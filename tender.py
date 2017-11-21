@@ -7,7 +7,7 @@ import os
 from datetime import datetime, timedelta
 
 
-cdb_host = 'http://public.api-sandbox.openprocurement.org/api/0/tenders/'
+cdb_host = 'http://api-sandbox.prozorro.openprocurement.net/api/dev/tenders/'
 
 
 def create_limited_reporting_simple():

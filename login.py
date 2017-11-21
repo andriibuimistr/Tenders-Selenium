@@ -9,7 +9,7 @@ def login(user_email, user_pass):
     driver.maximize_window()
     driver.get(host)
 
-    driver.find_element_by_xpath('//div[@class="header_top_menu r"]/div/a/span[1]').click()  # click link to login page
+    driver.find_element_by_xpath('//div[@class="ab relative"]/div/div[2]/a').click()  # click link to login page
 
     driver.find_element_by_name('email').clear()
     driver.find_element_by_name('email').send_keys(user_email)  # enter email
