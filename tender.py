@@ -1,17 +1,20 @@
 # -*- coding: utf-8 -*-
 from selenium.webdriver.support.ui import Select
+
+from initial_data.tender_additional_data import cdb_host, key_path, key_password, document_path
 from login import driver
 import time
 import requests
 import os
 from datetime import datetime, timedelta
-
-
-cdb_host = 'http://api-sandbox.prozorro.openprocurement.net/api/dev/tenders/'
+from selenium.webdriver.common.action_chains import ActionChains
 
 
 def create_limited_reporting_simple():
-    driver.find_element_by_xpath('//nav[@class="l menu relative clear yetInside1"]/div[1]/a').click()  # open procurements page
+    user_menu = driver.find_element_by_xpath('//div[contains(text(), "Мій ДЗО")]')
+    hover = ActionChains(driver).move_to_element(user_menu)
+    hover.perform()
+    driver.find_element_by_xpath('//a[contains(text(), "Мої закупівлі")]').click()  # open procurements page
     driver.find_element_by_xpath('//div[1][@class="newTender multiButtons"]/a').click()  # click "create tender" button
 
     # select procedure
@@ -101,8 +104,9 @@ def create_limited_reporting_simple():
 def get_json_from_cdb():
     # get long tender ID
     tender_id = driver.find_element_by_xpath('//span[@id="tender_id"]').text
-    cdb_json = requests.get(cdb_host + tender_id)
+    cdb_json = requests.get('{}/{}'.format(cdb_host, tender_id))
     return cdb_json.json()
+
 
 # get and convert information from tender page
 def get_data_limited_reporting_simple(parameter):
@@ -189,8 +193,8 @@ def qualify_winner_limited_reporting_simple():
     Select(driver.find_element_by_id('CAsServersSelect')).select_by_index(17)  # select eds entity
     # driver.execute_script('var elem = document.getElementById("PKeyFileInput"); elem.style.visibility="visible"')
     eds_file_path = os.getcwd()  # get current directory path
-    driver.find_element_by_id('PKeyFileInput').send_keys('{}\Key-6.dat'.format(eds_file_path))  # add sign file
-    driver.find_element_by_id('PKeyPassword').send_keys('12345677')  # type password
+    driver.find_element_by_id('PKeyFileInput').send_keys(key_path)  # add sign file
+    driver.find_element_by_id('PKeyPassword').send_keys(key_password)  # type password
     driver.find_element_by_id('PKeyReadButton').click()  # click read key button
 
     if driver.find_element_by_id(
@@ -217,18 +221,18 @@ def add_contract_limited_reporting_simple():
             driver.execute_script("arguments[0].scrollIntoView();", add_contract_button)
             add_contract_button.click()
             if add_contract_button:
-                print 'Contract button was found on the page'
+                print('Contract button was found on the page')
                 break
             else:
                 continue
         except Exception as e:
-            print 'Attempt ' + str(count) + ' - Contract button was not found on the page!'
+            print('Attempt ' + str(count) + ' - Contract button was not found on the page!')
             if count == 5:
-                print e
-                raise StandardError
+                print(e)
+                raise TimeoutError
 
     doc_file_path = os.getcwd()
-    driver.find_element_by_xpath('//div[@class="inp l relative"]/input[2]').send_keys('{}\Doc.pdf'.format(doc_file_path))
+    driver.find_element_by_xpath('//div[@class="inp l relative"]/input[2]').send_keys(document_path)
     driver.find_element_by_xpath('//div[@class="inp langSwitch langSwitch_uk dataFormatHelpInside"]/input').send_keys('Contract')
     Select(driver.find_element_by_name('documentType')).select_by_value('contractSigned')
     driver.find_element_by_xpath('//button[@class="icons icon_upload relative"]').click()
@@ -285,24 +289,25 @@ def sign_contract_limited_reporting_simple():
             driver.execute_script("arguments[0].scrollIntoView();", sign_contract_button)
             sign_contract_button.click()
             if sign_contract_button:
-                print 'Sign contract button was found on the page!'
+                print('Sign contract button was found on the page!')
                 break
             else:
                 continue
         except Exception as e:
-            print 'Attempt ' + str(count) + ' - Sign contract button was not found on the page:('
+            print('Attempt ' + str(count) + ' - Sign contract button was not found on the page:(')
             if count == 5:
-                print e
-                raise StandardError
+                print(e)
+                raise TimeoutError
 
     # sign page
     driver.switch_to.window(driver.window_handles[-1])  # swith to eds tab
     driver.find_element_by_class_name('js-oldPageLink').click()  # open old eds page
-    Select(driver.find_element_by_id('CAsServersSelect')).select_by_index(17)  # select eds entity
+    Select(driver.find_element_by_id('CAsServersSelect')).select_by_visible_text('Тестовий ЦСК АТ "ІІТ"')  # select eds entity
     # driver.execute_script('var elem = document.getElementById("PKeyFileInput"); elem.style.visibility="visible"')
-    eds_file_path = os.getcwd()  # get current directory path
-    driver.find_element_by_id('PKeyFileInput').send_keys('{}\Key-6.dat'.format(eds_file_path))  # add sign file
-    driver.find_element_by_id('PKeyPassword').send_keys('qwerty')  # type password
+    # eds_file_path = os.getcwd()  # get current directory path
+
+    driver.find_element_by_id('PKeyFileInput').send_keys(key_path)  # add sign file
+    driver.find_element_by_id('PKeyPassword').send_keys(key_password)  # type password
     driver.find_element_by_id('PKeyReadButton').click()  # click read key button
 
     if driver.find_element_by_id('PKStatusInfo').text == u'Ключ успішно завантажено':  # check successful read key message

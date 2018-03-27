@@ -1,5 +1,4 @@
 from selenium import webdriver
-import time
 host = 'http://www.dzo.byustudio.in.ua'
 driver = webdriver.Chrome()  # set driver
 
@@ -9,7 +8,7 @@ def login(user_email, user_pass):
     driver.maximize_window()
     driver.get(host)
 
-    driver.find_element_by_xpath('//div[@class="ab relative"]/div/div[2]/a').click()  # click link to login page
+    driver.find_element_by_xpath('//a[contains(text(), "Вхід")]').click()  # click link to login page
 
     driver.find_element_by_name('email').clear()
     driver.find_element_by_name('email').send_keys(user_email)  # enter email
@@ -24,5 +23,5 @@ def login(user_email, user_pass):
         psw.send_keys(user_pass)
         password_login_button = driver.find_element_by_xpath('//*[@class="buttons userAllow userAllow1"]')
         driver.execute_script("arguments[0].style.display = 'block';", password_login_button)
-        print "Password field was not visible"
+        print("Password field was not visible")
     driver.find_element_by_xpath('//div[@class="clear double"]/div[1]/div/button').click()  # click login button

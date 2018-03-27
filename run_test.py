@@ -1,10 +1,18 @@
 # -*- coding: utf-8 -*-
 import login
 import tender
+import pytest
 import unittest
+from initial_data.tender_data import create_tender_data
+from create_tender import create_tender
 
 
-class Tenders_Tests(unittest.TestCase):
+class BaseTestCase(unittest.TestCase):
+    tender_data = create_tender_data('negotiation')
+
+
+class TendersTests(BaseTestCase):
+
     @classmethod
     def setUpClass(cls):
         cls.driver = login.driver  # import driver from login file
@@ -13,7 +21,7 @@ class Tenders_Tests(unittest.TestCase):
         self.login = login.login('formyqatesting@gmail.com', 'andriy85')
 
     def test2_Create_tender(self):
-        tender.create_limited_reporting_simple()
+        create_tender(self.tender_data)
 
     def test3_Compare_tender_amount(self):
         cdb_json = tender.get_json_from_cdb()
@@ -43,5 +51,7 @@ class Tenders_Tests(unittest.TestCase):
     def tearDownClass(cls):
         cls.driver = login.driver.quit()
 
+
 if __name__ == "__main__":
     unittest.main(verbosity=2)
+
