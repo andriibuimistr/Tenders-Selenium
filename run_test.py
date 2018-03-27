@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+from selenium import webdriver
+
 import login
 import tender
 import pytest
@@ -6,9 +8,14 @@ import unittest
 from initial_data.tender_data import create_tender_data
 from create_tender import create_tender
 
+#
+# @pytest.fixture(scope="class", autouse=True)
+# def driver():
+#     return webdriver.Chrome()
+
 
 class BaseTestCase(unittest.TestCase):
-    tender_data = create_tender_data('negotiation')
+    tender_data = create_tender_data('aboveThresholdUA')
 
 
 class TendersTests(BaseTestCase):

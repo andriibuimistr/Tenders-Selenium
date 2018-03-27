@@ -40,7 +40,7 @@ def get_classification():
 
 
 def get_unit():
-    return choice([['BX', u'ящик'], ['D64', u'блок'], ['E48', u'послуга']])
+    return choice([['BX', u'ящик'], ['D64', u'блок'], ['E48', u'посл']])
 
 
 def generate_id_for_item():
@@ -336,5 +336,7 @@ def create_tender_data(procurement_method):
         tender_data = generate_tender_json(procurement_method, 0, 3, 1440, 'active.tendering', generate_id_for_lot(0), 0, False)
     elif procurement_method in negotiation_procurement:
         tender_data = generate_tender_json(procurement_method, 3, 3, 1440, 'active.tendering', generate_id_for_lot(3), 0, False)
+    else:
+        tender_data = generate_tender_json(procurement_method, 0, 3, 1440, 'active.tendering', generate_id_for_lot(3), 1, True)
     return tender_data
 
