@@ -190,7 +190,7 @@ def qualify_winner_limited_reporting_simple():
     # driver.execute_script('var elem = document.getElementById("PKeyFileInput"); elem.style.visibility="visible"')
     eds_file_path = os.getcwd()  # get current directory path
     driver.find_element_by_id('PKeyFileInput').send_keys('{}\Key-6.dat'.format(eds_file_path))  # add sign file
-    driver.find_element_by_id('PKeyPassword').send_keys('qwerty')  # type password
+    driver.find_element_by_id('PKeyPassword').send_keys('12345677')  # type password
     driver.find_element_by_id('PKeyReadButton').click()  # click read key button
 
     if driver.find_element_by_id(
