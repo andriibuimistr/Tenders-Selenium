@@ -2,7 +2,7 @@
 from selenium.webdriver.support.ui import Select
 from initial_data.tender_additional_data import select_procedure
 from initial_data.tender_additional_data import limited_procurement, kiev_now, negotiation_procurement
-from login import driver
+from conftest import driver
 import time
 import json
 from datetime import datetime

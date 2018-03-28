@@ -2,7 +2,7 @@
 from selenium.webdriver.support.ui import Select
 
 from initial_data.tender_additional_data import cdb_host, key_path, key_password, document_path
-from login import driver
+from conftest import driver
 import time
 import requests
 import os

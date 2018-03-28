@@ -10,3 +10,10 @@ def pytest_addoption(parser):
 @pytest.fixture(scope='class')
 def pmt(request):
     request.cls.pmt = create_tender_data(request.config.getoption("--pmt"))
+
+
+host = 'http://www.dzo.byustudio.in.ua'
+driver = webdriver.Chrome()
+driver.implicitly_wait(30)
+driver.maximize_window()
+driver.get(host)
