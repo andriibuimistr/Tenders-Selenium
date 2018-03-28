@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 from selenium import webdriver
-
 import login
 import tender
 import pytest
 import unittest
-from initial_data.tender_data import create_tender_data
+
 from create_tender import create_tender
 
 #
@@ -14,21 +13,22 @@ from create_tender import create_tender
 #     return webdriver.Chrome()
 
 
-class BaseTestCase(unittest.TestCase):
-    tender_data = create_tender_data('negotiation')
+# class BaseTestCase(unittest.TestCase):
+#         tender_data = create_tender_data('reporting')
 
 
-class TendersTests(BaseTestCase):
+@pytest.mark.usefixtures("pmt")
+class TendersTest(unittest.TestCase):
 
     @classmethod
     def setUpClass(cls):
         cls.driver = login.driver  # import driver from login file
 
     def test1_Login(self):
-        self.login = login.login('formyqatesting@gmail.com', 'andriy85')
+        self.login = login.login('formyqatesting@gmail.com', 'andriy85', self.driver)
 
     def test2_Create_tender(self):
-        create_tender(self.tender_data)
+        create_tender(self.pmt)
 
     def test3_Compare_tender_amount(self):
         cdb_json = tender.get_json_from_cdb()

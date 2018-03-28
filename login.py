@@ -3,7 +3,7 @@ host = 'http://www.dzo.byustudio.in.ua'
 driver = webdriver.Chrome()  # set driver
 
 
-def login(user_email, user_pass):
+def login(user_email, user_pass, driver):
     driver.implicitly_wait(30)
     driver.maximize_window()
     driver.get(host)
