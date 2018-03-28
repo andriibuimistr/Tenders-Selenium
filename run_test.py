@@ -13,14 +13,29 @@ class TendersTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
         cls.driver = driver
+        cls.login = actions.login('formyqatesting@gmail.com', 'andriy85')
 
-    def test1_Login(self):
-        self.login = actions.Actions(driver).login('formyqatesting@gmail.com', 'andriy85')
+    # def test0_Login(self):
+    #     self.login = actions.login('formyqatesting@gmail.com', 'andriy85')
 
-    def test2_Create_tender(self):
+    def test1_Create_tender(self):
         create_tender(self.pmt)
 
-    #
+    def test2_Add_supplier(self):
+        actions.add_participant_info_limited(self.pmt)
+
+    @staticmethod
+    def test3_Qualify_winner_limited():
+        actions.qualify_winner_limited()
+
+    @staticmethod
+    def test4_Add_contract_limited():
+        actions.add_contract()
+
+    @staticmethod
+    def test5_Sign_contract_limited():
+        actions.sign_contract()
+
     # def test3_Compare_tender_amount(self):
     #     cdb_json = tender.get_json_from_cdb()
     #     self.assertEqual(cdb_json['data']['value']['amount'], float(tender.get_data_limited_reporting_simple('tender_amount')))

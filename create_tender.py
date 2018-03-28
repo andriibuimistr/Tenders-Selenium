@@ -7,6 +7,12 @@ import time
 import json
 from datetime import datetime
 from selenium.webdriver.common.action_chains import ActionChains
+from actions import save_into_file
+
+
+def get_tender_id():
+    uid = driver.find_element_by_xpath('//a[@title="Оголошення на порталі Уповноваженого органу"]/span').text
+    return uid
 
 
 def fill_item_data(item_data, item, procurement_type, lot=0):
@@ -242,3 +248,7 @@ def create_tender(tender_data):
     driver.find_element_by_xpath('//button[@value="publicate"]').click()
     if driver.find_element_by_xpath('//button[@class="js-notClean_ignore_plan"]'):
         driver.find_element_by_xpath('//button[@class="js-notClean_ignore_plan"]').click()
+
+    tender_uid = get_tender_id()
+    print(tender_uid)
+    save_into_file(tender_uid)
