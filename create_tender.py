@@ -1,33 +1,30 @@
 # -*- coding: utf-8 -*-
 from selenium.webdriver.support.ui import Select
 from initial_data.tender_additional_data import select_procedure
-from initial_data.tender_additional_data import limited_procurement, kiev_now
+from initial_data.tender_additional_data import limited_procurement, kiev_now, negotiation_procurement
 from login import driver
-from initial_data.tender_additional_data import cdb_host, key_path, key_password, document_path
 import time
-import requests
-import os
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions
 import json
-from datetime import datetime, timedelta
+from datetime import datetime
 from selenium.webdriver.common.action_chains import ActionChains
 
 
-def fill_item_data(item_data, item, procurement_type):
-    # item title
-    driver.find_element_by_name('data[items][{}][description]'.format(item)).send_keys(item_data['description'])
-
+def fill_item_data(item_data, item, procurement_type, lot=0):
+    try:
+        # item title
+        driver.find_element_by_name('data[items][{}][description]'.format(item)).send_keys(item_data['description'])
+    except:
+        driver.find_element_by_xpath('//span[@class="lotIndex"][contains(text(), "{}")]/preceding-sibling::span[contains(text(), "Склад лоту")]/../following-sibling::a'.format(lot + 1)).click()
+        driver.find_element_by_name('data[items][{}][description]'.format(item)).send_keys(item_data['description'])
     # quantity
     driver.find_element_by_name('data[items][{}][quantity]'.format(item)).send_keys(item_data['quantity'])
 
     # unit id
     Select(driver.find_element_by_name('data[items][{}][unit_id]'.format(item))).select_by_visible_text(item_data['unit']['name'])
 
-    if procurement_type in limited_procurement:
-        # amount of item
-        driver.find_element_by_name('data[items][{}][unit][value][amount]'.format(item)).send_keys(item_data['value']['amount'])
+    # if procurement_type in limited_procurement:
+    #     # amount of item
+    #     driver.find_element_by_name('data[items][{}][unit][value][amount]'.format(item)).send_keys(item_data['unit']['value']['amount'])
 
     # select classification
     select_main_classification = driver.find_element_by_xpath('//input[@name="data[items][{}][cpv_id]"]/preceding-sibling::a[contains(text(), "Визначити за довідником")]'.format(item))
@@ -67,14 +64,39 @@ def fill_item_data(item_data, item, procurement_type):
     delivery_end_date_path.send_keys(delivery_date)
 
 
-def fill_lot_data(lot_data, features_data, lot):
+def fill_lot_data(lot_data, lot):
     driver.find_element_by_name('data[lots][{}][title]'.format(lot)).send_keys(lot_data['title'])
     driver.find_element_by_name('data[lots][{}][description]'.format(lot)).send_keys(lot_data['description'])
     driver.find_element_by_name('data[lots][{}][value][amount]'.format(lot)).send_keys(lot_data['value']['amount'])
     driver.find_element_by_name('data[lots][{}][minimalStep][amount]'.format(lot)).send_keys(lot_data['minimalStep']['amount'])
     if 'guarantee' in lot_data:
-        driver.find_element_by_xpath('//input[@name="data[lots][{}][title]"]/ancestor::div[contains(@class, "accordionContent")]/descendant::span[contains(text(), "Електронна гарантія")][{}]'.format(lot, lot + 1)).click()
+        driver.find_element_by_xpath(
+            '//input[@name="data[lots][{}][title]"]/ancestor::div[contains(@class, "accordionContent")]/descendant::span[contains(text(), "Електронна гарантія")][{}]'.format(lot, lot + 1)).click()
         driver.find_element_by_name('data[lots][{}][guarantee][amount]'.format(lot)).send_keys(lot_data['guarantee']['amount'])
+
+
+def add_tender_features(feature_data, feature_number):
+    driver.find_element_by_name('data[features][{}][title]'.format(feature_number)).send_keys(feature_data['title'])
+    driver.find_element_by_name('data[features][{}][description]'.format(feature_number)).send_keys(feature_data['description'])
+    for option in range(len(feature_data['enum'])):
+        if option > 0:
+            driver.execute_script("arguments[0].scrollIntoView();", driver.find_element_by_name('data[features][{}][title]'.format(feature_number)))
+            driver.find_element_by_xpath('//h3[contains(text(), "Загальні нецінові критерії")]/../descendant::a[contains(text(), "Додати опцію")]').click()
+        driver.find_element_by_name('data[features][{}][enum][{}][title]'.format(feature_number, option)).send_keys(feature_data['enum'][option]['title'])
+        driver.find_element_by_name('data[features][{}][enum][{}][value]'.format(feature_number, option)).send_keys(str(int(float(feature_data['enum'][option]['value']) * 100)))
+
+
+def add_lot_features(feature_data, feature_number, lot):
+    driver.find_element_by_name('data[features][{}][title]'.format(feature_number)).send_keys(feature_data['title'])
+    driver.find_element_by_name('data[features][{}][description]'.format(feature_number)).send_keys(feature_data['description'])
+    Select(driver.find_element_by_name('data[features][{}][featureOf]'.format(feature_number))).select_by_value('lot')
+    for option in range(len(feature_data['enum'])):
+        if option > 0:
+            driver.execute_script("arguments[0].scrollIntoView();", driver.find_element_by_name('data[features][{}][title]'.format(feature_number)))
+            driver.find_element_by_xpath(
+                '//span[@class="lotIndex"][contains(text(), "{}")]/preceding-sibling::span[contains(text(), "Нецінові критерії до лоту")]/../following-sibling::div/descendant::a[contains(text(), "Додати опцію")]'.format(lot + 1)).click()
+        driver.find_element_by_name('data[features][{}][enum][{}][title]'.format(feature_number, option)).send_keys(feature_data['enum'][option]['title'])
+        driver.find_element_by_name('data[features][{}][enum][{}][value]'.format(feature_number, option)).send_keys(str(int(float(feature_data['enum'][option]['value'])*100)))
 
 
 def create_tender(tender_data):
@@ -83,6 +105,7 @@ def create_tender(tender_data):
     user_menu = driver.find_element_by_xpath('//div[contains(text(), "Мій ДЗО")]')
     hover = ActionChains(driver).move_to_element(user_menu)
     hover.perform()
+    time.sleep(1)
     driver.find_element_by_xpath('//a[contains(text(), "Мої закупівлі")]').click()  # open procurements page
     driver.find_element_by_xpath('//div[1][@class="newTender multiButtons"]/a').click()  # click "create tender" button
 
@@ -91,6 +114,11 @@ def create_tender(tender_data):
     time.sleep(2)
     driver.find_element_by_xpath('//*[@class="jContent"]/div[2]/a[1]').click()  # close modal window
     time.sleep(5)
+
+    if procurement_type in negotiation_procurement:
+        driver.find_element_by_xpath('//input[@value="additionalConstruction"]/following-sibling::span').click()
+        driver.execute_script("arguments[0].scrollIntoView();", driver.find_element_by_name('data[description]'))
+        driver.find_element_by_name('data[causeDescription]').send_keys(data['causeDescription'])
 
     number_of_lots = 0
     if 'lots' in data:
@@ -131,7 +159,6 @@ def create_tender(tender_data):
             driver.find_element_by_name('data[guarantee][amount]').send_keys(data['guarantee']['amount'])
 
     # tender title
-    actual_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
     driver.find_element_by_name('data[title]').send_keys(data['title'])
 
     # tender description
@@ -148,19 +175,13 @@ def create_tender(tender_data):
     items_section.click()
 
     items = -1
+    feature_number = -1
     if number_of_lots != 0:
         for lot in range(len(data['lots'])):
             if lot > 0:
                 driver.find_element_by_xpath('//a[contains(@class, "addMultiLot")]').click()
             lot_data = data['lots'][lot]
-            if number_of_features != 0:
-                features_data = []
-                for feature in range(len(data['features'])):
-                    if data['features'][feature]['featureOf'] == 'lot' and data['features'][feature]['relatedItem'] == data['lots'][lot]['id']:
-                        features_data.append(data['features'][feature])
-            else:
-                features_data = []
-            fill_lot_data(lot_data, features_data, lot)
+            fill_lot_data(lot_data, lot)
             item_data = []
             for item in range(len(data['items'])):
                 if data['items'][item]['relatedLot'] == data['lots'][lot]['id']:
@@ -171,13 +192,39 @@ def create_tender(tender_data):
                     driver.find_element_by_xpath(
                         '//input[@name="data[items][{}][description]"]/ancestor::div[contains(@class, "listItems")]/following-sibling::table[@class="addNewItem"]/descendant::a[contains(@class, "addMultiItem")]'.format(
                             items - 1)).click()
-                fill_item_data(item_data[lot_item], items, procurement_type)
+                fill_item_data(item_data[lot_item], items, procurement_type, lot)
+            if number_of_features != 0:
+                features_data = []
+                for feature in range(len(data['features'])):
+                    if data['features'][feature]['featureOf'] == 'lot' and data['features'][feature]['relatedItem'] == data['lots'][lot]['id']:
+                        features_data.append(data['features'][feature])
+                driver.find_element_by_xpath('//span[@class="lotIndex"][contains(text(), "{}")]/preceding-sibling::span[contains(text(), "Нецінові критерії до лоту")]/../following-sibling::a'.format(lot + 1)).click()
+                for feature in range(len(features_data)):
+                    feature_number += 1
+                    driver.find_element_by_xpath(
+                        '//span[@class="lotIndex"][contains(text(), "{}")]/preceding-sibling::span[contains(text(), "Нецінові критерії до лоту")]/../../descendant::a[contains(text(), "Додати критерій")]'.format(lot + 1)).click()
+                    add_lot_features(features_data[feature], feature_number, lot)
     else:
         for item in range(len(data['items'])):
             item_data = data['items'][item]
             if item > 0:
-                driver.find_element_by_xpath('//input[@name="data[items][{}][description]"]/ancestor::div[contains(@class, "listItems")]/following-sibling::table[@class="addNewItem"]/descendant::a[contains(@class, "addMultiItem")]'.format(item - 1)).click()
+                driver.find_element_by_xpath(
+                    '//input[@name="data[items][{}][description]"]/ancestor::div[contains(@class, "listItems")]/following-sibling::table[@class="addNewItem"]/descendant::a[contains(@class, "addMultiItem")]'.format(item - 1)).click()
             fill_item_data(item_data, item, procurement_type)
+
+    if number_of_features != 0:
+        features_tender = []
+        for feature in range(len(data['features'])):
+            if data['features'][feature]['featureOf'] == 'tenderer':
+                features_tender.append(data['features'][feature])
+        if len(features_tender) > 0:
+            driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
+            driver.find_element_by_xpath('//h3[contains(text(), "Загальні нецінові критерії")]/following-sibling::a[contains(@class, "accordionOpen")]').click()
+            for tender_feature in range(len(features_tender)):
+                feature_number += 1
+                if tender_feature > 0:
+                    driver.find_element_by_xpath('//h3[contains(text(), "Загальні нецінові критерії")]/../descendant::a[contains(text(), "Додати критерій")]').click()
+                add_tender_features(features_tender[tender_feature], feature_number)
 
     if procurement_type == 'belowThreshold':
         enquiry_period_field = driver.find_element_by_name('data[enquiryPeriod][endDate]')
@@ -185,14 +232,13 @@ def create_tender(tender_data):
         enquiry_period_field.click()
         driver.execute_script("arguments[0].removeAttribute('readonly','readonly')", enquiry_period_field)
         enquiry_period_field.send_keys(datetime.strftime(datetime.strptime(data['enquiryPeriod']['endDate'], "%Y-%m-%dT%H:%M:%S{}".format(kiev_now)), '%d/%m/%Y'))
-
-    tender_period_end_date_field = driver.find_element_by_name('data[tenderPeriod][endDate]')
-    driver.execute_script("arguments[0].scrollIntoView();", tender_period_end_date_field)
-    tender_period_end_date_field.click()
-    driver.execute_script("arguments[0].removeAttribute('readonly','readonly')", tender_period_end_date_field)
-    tender_period_end_date_field.send_keys(datetime.strftime(datetime.strptime(data['tenderPeriod']['endDate'], "%Y-%m-%dT%H:%M:%S{}".format(kiev_now)), '%d/%m/%Y'))
+    if procurement_type not in limited_procurement:
+        tender_period_end_date_field = driver.find_element_by_name('data[tenderPeriod][endDate]')
+        driver.execute_script("arguments[0].scrollIntoView();", tender_period_end_date_field)
+        tender_period_end_date_field.click()
+        driver.execute_script("arguments[0].removeAttribute('readonly','readonly')", tender_period_end_date_field)
+        tender_period_end_date_field.send_keys(datetime.strftime(datetime.strptime(data['tenderPeriod']['endDate'], "%Y-%m-%dT%H:%M:%S{}".format(kiev_now)), '%d/%m/%Y'))
 
     driver.find_element_by_xpath('//button[@value="publicate"]').click()
     if driver.find_element_by_xpath('//button[@class="js-notClean_ignore_plan"]'):
         driver.find_element_by_xpath('//button[@class="js-notClean_ignore_plan"]').click()
-

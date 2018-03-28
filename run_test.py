@@ -15,7 +15,7 @@ from create_tender import create_tender
 
 
 class BaseTestCase(unittest.TestCase):
-    tender_data = create_tender_data('aboveThresholdUA')
+    tender_data = create_tender_data('negotiation')
 
 
 class TendersTests(BaseTestCase):
