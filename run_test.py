@@ -1,25 +1,23 @@
 # -*- coding: utf-8 -*-
 import actions
-# import tender
 import pytest
 import unittest
-from conftest import driver
+from config import driver, td, json_cdb
 from create_tender import create_tender
+import view_from_page
 
 
 @pytest.mark.usefixtures("pmt")
-class TendersTest(unittest.TestCase):
+class TestTendersTest(object):
 
     @classmethod
-    def setUpClass(cls):
+    def setup_class(cls):
         cls.driver = driver
         cls.login = actions.login('formyqatesting@gmail.com', 'andriy85')
 
-    # def test0_Login(self):
-    #     self.login = actions.login('formyqatesting@gmail.com', 'andriy85')
-
     def test1_Create_tender(self):
-        create_tender(self.pmt)
+        global json_cdb
+        json_cdb = create_tender(self.pmt)
 
     def test2_Add_supplier(self):
         actions.add_participant_info_limited(self.pmt)
@@ -28,12 +26,22 @@ class TendersTest(unittest.TestCase):
     def test3_Qualify_winner_limited():
         actions.qualify_winner_limited()
 
+    def test4_Compare_tender_title(self):
+        assert self.pmt['data']['title'] == view_from_page.get_tender_title()
+
+    def test5_Compare_tender_description(self):
+        assert self.pmt['data']['description'] == view_from_page.get_tender_description()
+
     @staticmethod
-    def test4_Add_contract_limited():
+    def test6_Compare_tender_id():
+        assert json_cdb['data']['tenderID'] == view_from_page.get_tender_uid()
+
+    @staticmethod
+    def test7_Add_contract_limited():
         actions.add_contract()
 
     @staticmethod
-    def test5_Sign_contract_limited():
+    def test99_Sign_contract_limited():
         actions.sign_contract()
 
     # def test3_Compare_tender_amount(self):
@@ -47,23 +55,11 @@ class TendersTest(unittest.TestCase):
     # def test5_Compare_tender_taxIncluded(self):  # add info about participant
     #     cdb_json = tender.get_json_from_cdb()
     #     self.assertEqual(cdb_json['data']['value']['valueAddedTaxIncluded'], tender.get_data_limited_reporting_simple('tender_taxIncluded'))
-    #
-    # def test6_Add_participant_info(self):  # add info about participant
-    #     tender.add_participant_info_limited_reporting_simple()
-    #
-    # def test7_Qualify_winner_limited_reporting_simple(self):  # sign with EDS
-    #     tender.qualify_winner_limited_reporting_simple()
-    #
-    # def test8_Add_contract_limited_reporting_simple(self):  # add contract
-    #     tender.add_contract_limited_reporting_simple()
-    #
-    # def test9_Sign_contract_limited_reporting_simple(self):  # add contract
-    #     tender.sign_contract_limited_reporting_simple()
 
     @classmethod
-    def tearDownClass(cls):
+    def teardown_class(cls):
         cls.driver = driver.quit()
 
-
-if __name__ == "__main__":
-    unittest.main(verbosity=2)
+#
+# if __name__ == "__main__":
+#     unittest.main(verbosity=2)

@@ -2,17 +2,14 @@
 from selenium.webdriver.support.ui import Select
 from initial_data.tender_additional_data import select_procedure
 from initial_data.tender_additional_data import limited_procurement, kiev_now, negotiation_procurement
-from conftest import driver
+from config import driver
 import time
 import json
 from datetime import datetime
 from selenium.webdriver.common.action_chains import ActionChains
-from actions import save_into_file
-
-
-def get_tender_id():
-    uid = driver.find_element_by_xpath('//a[@title="Оголошення на порталі Уповноваженого органу"]/span').text
-    return uid
+from view_from_page import get_tender_id
+from cdb_requests import TenderRequests
+# from actions import save_into_file
 
 
 def fill_item_data(item_data, item, procurement_type, lot=0):
@@ -37,11 +34,11 @@ def fill_item_data(item_data, item, procurement_type, lot=0):
     v_position = select_main_classification.location['y']
     driver.execute_script("arguments[0].scrollIntoView();", driver.find_element_by_name('data[items][{}][description]'.format(item)))
     select_main_classification.click()  # open classification window
-    time.sleep(5)
+    # time.sleep(5)
 
     driver.switch_to.frame(driver.find_element_by_xpath('//div[@id="modal"]/div/div/iframe'))
     driver.find_element_by_xpath('//input[@id="search"]').send_keys(item_data['classification']['id'])
-    time.sleep(2)
+    # time.sleep(2)
     driver.find_element_by_xpath('//a[contains(@id, "{}")]'.format(item_data['classification']['id'][:-4])).click()  # select classification
     driver.find_element_by_xpath('//div[@class="buttons"]/a').click()  # press select button
     driver.switch_to.default_content()
@@ -119,7 +116,7 @@ def create_tender(tender_data):
     Select(driver.find_element_by_name('tender_method')).select_by_visible_text(select_procedure(data['procurementMethodType']))
     time.sleep(2)
     driver.find_element_by_xpath('//*[@class="jContent"]/div[2]/a[1]').click()  # close modal window
-    time.sleep(5)
+    time.sleep(2)
 
     if procurement_type in negotiation_procurement:
         driver.find_element_by_xpath('//input[@value="additionalConstruction"]/following-sibling::span').click()
@@ -249,6 +246,7 @@ def create_tender(tender_data):
     if driver.find_element_by_xpath('//button[@class="js-notClean_ignore_plan"]'):
         driver.find_element_by_xpath('//button[@class="js-notClean_ignore_plan"]').click()
 
-    tender_uid = get_tender_id()
-    print(tender_uid)
-    save_into_file(tender_uid)
+    tender_id = get_tender_id()
+    # print(tender_id)
+    json_cdb = TenderRequests('2.4').get_tender_info(tender_id).json()
+    return json_cdb

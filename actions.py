@@ -1,7 +1,7 @@
 # from run_test import driver
 import os
 import time
-from conftest import host, driver
+from config import host, driver
 from selenium.webdriver.support.ui import Select
 from datetime import datetime, timedelta
 from initial_data.tender_additional_data import key_path, key_password, document_path
@@ -28,17 +28,17 @@ def login(user_email, user_pass):
     driver.find_element_by_name('email').clear()
     driver.find_element_by_name('email').send_keys(user_email)  # enter email
 
-    try:
-        psw = driver.find_element_by_name('psw')
-        psw.send_keys(user_pass)
-    except Exception as e:
-        password_block = driver.find_element_by_xpath('//*[@class="line userAllow userAllow1"]')
-        psw = driver.find_element_by_name('psw')
-        driver.execute_script("arguments[0].style.display = 'table-row';", password_block)
-        psw.send_keys(user_pass)
-        password_login_button = driver.find_element_by_xpath('//*[@class="buttons userAllow userAllow1"]')
-        driver.execute_script("arguments[0].style.display = 'block';", password_login_button)
-        print("Password field was not visible {}".format(e))
+    # try:
+    #     psw = driver.find_element_by_name('psw')
+    #     psw.send_keys(user_pass)
+    # except Exception as e:
+    password_block = driver.find_element_by_xpath('//*[@class="line userAllow userAllow1"]')
+    psw = driver.find_element_by_name('psw')
+    driver.execute_script("arguments[0].style.display = 'table-row';", password_block)
+    psw.send_keys(user_pass)
+    password_login_button = driver.find_element_by_xpath('//*[@class="buttons userAllow userAllow1"]')
+    driver.execute_script("arguments[0].style.display = 'block';", password_login_button)
+    # print("Password field was not visible {}".format(e))
     driver.find_element_by_xpath('//div[@class="clear double"]/div[1]/div/button').click()  # click login button
 
 
@@ -52,6 +52,34 @@ def find_tender_by_id():
     driver.find_element_by_xpath('//a[contains(@class, "tenderLink")]').click()
     time.sleep(1)
     return driver.find_element_by_xpath('//a[@title="Оголошення на порталі Уповноваженого органу"]/span').text
+
+
+def eds_sign(eds_button):
+    driver.execute_script("arguments[0].scrollIntoView();", eds_button)
+    eds_button.click()
+
+    main_window = driver.current_window_handle  # set tender window
+
+    # sign page
+    driver.switch_to.window(driver.window_handles[-1])  # swith to eds tab
+    driver.find_element_by_class_name('js-oldPageLink').click()  # open old eds page
+    for x in range(5):
+        Select(driver.find_element_by_id('CAsServersSelect')).select_by_index(17)  # select eds entity
+        driver.find_element_by_id('PKeyFileInput').send_keys(key_path)  # add sign file
+        driver.find_element_by_id('PKeyPassword').send_keys(key_password)  # type password
+        driver.find_element_by_id('PKeyReadButton').click()  # click read key button
+
+        if driver.find_element_by_id('PKStatusInfo').text == u'Ключ успішно завантажено':  # check successful read key message
+            time.sleep(2)
+            driver.find_element_by_id('SignDataButton').click()  # click sign button
+            time.sleep(5)
+            if driver.find_element_by_id('PKStatusInfo').text == u'Підпис успішно накладено та передано у ЦБД':
+                driver.close()  # close sign page tab
+                driver.switch_to_window(main_window)  # switch to tender window
+                break
+            else:
+                driver.find_element_by_xpath('//button[@id="PKeyReadButton"][contains(text(), "Зтерти")]').click()
+                continue
 
 
 def add_participant_info_limited(data):
@@ -110,49 +138,30 @@ def qualify_winner_limited():
 
     # open EDS window
     eds_button = driver.find_element_by_xpath('//div[@class="sign"]/a')
-    driver.execute_script("arguments[0].scrollIntoView();", eds_button)
-    eds_button.click()
-
-    main_window = driver.current_window_handle  # set tender window
-
-    # sign page
-    driver.switch_to.window(driver.window_handles[-1])  # swith to eds tab
-    driver.find_element_by_class_name('js-oldPageLink').click()  # open old eds page
-    Select(driver.find_element_by_id('CAsServersSelect')).select_by_index(17)  # select eds entity
-    driver.find_element_by_id('PKeyFileInput').send_keys(key_path)  # add sign file
-    driver.find_element_by_id('PKeyPassword').send_keys(key_password)  # type password
-    driver.find_element_by_id('PKeyReadButton').click()  # click read key button
-
-    if driver.find_element_by_id(
-            'PKStatusInfo').text == u'Ключ успішно завантажено':  # check successful read key message
-        time.sleep(2)
-        driver.find_element_by_id('SignDataButton').click()  # click sign button
-        time.sleep(2)
-        if driver.find_element_by_id('PKStatusInfo').text == u'Підпис успішно накладено та передано у ЦБД':
-            time.sleep(2)
-            driver.close()  # close sign page tab
-            driver.switch_to_window(main_window)  # switch to tender window
+    eds_sign(eds_button)
 
 
 # add contract for limited reporting procedure
 def add_contract():
     # check "add contract" button
     count = 0
-    for x in range(5):
+    for x in range(10):
         count += 1
         try:
             driver.refresh()
+            time.sleep(1)
             add_contract_button = driver.find_element_by_xpath('//a[@class="reverse grey setDone"]')
             driver.execute_script("arguments[0].scrollIntoView();", add_contract_button)
             add_contract_button.click()
+            time.sleep(2)
             if add_contract_button:
-                print('Contract button was found on the page')
+                # print('Contract button was found on the page')
                 break
             else:
                 continue
         except Exception as e:
-            print('Attempt ' + str(count) + ' - Contract button was not found on the page!')
-            if count == 5:
+            # print('Attempt ' + str(count) + ' - Contract button was not found on the page!')
+            if count == 10:
                 print(e)
                 raise TimeoutError
 
@@ -198,9 +207,9 @@ def add_contract():
 # sign contract for limited reporting procedure
 def sign_contract():
     # check "sign contract" button
-    main_window = driver.current_window_handle  # set tender window
+    # main_window = driver.current_window_handle  # set tender window
     count = 0
-    for x in range(5):
+    for x in range(20):
         count += 1
         try:
             driver.refresh()
@@ -211,37 +220,38 @@ def sign_contract():
             time.sleep(2)
             sign_contract_button = driver.find_element_by_xpath('//div[@class="sign"]/a')
             driver.execute_script("arguments[0].scrollIntoView();", sign_contract_button)
-            sign_contract_button.click()
+            # sign_contract_button.click()
             if sign_contract_button:
-                print('Sign contract button was found on the page!')
+                eds_sign(sign_contract_button)
+                # print('Sign contract button was found on the page!')
                 break
             else:
                 continue
         except Exception as e:
-            print('Attempt ' + str(count) + ' - Sign contract button was not found on the page:(')
-            if count == 5:
+            # print('Attempt ' + str(count) + ' - Sign contract button was not found on the page:(')
+            if count == 20:
                 print(e)
                 raise TimeoutError
 
     # sign page
-    driver.switch_to.window(driver.window_handles[-1])  # swith to eds tab
-    driver.find_element_by_class_name('js-oldPageLink').click()  # open old eds page
-    Select(driver.find_element_by_id('CAsServersSelect')).select_by_visible_text('Тестовий ЦСК АТ "ІІТ"')  # select eds entity
-    # driver.execute_script('var elem = document.getElementById("PKeyFileInput"); elem.style.visibility="visible"')
-    # eds_file_path = os.getcwd()  # get current directory path
-
-    driver.find_element_by_id('PKeyFileInput').send_keys(key_path)  # add sign file
-    driver.find_element_by_id('PKeyPassword').send_keys(key_password)  # type password
-    driver.find_element_by_id('PKeyReadButton').click()  # click read key button
-
-    if driver.find_element_by_id('PKStatusInfo').text == u'Ключ успішно завантажено':  # check successful read key message
-        time.sleep(2)
-        driver.find_element_by_id('SignDataButton').click()  # click sign button
-        time.sleep(2)
-        if driver.find_element_by_id('PKStatusInfo').text == u'Підпис успішно накладено та передано у ЦБД':
-            time.sleep(2)
-            driver.close()  # close sign page tab
-            driver.switch_to_window(main_window)  # switch to tender window
+    # driver.switch_to.window(driver.window_handles[-1])  # swith to eds tab
+    # driver.find_element_by_class_name('js-oldPageLink').click()  # open old eds page
+    # Select(driver.find_element_by_id('CAsServersSelect')).select_by_visible_text('Тестовий ЦСК АТ "ІІТ"')  # select eds entity
+    # # driver.execute_script('var elem = document.getElementById("PKeyFileInput"); elem.style.visibility="visible"')
+    # # eds_file_path = os.getcwd()  # get current directory path
+    #
+    # driver.find_element_by_id('PKeyFileInput').send_keys(key_path)  # add sign file
+    # driver.find_element_by_id('PKeyPassword').send_keys(key_password)  # type password
+    # driver.find_element_by_id('PKeyReadButton').click()  # click read key button
+    #
+    # if driver.find_element_by_id('PKStatusInfo').text == u'Ключ успішно завантажено':  # check successful read key message
+    #     time.sleep(2)
+    #     driver.find_element_by_id('SignDataButton').click()  # click sign button
+    #     time.sleep(2)
+    #     if driver.find_element_by_id('PKStatusInfo').text == u'Підпис успішно накладено та передано у ЦБД':
+    #         time.sleep(2)
+    #         driver.close()  # close sign page tab
+    #         driver.switch_to_window(main_window)  # switch to tender window
 
     # close modal window
     time.sleep(2)
