@@ -9,7 +9,6 @@ from datetime import datetime
 from selenium.webdriver.common.action_chains import ActionChains
 from view_from_page import get_tender_id
 from cdb_requests import TenderRequests
-# from actions import save_into_file
 
 
 def fill_item_data(item_data, item, procurement_type, lot=0):

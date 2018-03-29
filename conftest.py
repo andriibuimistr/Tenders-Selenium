@@ -1,7 +1,6 @@
 # from config import host, driver
 from initial_data.tender_data import create_tender_data
 import pytest
-# import time
 
 
 def pytest_addoption(parser):

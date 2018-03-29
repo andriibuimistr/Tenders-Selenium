@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 import actions
 import pytest
-import unittest
-from config import driver, td, json_cdb
+from config import driver
 from create_tender import create_tender
+import msg
 import view_from_page
 
 
@@ -26,18 +26,46 @@ class TestTendersTest(object):
     def test3_Qualify_winner_limited():
         actions.qualify_winner_limited()
 
-    def test4_Compare_tender_title(self):
-        assert self.pmt['data']['title'] == view_from_page.get_tender_title()
-
-    def test5_Compare_tender_description(self):
-        assert self.pmt['data']['description'] == view_from_page.get_tender_description()
+    def test4_Find_tender_by_identifier(self):
+        actions.find_tender_by_id(json_cdb['data']['tenderID'])
 
     @staticmethod
-    def test6_Compare_tender_id():
+    def test5_Compare_tender_id():
         assert json_cdb['data']['tenderID'] == view_from_page.get_tender_uid()
 
+    def test6_Compare_tender_title(self):
+        with pytest.allure.step(msg.compare_cdb):
+            assert self.pmt['data']['title'] == json_cdb['data']['title'].split('] ')[-1]
+        with pytest.allure.step('Check data on tender page'):
+            assert self.pmt['data']['title'] == view_from_page.get_tender_title()
+
+    def test7_Compare_tender_description(self):
+        with pytest.allure.step(msg.compare_cdb):
+            assert self.pmt['data']['description'] == json_cdb['data']['description']
+        with pytest.allure.step('Check data on tender page'):
+            assert self.pmt['data']['description'] == view_from_page.get_tender_description()
+
+    def test8_compare_tender_value_amount(self):
+        with pytest.allure.step(msg.compare_cdb):
+            assert self.pmt['data']['value']['amount'] == json_cdb['data']['value']['amount']
+        with pytest.allure.step('Check data on tender page'):
+            assert self.pmt['data']['value']['amount'] == view_from_page.get_tender_value_amount()
+
+    def test9_Compare_tender_currency(self):
+        with pytest.allure.step(msg.compare_cdb):
+            assert self.pmt['data']['value']['currency'] == json_cdb['data']['value']['currency']
+        with pytest.allure.step('Check data on tender page'):
+            assert self.pmt['data']['value']['currency'] == view_from_page.get_tender_currency()
+
+    def test10_compare_value_tax_included(self):
+        with pytest.allure.step(msg.compare_cdb):
+            assert self.pmt['data']['value']['valueAddedTaxIncluded'] == json_cdb['data']['value']['valueAddedTaxIncluded']
+        with pytest.allure.step('Check data on tender page'):
+            assert self.pmt['data']['value']['valueAddedTaxIncluded'] == view_from_page.get_value_added_tax_included()
+
+
     @staticmethod
-    def test7_Add_contract_limited():
+    def test98_Add_contract_limited():
         actions.add_contract()
 
     @staticmethod

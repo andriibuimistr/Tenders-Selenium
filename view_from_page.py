@@ -22,3 +22,24 @@ def get_tender_title():
 
 def get_tender_description():
     return driver.find_element_by_xpath('//h2[@class="tenderDescr"]').text
+
+
+def get_tender_value_amount():
+    amount = driver.find_element_by_xpath('//span[contains(@class, "js-pricedecor")]').text.replace('`', '')
+    cents = driver.find_element_by_xpath('//span[contains(@class, "js-pricedecor")]/following-sibling::span[1]').text
+    return float('{}.{}'.format(amount, cents))
+
+
+def get_tender_currency():
+    currency = driver.find_element_by_xpath('//span[contains(@class, "js-pricedecor")]/following-sibling::span[2]/span').text
+    return {'€': 'EUR',
+            '$': 'USD',
+            'грн': 'UAH',
+            '₽': 'RUB',
+            '£': 'GBP'}.get(currency, currency)
+
+
+def get_value_added_tax_included():
+    added_tax = driver.find_element_by_xpath('//span[contains(@class, "taxIncluded")]/span').text
+    return {'з ПДВ': True,
+            'без ПДВ': False}.get(added_tax, added_tax)

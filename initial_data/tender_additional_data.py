@@ -3,6 +3,7 @@ import os
 from datetime import datetime
 import pytz
 
+
 above_threshold_procurement = ['aboveThresholdUA', 'aboveThresholdEU', 'aboveThresholdUA.defense', 'competitiveDialogueUA', 'competitiveDialogueEU', 'esco']
 below_threshold_procurement = ['belowThreshold']
 limited_procurement = ['reporting', 'negotiation', 'negotiation.quick']
@@ -32,6 +33,7 @@ documents_above_procedures = ['aboveThresholdEU', 'esco', 'aboveThresholdUA.defe
 documents_above_non_financial = ['aboveThresholdUA.defense', 'aboveThresholdUA', 'competitiveDialogueUA.stage2']
 documents_above_non_confidential = ['aboveThresholdUA.defense', 'aboveThresholdUA', 'competitiveDialogueUA.stage2']
 
+
 # List of fields for tender create validator
 create_tender_required_fields = ['procurementMethodType', 'number_of_items', 'number_of_bids', 'accelerator', 'company_id', 'platform_host', 'api_version', 'tenderStatus']
 
@@ -58,3 +60,4 @@ def select_procedure(procedure):
             'competitiveDialogueEU': 'Конкурентний діалог з публікацією англійською мовою 1-ий етап',
             'belowThreshold': 'Допорогові закупівлі'
             }.get(procedure, procedure)
+

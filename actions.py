@@ -42,8 +42,7 @@ def login(user_email, user_pass):
     driver.find_element_by_xpath('//div[@class="clear double"]/div[1]/div/button').click()  # click login button
 
 
-def find_tender_by_id():
-    uid = read_from_file()
+def find_tender_by_id(uid):
     driver.get(host)
     Select(driver.find_element_by_name('filter[object]')).select_by_value('tenderID')
     driver.find_element_by_name('filter[search]').send_keys(uid)
@@ -139,11 +138,7 @@ def qualify_winner_limited():
     # open EDS window
     eds_button = driver.find_element_by_xpath('//div[@class="sign"]/a')
     eds_sign(eds_button)
-
-
-# add contract for limited reporting procedure
-def add_contract():
-    # check "add contract" button
+    # check "add contract" button (check if tender has winner)
     count = 0
     for x in range(10):
         count += 1
@@ -151,8 +146,8 @@ def add_contract():
             driver.refresh()
             time.sleep(1)
             add_contract_button = driver.find_element_by_xpath('//a[@class="reverse grey setDone"]')
-            driver.execute_script("arguments[0].scrollIntoView();", add_contract_button)
-            add_contract_button.click()
+            # driver.execute_script("arguments[0].scrollIntoView();", add_contract_button)
+            # add_contract_button.click()
             time.sleep(2)
             if add_contract_button:
                 # print('Contract button was found on the page')
@@ -165,6 +160,12 @@ def add_contract():
                 print(e)
                 raise TimeoutError
 
+
+# add contract for limited reporting procedure
+def add_contract():
+    add_contract_button = driver.find_element_by_xpath('//a[@class="reverse grey setDone"]')
+    driver.execute_script("arguments[0].scrollIntoView();", add_contract_button)
+    add_contract_button.click()
     driver.find_element_by_xpath('//div[@class="inp l relative"]/input[2]').send_keys(document_path)
     driver.find_element_by_xpath('//div[@class="inp langSwitch langSwitch_uk dataFormatHelpInside"]/input').send_keys('Contract')
     Select(driver.find_element_by_name('documentType')).select_by_value('contractSigned')
