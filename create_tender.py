@@ -9,6 +9,8 @@ from datetime import datetime
 from selenium.webdriver.common.action_chains import ActionChains
 from view_from_page import get_tender_id
 from cdb_requests import TenderRequests
+from helper import wait_for_element_xpath, wait_for_element_name
+import pytest
 
 
 def fill_item_data(item_data, item, procurement_type, lot=0):
@@ -107,17 +109,18 @@ def create_tender(tender_data):
     user_menu = driver.find_element_by_xpath('//div[contains(text(), "Мій ДЗО")]')
     hover = ActionChains(driver).move_to_element(user_menu)
     hover.perform()
-    time.sleep(1)
+    wait_for_element_xpath('//a[contains(text(), "Мої закупівлі")]')
     driver.find_element_by_xpath('//a[contains(text(), "Мої закупівлі")]').click()  # open procurements page
     driver.find_element_by_xpath('//div[1][@class="newTender multiButtons"]/a').click()  # click "create tender" button
 
     # select procedure
     Select(driver.find_element_by_name('tender_method')).select_by_visible_text(select_procedure(data['procurementMethodType']))
-    time.sleep(2)
+    wait_for_element_xpath('//*[@class="jContent"]/div[2]/a[1]')
     driver.find_element_by_xpath('//*[@class="jContent"]/div[2]/a[1]').click()  # close modal window
     time.sleep(2)
 
     if procurement_type in negotiation_procurement:
+        wait_for_element_xpath('//input[@value="additionalConstruction"]/following-sibling::span')
         driver.find_element_by_xpath('//input[@value="additionalConstruction"]/following-sibling::span').click()
         driver.execute_script("arguments[0].scrollIntoView();", driver.find_element_by_name('data[description]'))
         driver.find_element_by_name('data[causeDescription]').send_keys(data['causeDescription'])

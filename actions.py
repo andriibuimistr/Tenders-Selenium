@@ -1,10 +1,13 @@
+# -*- coding: utf-8 -*-
 # from run_test import driver
 import os
 import time
 from config import host, driver
 from selenium.webdriver.support.ui import Select
 from datetime import datetime, timedelta
+from helper import wait_for_element_xpath
 from initial_data.tender_additional_data import key_path, key_password, document_path
+from initial_data.document_generator import generate_files, delete_documents
 
 
 def save_into_file(data):
@@ -28,10 +31,6 @@ def login(user_email, user_pass):
     driver.find_element_by_name('email').clear()
     driver.find_element_by_name('email').send_keys(user_email)  # enter email
 
-    # try:
-    #     psw = driver.find_element_by_name('psw')
-    #     psw.send_keys(user_pass)
-    # except Exception as e:
     password_block = driver.find_element_by_xpath('//*[@class="line userAllow userAllow1"]')
     psw = driver.find_element_by_name('psw')
     driver.execute_script("arguments[0].style.display = 'table-row';", password_block)
@@ -45,13 +44,22 @@ def login(user_email, user_pass):
 def find_tender_by_id(uid):
     driver.get(host)
     Select(driver.find_element_by_name('filter[object]')).select_by_value('tenderID')
+    time.sleep(2)
     driver.find_element_by_name('filter[search]').send_keys(uid)
-    driver.find_element_by_xpath('(//button[contains(text(), "Пошук")])[1]').click()
     time.sleep(1)
-    driver.find_element_by_xpath('//a[contains(@class, "tenderLink")]').click()
+    driver.find_element_by_xpath('(//button[contains(text(), "Пошук")])[1]').click()
+    wait_for_element_xpath('//span[contains(text(), "{}")]'.format(uid))
+    time.sleep(1)
+    driver.find_element_by_xpath('//span[contains(text(), "{}")]/ancestor::div[5]/descendant::h2[@class="title"]/a'.format(uid)).click()
     time.sleep(1)
     return driver.find_element_by_xpath('//a[@title="Оголошення на порталі Уповноваженого органу"]/span').text
 
+
+def open_tender_edit_page(uid):
+    tender_edit_button = driver.find_element_by_xpath('//a[contains(@class, "save")]')
+    driver.execute_script("arguments[0].scrollIntoView();", tender_edit_button)  # scroll to tender edit button
+    tender_edit_button.click()
+    wait_for_element_xpath('//h3[contains(@class, "bigTitle")]')
 
 def eds_sign(eds_button):
     driver.execute_script("arguments[0].scrollIntoView();", eds_button)
@@ -234,27 +242,26 @@ def sign_contract():
                 print(e)
                 raise TimeoutError
 
-    # sign page
-    # driver.switch_to.window(driver.window_handles[-1])  # swith to eds tab
-    # driver.find_element_by_class_name('js-oldPageLink').click()  # open old eds page
-    # Select(driver.find_element_by_id('CAsServersSelect')).select_by_visible_text('Тестовий ЦСК АТ "ІІТ"')  # select eds entity
-    # # driver.execute_script('var elem = document.getElementById("PKeyFileInput"); elem.style.visibility="visible"')
-    # # eds_file_path = os.getcwd()  # get current directory path
-    #
-    # driver.find_element_by_id('PKeyFileInput').send_keys(key_path)  # add sign file
-    # driver.find_element_by_id('PKeyPassword').send_keys(key_password)  # type password
-    # driver.find_element_by_id('PKeyReadButton').click()  # click read key button
-    #
-    # if driver.find_element_by_id('PKStatusInfo').text == u'Ключ успішно завантажено':  # check successful read key message
-    #     time.sleep(2)
-    #     driver.find_element_by_id('SignDataButton').click()  # click sign button
-    #     time.sleep(2)
-    #     if driver.find_element_by_id('PKStatusInfo').text == u'Підпис успішно накладено та передано у ЦБД':
-    #         time.sleep(2)
-    #         driver.close()  # close sign page tab
-    #         driver.switch_to_window(main_window)  # switch to tender window
-
     # close modal window
     time.sleep(2)
     driver.find_element_by_xpath('//*[@id="modal"]/div[2]/a').click()
     time.sleep(2)
+
+
+def add_documents(uid):
+    document_data = generate_files(5)
+    add_documents_tender_section = driver.find_element_by_xpath('//h3[contains(text(), "Тендерна документація")]/following-sibling::a')
+    driver.execute_script("arguments[0].scrollIntoView();", add_documents_tender_section)
+    add_documents_tender_section.click()
+    for doc in range(len(document_data)):
+        driver.find_element_by_xpath('(//input[@ name="upload"])').send_keys(document_data[doc]['file_path'])
+        time.sleep(2)
+        Select(driver.find_element_by_xpath('(//select[@class="js-documentType"])[last()]')).select_by_value(document_data[doc]['type'])
+    save_changes_button = driver.find_element_by_xpath('//button[text()="Зберегти"]')
+    driver.execute_script("arguments[0].scrollIntoView();", save_changes_button)
+    save_changes_button.click()
+    wait_for_element_xpath('//h1[@class="t_title"]')
+    delete_documents(document_data)
+    return document_data
+
+

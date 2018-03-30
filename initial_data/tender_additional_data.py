@@ -33,6 +33,9 @@ documents_above_procedures = ['aboveThresholdEU', 'esco', 'aboveThresholdUA.defe
 documents_above_non_financial = ['aboveThresholdUA.defense', 'aboveThresholdUA', 'competitiveDialogueUA.stage2']
 documents_above_non_confidential = ['aboveThresholdUA.defense', 'aboveThresholdUA', 'competitiveDialogueUA.stage2']
 
+tender_documents_types = ["biddingDocuments", "technicalSpecifications", "eligibilityCriteria", "evaluationCriteria", "contractProforma"]
+document_type_names = {"biddingDocuments": "Тендерна документація", "technicalSpecifications": "Технічний опис предмету закупівлі",
+                       "eligibilityCriteria": "Кваліфікаційні критерії", "evaluationCriteria": "Критерії оцінки", "contractProforma": "Проект договору"}
 
 # List of fields for tender create validator
 create_tender_required_fields = ['procurementMethodType', 'number_of_items', 'number_of_bids', 'accelerator', 'company_id', 'platform_host', 'api_version', 'tenderStatus']

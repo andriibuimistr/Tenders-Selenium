@@ -43,3 +43,78 @@ def get_value_added_tax_included():
     added_tax = driver.find_element_by_xpath('//span[contains(@class, "taxIncluded")]/span').text
     return {'з ПДВ': True,
             'без ПДВ': False}.get(added_tax, added_tax)
+
+def get_owner_country():
+    pass
+
+def get_owner_city():
+    pass
+
+def get_owner_postal_code():
+    pass
+
+def get_owner_region():
+    pass
+
+def get_owner_street():
+    pass
+
+def get_owner_contact_name():
+    pass
+
+def get_owner_phone_number():
+    pass
+
+def get_owner_site():
+    pass
+
+def get_owner_company_name():
+    pass
+
+def get_owner_identifier():
+    pass
+
+def get_item_description():
+    pass
+
+def get_classification_scheme():
+    pass
+
+def get_classification_identifier():
+    pass
+
+def get_classification_name():
+    pass
+
+def get_item_quantity():
+    pass
+
+def get_unit_name():
+    pass
+
+def get_delivery_date():
+    pass
+
+def get_delivery_country():
+    pass
+
+def get_delivery_postal_code():
+    pass
+
+def get_delivery_region():
+    pass
+
+def get_delivery_locality():
+    pass
+
+def get_delivery_street():
+    pass
+
+def get_document_name():
+    pass
+
+def get_document_type():
+    pass
+
+def get_document_content():
+    pass
