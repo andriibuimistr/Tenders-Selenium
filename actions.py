@@ -254,7 +254,9 @@ def add_documents(uid):
     driver.execute_script("arguments[0].scrollIntoView();", add_documents_tender_section)
     add_documents_tender_section.click()
     for doc in range(len(document_data)):
-        driver.find_element_by_xpath('(//input[@ name="upload"])').send_keys(document_data[doc]['file_path'])
+        add_doc_input = driver.find_element_by_xpath('(//input[@ name="upload"])')
+        driver.execute_script("arguments[0].scrollIntoView();", add_doc_input)
+        add_doc_input.send_keys(document_data[doc]['file_path'])
         time.sleep(2)
         Select(driver.find_element_by_xpath('(//select[@class="js-documentType"])[last()]')).select_by_value(document_data[doc]['type'])
     save_changes_button = driver.find_element_by_xpath('//button[text()="Зберегти"]')

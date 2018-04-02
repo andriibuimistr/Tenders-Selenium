@@ -270,7 +270,7 @@ def generate_tender_json(procurement_method, number_of_lots, number_of_items, ac
                                 "postalCode": "12345",
                                 "countryName": "Україна",
                                 "streetAddress": "Улица Койкого",
-                                "region": "місто Київ",
+                                "region": "м. Київ",
                                 "locality": "Київ"
                             },
                             "contactPoint": {

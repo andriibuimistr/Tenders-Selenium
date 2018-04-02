@@ -44,20 +44,26 @@ def get_value_added_tax_included():
     return {'з ПДВ': True,
             'без ПДВ': False}.get(added_tax, added_tax)
 
-def get_owner_country():
-    pass
 
-def get_owner_city():
-    pass
+def get_owner_country():
+    return driver.find_element_by_xpath('//td[@class="nameField"][contains(text(), "Юридична адреса")]/following-sibling::td[1]').text.split(',')[1].strip()
+
+
+def get_owner_locality():
+    return driver.find_element_by_xpath('//td[@class="nameField"][contains(text(), "Юридична адреса")]/following-sibling::td[1]').text.split(',')[3].strip()
+
 
 def get_owner_postal_code():
-    pass
+    return driver.find_element_by_xpath('//td[@class="nameField"][contains(text(), "Юридична адреса")]/following-sibling::td[1]').text.split(',')[0].strip()
+
 
 def get_owner_region():
-    pass
+    return driver.find_element_by_xpath('//td[@class="nameField"][contains(text(), "Юридична адреса")]/following-sibling::td[1]').text.split(',')[2].strip()
+
 
 def get_owner_street():
-    pass
+    return driver.find_element_by_xpath('//td[@class="nameField"][contains(text(), "Юридична адреса")]/following-sibling::td[1]').text.split(',')[4].strip()
+
 
 def get_owner_contact_name():
     pass

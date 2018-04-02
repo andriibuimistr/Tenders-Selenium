@@ -69,6 +69,36 @@ class TestTendersTest(object):
         with pytest.allure.step('Check data on tender page'):
             assert self.pmt['data']['value']['valueAddedTaxIncluded'] == view_from_page.get_value_added_tax_included()
 
+    def test16_Compare_owner_country(self):
+        with pytest.allure.step(msg.compare_cdb):
+            assert self.pmt['data']['procuringEntity']['address']['countryName'] == json_cdb['data']['procuringEntity']['address']['countryName']
+        with pytest.allure.step('Check data on tender page'):
+            assert self.pmt['data']['procuringEntity']['address']['countryName'] == view_from_page.get_owner_country()
+
+    def test17_Compare_owner_locality(self):
+        with pytest.allure.step(msg.compare_cdb):
+            assert self.pmt['data']['procuringEntity']['address']['locality'] == json_cdb['data']['procuringEntity']['address']['locality']
+        with pytest.allure.step('Check data on tender page'):
+            assert self.pmt['data']['procuringEntity']['address']['locality'] == view_from_page.get_owner_locality()
+
+    def test18_Compare_owner_postal_code(self):
+        with pytest.allure.step(msg.compare_cdb):
+            assert self.pmt['data']['procuringEntity']['address']['postalCode'] == json_cdb['data']['procuringEntity']['address']['postalCode']
+        with pytest.allure.step('Check data on tender page'):
+            assert self.pmt['data']['procuringEntity']['address']['postalCode'] == view_from_page.get_owner_postal_code()
+
+    def test19_Compare_owner_region(self):
+        with pytest.allure.step(msg.compare_cdb):
+            assert self.pmt['data']['procuringEntity']['address']['region'] == json_cdb['data']['procuringEntity']['address']['region']
+        with pytest.allure.step('Check data on tender page'):
+            assert self.pmt['data']['procuringEntity']['address']['region'] == view_from_page.get_owner_region()
+
+    def test20_Compare_owner_street(self):
+        with pytest.allure.step(msg.compare_cdb):
+            assert self.pmt['data']['procuringEntity']['address']['streetAddress'] == json_cdb['data']['procuringEntity']['address']['streetAddress']
+        with pytest.allure.step('Check data on tender page'):
+            assert self.pmt['data']['procuringEntity']['address']['streetAddress'] == view_from_page.get_owner_street()
+
 
     @staticmethod
     def test98_Add_contract_limited():
