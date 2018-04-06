@@ -1,28 +1,11 @@
 # -*- coding: utf-8 -*-
-# from run_test import driver
-import os
 import time
 from config import host, driver
 from selenium.webdriver.support.ui import Select
 from datetime import datetime, timedelta
 from helper import wait_for_element_xpath
 from initial_data.tender_additional_data import key_path, key_password, document_path
-from initial_data.document_generator import generate_files, delete_documents
-
-
-def save_into_file(data):
-    path = os.path.join(os.getcwd(), 'id.txt')
-    f = open(path, "w+")
-    f.write(data)
-    f.close()
-
-
-def read_from_file():
-    path = os.path.join(os.getcwd(), 'id.txt')
-    f = open(path, "r")
-    data = f.read()
-    f.close()
-    return data
+from initial_data.document_generator import *
 
 
 def login(user_email, user_pass):
@@ -265,5 +248,3 @@ def add_documents(uid):
     wait_for_element_xpath('//h1[@class="t_title"]')
     delete_documents(document_data)
     return document_data
-
-

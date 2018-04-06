@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 import actions
 import pytest
+
+import helper
 from config import driver
 from create_tender import create_tender
 import msg
@@ -23,7 +25,12 @@ class TestTendersTest(object):
         with pytest.allure.step('Open tender edit page'):
             actions.open_tender_edit_page(json_cdb['data']['tenderID'])
         with pytest.allure.step('Upload documents'):
-            actions.add_documents(json_cdb['data']['tenderID'])
+            global docs_data
+            docs_data = actions.add_documents(json_cdb['data']['tenderID'])
+
+    def test3_Compare_document_content(self):
+        helper.compare_document_content(docs_data, json_cdb['data']['id'])
+
 
     def test7_Add_supplier(self):
         actions.add_participant_info_limited(self.pmt)

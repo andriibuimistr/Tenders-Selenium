@@ -32,12 +32,13 @@ def fill_item_data(item_data, item, procurement_type, lot=0):
 
     # select classification
     select_main_classification = driver.find_element_by_xpath('//input[@name="data[items][{}][cpv_id]"]/preceding-sibling::a[contains(text(), "Визначити за довідником")]'.format(item))
-    v_position = select_main_classification.location['y']
+
     driver.execute_script("arguments[0].scrollIntoView();", driver.find_element_by_name('data[items][{}][description]'.format(item)))
     select_main_classification.click()  # open classification window
     # time.sleep(5)
 
     driver.switch_to.frame(driver.find_element_by_xpath('//div[@id="modal"]/div/div/iframe'))
+    time.sleep(5)
     driver.find_element_by_xpath('//input[@id="search"]').send_keys(item_data['classification']['id'])
     # time.sleep(2)
     driver.find_element_by_xpath('//a[contains(@id, "{}")]'.format(item_data['classification']['id'][:-4])).click()  # select classification
