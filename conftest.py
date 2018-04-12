@@ -7,12 +7,17 @@ import allure
 
 def pytest_addoption(parser):
     parser.addoption("--pmt", action="store", default="reporting", help="procurementMethodType")
+    parser.addoption("--broker", action="store", default="DZO", help="broker")
 
 
 @pytest.fixture(scope='class')
 def pmt(request):
     request.cls.pmt = create_tender_data(request.config.getoption("--pmt"))
 
+
+@pytest.fixture(scope='class')
+def broker(request):
+    request.cls.broker = request.config.getoption("--broker")
 #
 # def pytest_exception_interact(node, call, report):
 #     driver = node.instance.driver
