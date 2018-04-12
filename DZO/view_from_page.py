@@ -66,22 +66,27 @@ def get_owner_street():
 
 
 def get_owner_contact_name():
-    pass
+    return driver.find_element_by_xpath('//td[contains(text(), "Особа, відповідальна за процедуру")]/following-sibling::td').text
+
 
 def get_owner_phone_number():
-    pass
+    return driver.find_element_by_xpath('//td[contains(text(), "Телефон")]/following-sibling::td').text
+
 
 def get_owner_site():
-    pass
+    return driver.find_element_by_xpath('//td[contains(text(), "Веб сайт")]/following-sibling::td').text
+
 
 def get_owner_company_name():
-    pass
+    return driver.find_element_by_xpath('//td[contains(text(), "Найменування замовника")]/following-sibling::td/a/span').text
+
 
 def get_owner_identifier():
-    pass
+    return driver.find_element_by_xpath('//td[@class="js-identifierRatingValue"]').text
 
-def get_item_description():
-    pass
+
+def get_item_description(item_text):
+    return driver.find_element_by_xpath('//div[@class="itemDescr"][contains(text(), "{}")]'.format(item_text)).text
 
 def get_classification_scheme():
     pass

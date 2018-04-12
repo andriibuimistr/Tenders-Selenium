@@ -14,7 +14,7 @@ fake = Faker('uk_UA')
 kiev_utc_now = str(datetime.now(pytz.timezone('Europe/Kiev')))[26:]
 
 
-def random_id():
+def random_item_id():
     return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(8))
 
 
@@ -199,7 +199,7 @@ def generate_items(number_of_items, procurement_method, classification):
     for item in range(number_of_items):
         item_number += 1
         item_data = {
-                    "description": "Предмет закупки {} {} {}".format(item_number, random_id(), fake.text(200).replace('\n', ' ')),
+                    "description": "Предмет закупки {} {} {}".format(item_number, random_item_id(), fake.text(200).replace('\n', ' ')),
                     "classification": {
                         "scheme": "ДК021",
                         "description": classification[1],
@@ -265,7 +265,7 @@ def generate_tender_json(procurement_method, number_of_lots, number_of_items, ac
                         "title_ru": "",
                         "procuringEntity": {
                             "kind": "defense",
-                            "name": "Тестовая организация ООО Тест",
+                            "name": 'ТОВ Тестовый заказчик "Заказик"',
                             "address": {
                                 "postalCode": "12345",
                                 "countryName": "Україна",
@@ -274,11 +274,11 @@ def generate_tender_json(procurement_method, number_of_lots, number_of_items, ac
                                 "locality": "Київ"
                             },
                             "contactPoint": {
-                                "telephone": "+380002222222",
+                                "telephone": "+380510101010",
                                 "url": "http://www.site.site",
                                 "name_en": "Name of person in english",
-                                "name": fake.name(),
-                                "email": "testik@gmail.test"
+                                "name": "Франко Иван Яковлевич",
+                                "email": "formyqatesting@gmail.com"
                             },
                             "identifier": {
                                 "scheme": "UA-EDR",

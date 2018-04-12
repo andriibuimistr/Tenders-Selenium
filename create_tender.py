@@ -7,10 +7,9 @@ import time
 import json
 from datetime import datetime
 from selenium.webdriver.common.action_chains import ActionChains
-from view_from_page import get_tender_id
+from DZO.view_from_page import get_tender_id
 from cdb_requests import TenderRequests
-from helper import wait_for_element_xpath, wait_for_element_name
-import pytest
+from helper import wait_for_element_xpath
 
 
 def fill_item_data(item_data, item, procurement_type, lot=0):

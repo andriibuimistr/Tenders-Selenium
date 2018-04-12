@@ -1,12 +1,13 @@
 # -*- coding: utf-8 -*-
 import actions
 import pytest
-
+import sys
+import os
 import helper
 from config import driver
 from create_tender import create_tender
 import msg
-import view_from_page
+from DZO import view_from_page
 
 
 @pytest.mark.usefixtures("pmt")
@@ -28,9 +29,13 @@ class TestTendersTest(object):
             global docs_data
             docs_data = actions.add_documents(json_cdb['data']['tenderID'])
 
-    def test3_Compare_document_content(self):
+    @staticmethod
+    def test3_Compare_document_content():
         helper.compare_document_content(docs_data, json_cdb['data']['id'])
 
+    @staticmethod
+    def test4_Compare_document_type():
+        helper.compare_document_type(docs_data, json_cdb['data']['id'])
 
     def test7_Add_supplier(self):
         actions.add_participant_info_limited(self.pmt)
@@ -49,62 +54,98 @@ class TestTendersTest(object):
     def test11_Compare_tender_title(self):
         with pytest.allure.step(msg.compare_cdb):
             assert self.pmt['data']['title'] == json_cdb['data']['title'].split('] ')[-1]
-        with pytest.allure.step('Check data on tender page'):
+        with pytest.allure.step(msg.compare_site):
             assert self.pmt['data']['title'] == view_from_page.get_tender_title()
 
     def test12_Compare_tender_description(self):
         with pytest.allure.step(msg.compare_cdb):
             assert self.pmt['data']['description'] == json_cdb['data']['description']
-        with pytest.allure.step('Check data on tender page'):
+        with pytest.allure.step(msg.compare_site):
             assert self.pmt['data']['description'] == view_from_page.get_tender_description()
 
     def test13_compare_tender_value_amount(self):
         with pytest.allure.step(msg.compare_cdb):
             assert self.pmt['data']['value']['amount'] == json_cdb['data']['value']['amount']
-        with pytest.allure.step('Check data on tender page'):
+        with pytest.allure.step(msg.compare_site):
             assert self.pmt['data']['value']['amount'] == view_from_page.get_tender_value_amount()
 
     def test14_Compare_tender_currency(self):
         with pytest.allure.step(msg.compare_cdb):
             assert self.pmt['data']['value']['currency'] == json_cdb['data']['value']['currency']
-        with pytest.allure.step('Check data on tender page'):
+        with pytest.allure.step(msg.compare_site):
             assert self.pmt['data']['value']['currency'] == view_from_page.get_tender_currency()
 
     def test15_compare_value_tax_included(self):
         with pytest.allure.step(msg.compare_cdb):
             assert self.pmt['data']['value']['valueAddedTaxIncluded'] == json_cdb['data']['value']['valueAddedTaxIncluded']
-        with pytest.allure.step('Check data on tender page'):
+        with pytest.allure.step(msg.compare_site):
             assert self.pmt['data']['value']['valueAddedTaxIncluded'] == view_from_page.get_value_added_tax_included()
 
     def test16_Compare_owner_country(self):
         with pytest.allure.step(msg.compare_cdb):
             assert self.pmt['data']['procuringEntity']['address']['countryName'] == json_cdb['data']['procuringEntity']['address']['countryName']
-        with pytest.allure.step('Check data on tender page'):
+        with pytest.allure.step(msg.compare_site):
             assert self.pmt['data']['procuringEntity']['address']['countryName'] == view_from_page.get_owner_country()
 
     def test17_Compare_owner_locality(self):
         with pytest.allure.step(msg.compare_cdb):
             assert self.pmt['data']['procuringEntity']['address']['locality'] == json_cdb['data']['procuringEntity']['address']['locality']
-        with pytest.allure.step('Check data on tender page'):
+        with pytest.allure.step(msg.compare_site):
             assert self.pmt['data']['procuringEntity']['address']['locality'] == view_from_page.get_owner_locality()
 
     def test18_Compare_owner_postal_code(self):
         with pytest.allure.step(msg.compare_cdb):
             assert self.pmt['data']['procuringEntity']['address']['postalCode'] == json_cdb['data']['procuringEntity']['address']['postalCode']
-        with pytest.allure.step('Check data on tender page'):
+        with pytest.allure.step(msg.compare_site):
             assert self.pmt['data']['procuringEntity']['address']['postalCode'] == view_from_page.get_owner_postal_code()
 
     def test19_Compare_owner_region(self):
         with pytest.allure.step(msg.compare_cdb):
             assert self.pmt['data']['procuringEntity']['address']['region'] == json_cdb['data']['procuringEntity']['address']['region']
-        with pytest.allure.step('Check data on tender page'):
+        with pytest.allure.step(msg.compare_site):
             assert self.pmt['data']['procuringEntity']['address']['region'] == view_from_page.get_owner_region()
 
     def test20_Compare_owner_street(self):
         with pytest.allure.step(msg.compare_cdb):
             assert self.pmt['data']['procuringEntity']['address']['streetAddress'] == json_cdb['data']['procuringEntity']['address']['streetAddress']
-        with pytest.allure.step('Check data on tender page'):
+        with pytest.allure.step(msg.compare_site):
             assert self.pmt['data']['procuringEntity']['address']['streetAddress'] == view_from_page.get_owner_street()
+
+    def test21_Compare_owner_contact_name(self):
+        with pytest.allure.step(msg.compare_cdb):
+            assert self.pmt['data']['procuringEntity']['contactPoint']['name'] == json_cdb['data']['procuringEntity']['contactPoint']['name']
+        with pytest.allure.step(msg.compare_site):
+            assert self.pmt['data']['procuringEntity']['contactPoint']['name'] == view_from_page.get_owner_contact_name()
+
+    def test22_Compare_owner_phone_number(self):
+        with pytest.allure.step(msg.compare_cdb):
+            assert self.pmt['data']['procuringEntity']['contactPoint']['telephone'] == json_cdb['data']['procuringEntity']['contactPoint']['telephone']
+        with pytest.allure.step(msg.compare_site):
+            assert self.pmt['data']['procuringEntity']['contactPoint']['telephone'] == view_from_page.get_owner_phone_number()
+
+    def test23_Compare_owner_site(self):
+        with pytest.allure.step(msg.compare_cdb):
+            assert self.pmt['data']['procuringEntity']['contactPoint']['url'] == json_cdb['data']['procuringEntity']['contactPoint']['url']
+        with pytest.allure.step(msg.compare_site):
+            assert self.pmt['data']['procuringEntity']['contactPoint']['url'] == view_from_page.get_owner_site()
+
+    def test24_Compare_owner_company_name(self):
+        with pytest.allure.step(msg.compare_cdb):
+            assert self.pmt['data']['procuringEntity']['name'] == json_cdb['data']['procuringEntity']['name']
+        with pytest.allure.step(msg.compare_site):
+            assert self.pmt['data']['procuringEntity']['name'] == view_from_page.get_owner_company_name()
+
+    def test25_Compare_owner_identifier(self):
+        with pytest.allure.step(msg.compare_cdb):
+            assert self.pmt['data']['procuringEntity']['identifier']['id'] == json_cdb['data']['procuringEntity']['identifier']['id']
+        with pytest.allure.step(msg.compare_site):
+            assert self.pmt['data']['procuringEntity']['identifier']['id'] == view_from_page.get_owner_identifier()
+
+    def test26_Compare_item_description(self):
+        with pytest.allure.step(msg.compare_cdb):
+            helper.compare_item_description_cdb(self.pmt, json_cdb['data']['id'])
+        with pytest.allure.step(msg.compare_site):
+            helper.compare_item_description_page(self.pmt)
 
 
     @staticmethod
