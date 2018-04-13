@@ -91,17 +91,21 @@ def get_item_description(item_text):
 def get_classification_scheme():
     pass
 
-def get_classification_identifier():
-    pass
 
-def get_classification_name():
-    pass
+def get_classification_identifier(item_text):
+    return driver.find_element_by_xpath('//div[@class="itemDescr"][contains(text(), "{}")]/following-sibling::div[1]/descendant::span[2]'.format(item_text)).text
 
-def get_item_quantity():
-    pass
 
-def get_unit_name():
-    pass
+def get_classification_name(item_text):
+    return driver.find_element_by_xpath('//div[@class="itemDescr"][contains(text(), "{}")]/following-sibling::div[1]/descendant::span[3]'.format(item_text)).text
+
+
+def get_item_quantity(item_text):
+    return int(driver.find_element_by_xpath('//div[@class="itemDescr"][contains(text(), "{}")]/../following-sibling::td[contains(@class, "itemCount")]/div/span[2]'.format(item_text)).text)
+
+
+def get_unit_name(item_text):
+    return driver.find_element_by_xpath('//div[@class="itemDescr"][contains(text(), "{}")]/../following-sibling::td[contains(@class, "itemCount")]/div/span[3]'.format(item_text)).text
 
 def get_delivery_date():
     pass

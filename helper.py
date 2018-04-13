@@ -64,6 +64,57 @@ def compare_item_description_cdb(generated_json, tender_id):
                     assert generated_description == item_in_cdb_description
 
 
+def compare_item_class_id_cdb(generated_json, tender_id):
+    items_cdb = TenderRequests('2.4').get_tender_info(tender_id).json()['data']['items']
+    number = 0
+    for item in range(len(generated_json['data']['items'])):
+        generated_description = generated_json['data']['items'][item]['description']
+        number += 1
+        for cdb_item in range(len(items_cdb)):
+            item_in_cdb_description = items_cdb[cdb_item]['description']
+            if item_in_cdb_description.split(' ')[3] in generated_description:
+                generated_class_id = generated_json['data']['items'][item]['classification']['id']
+                cdb_class_id = items_cdb[cdb_item]['classification']['id']
+                with pytest.allure.step('Compare classification id of item {}'.format(number)):
+                    allure.attach('Generated classification id', generated_class_id)
+                    allure.attach('Classification id in cdb', cdb_class_id)
+                    assert generated_class_id == cdb_class_id
+
+
+def compare_item_class_name_cdb(generated_json, tender_id):
+    items_cdb = TenderRequests('2.4').get_tender_info(tender_id).json()['data']['items']
+    number = 0
+    for item in range(len(generated_json['data']['items'])):
+        generated_description = generated_json['data']['items'][item]['description']
+        number += 1
+        for cdb_item in range(len(items_cdb)):
+            item_in_cdb_description = items_cdb[cdb_item]['description']
+            if item_in_cdb_description.split(' ')[3] in generated_description:
+                generated_class_name = generated_json['data']['items'][item]['classification']['description']
+                cdb_class_name = items_cdb[cdb_item]['classification']['description']
+                with pytest.allure.step('Compare classification description of item {}'.format(number)):
+                    allure.attach('Generated classification description', generated_class_name)
+                    allure.attach('Classification description in cdb', cdb_class_name)
+                    assert generated_class_name == cdb_class_name
+
+
+def compare_item_quantity_cdb(generated_json, tender_id):
+    items_cdb = TenderRequests('2.4').get_tender_info(tender_id).json()['data']['items']
+    number = 0
+    for item in range(len(generated_json['data']['items'])):
+        generated_description = generated_json['data']['items'][item]['description']
+        number += 1
+        for cdb_item in range(len(items_cdb)):
+            item_in_cdb_description = items_cdb[cdb_item]['description']
+            if item_in_cdb_description.split(' ')[3] in generated_description:
+                generated_item_quantity = generated_json['data']['items'][item]['quantity']
+                cdb_item_quantity = items_cdb[cdb_item]['quantity']
+                with pytest.allure.step('Compare quantity of item {}'.format(number)):
+                    allure.attach('Generated quantity', str(generated_item_quantity))
+                    allure.attach('Quantity in cdb', str(cdb_item_quantity))
+                    assert generated_item_quantity == cdb_item_quantity
+
+
 class BrokerBasedViews:
 
     def __init__(self, broker):
@@ -161,6 +212,42 @@ class BrokerBasedActions:
                 allure.attach('Generated description', generated_description)
                 allure.attach('Description on page', item_description_page)
                 assert generated_description == item_description_page
+
+    def compare_item_class_id_page(self, generated_json):
+        number = 0
+        for item in range(len(generated_json['data']['items'])):
+            generated_description_identifier = generated_json['data']['items'][item]['description'].split(' ')[3]
+            number += 1
+            generated_classification_identifier = generated_json['data']['items'][item]['classification']['id']
+            classification_identifier_page = self.broker_view_from_page_file.get_classification_identifier(generated_description_identifier)
+            with pytest.allure.step('Compare classification id of item {}'.format(number)):
+                allure.attach('Generated classification id', generated_classification_identifier)
+                allure.attach('Classification id on page', classification_identifier_page)
+                assert generated_classification_identifier == classification_identifier_page
+
+    def compare_item_class_name_page(self, generated_json):
+        number = 0
+        for item in range(len(generated_json['data']['items'])):
+            generated_description_identifier = generated_json['data']['items'][item]['description'].split(' ')[3]
+            number += 1
+            generated_classification_name = generated_json['data']['items'][item]['classification']['description']
+            classification_name_page = self.broker_view_from_page_file.get_classification_name(generated_description_identifier)
+            with pytest.allure.step('Compare classification id of item {}'.format(number)):
+                allure.attach('Generated classification id', generated_classification_name)
+                allure.attach('Classification id on page', classification_name_page)
+                assert generated_classification_name == classification_name_page
+
+    def compare_item_quantity(self, generated_json):
+        number = 0
+        for item in range(len(generated_json['data']['items'])):
+            generated_description_identifier = generated_json['data']['items'][item]['description'].split(' ')[3]
+            number += 1
+            generated_quantity = generated_json['data']['items'][item]['quantity']
+            quantity_page = self.broker_view_from_page_file.get_item_quantity(generated_description_identifier)
+            with pytest.allure.step('Compare quantity of item {}'.format(number)):
+                allure.attach('Generated quantity', str(generated_quantity))
+                allure.attach('Quantity on page', str(quantity_page))
+                assert generated_quantity == quantity_page
 
     def add_contract(self):
         self.broker_actions_file.add_contract()

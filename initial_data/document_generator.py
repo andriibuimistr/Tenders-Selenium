@@ -61,4 +61,3 @@ def download_and_open_file(url):
     f.close()
     os.remove(file_path)
     return content
-
