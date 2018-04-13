@@ -7,7 +7,7 @@ import allure
 
 def pytest_addoption(parser):
     parser.addoption("--pmt", action="store", default="reporting", help="procurementMethodType")
-    parser.addoption("--broker", action="store", default="DZO", help="broker")
+    parser.addoption("--broker", action="store", default="dzo", help="broker")
 
 
 @pytest.fixture(scope='class')

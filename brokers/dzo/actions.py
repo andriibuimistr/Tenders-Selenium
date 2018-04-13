@@ -44,6 +44,7 @@ def open_tender_edit_page(uid):
     tender_edit_button.click()
     wait_for_element_xpath('//h3[contains(@class, "bigTitle")]')
 
+
 def eds_sign(eds_button):
     driver.execute_script("arguments[0].scrollIntoView();", eds_button)
     eds_button.click()

@@ -7,8 +7,6 @@ import time
 import json
 from datetime import datetime
 from selenium.webdriver.common.action_chains import ActionChains
-from DZO.view_from_page import get_tender_id
-from cdb_requests import TenderRequests
 from helper import wait_for_element_xpath
 
 
@@ -248,7 +246,4 @@ def create_tender(tender_data):
     if driver.find_element_by_xpath('//button[@class="js-notClean_ignore_plan"]'):
         driver.find_element_by_xpath('//button[@class="js-notClean_ignore_plan"]').click()
 
-    tender_id = get_tender_id()
-    # print(tender_id)
-    json_cdb = TenderRequests('2.4').get_tender_info(tender_id).json()
-    return json_cdb
+
