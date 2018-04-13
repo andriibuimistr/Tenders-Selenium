@@ -158,6 +158,16 @@ class TestTendersTest(object):
         with pytest.allure.step(msg.compare_site):
             BrokerBasedActions(self.broker).compare_item_quantity(self.pmt)
 
+    def test30_compare_unit_name(self):
+        with pytest.allure.step(msg.compare_cdb):
+            compare_unit_name_cdb(self.pmt, json_cdb['data']['id'])
+        with pytest.allure.step(msg.compare_site):
+            BrokerBasedActions(self.broker).compare_unit_name(self.pmt)
+
+    def test31_compare_unit_code(self):
+        with pytest.allure.step(msg.compare_cdb):
+            compare_unit_code_cdb(self.pmt, json_cdb['data']['id'])
+
     def test98_add_contract_limited(self):
         BrokerBasedActions(self.broker).add_contract()
 

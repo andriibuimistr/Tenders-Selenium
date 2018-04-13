@@ -115,6 +115,40 @@ def compare_item_quantity_cdb(generated_json, tender_id):
                     assert generated_item_quantity == cdb_item_quantity
 
 
+def compare_unit_name_cdb(generated_json, tender_id):
+    items_cdb = TenderRequests('2.4').get_tender_info(tender_id).json()['data']['items']
+    number = 0
+    for item in range(len(generated_json['data']['items'])):
+        generated_description = generated_json['data']['items'][item]['description']
+        number += 1
+        for cdb_item in range(len(items_cdb)):
+            item_in_cdb_description = items_cdb[cdb_item]['description']
+            if item_in_cdb_description.split(' ')[3] in generated_description:
+                generated_unit_name = generated_json['data']['items'][item]['unit']['name']
+                cdb_unit_name = items_cdb[cdb_item]['unit']['name']
+                with pytest.allure.step('Compare unit name of item {}'.format(number)):
+                    allure.attach('Generated unit name', generated_unit_name)
+                    allure.attach('Unit name in cdb', cdb_unit_name)
+                    assert generated_unit_name == cdb_unit_name
+
+
+def compare_unit_code_cdb(generated_json, tender_id):
+    items_cdb = TenderRequests('2.4').get_tender_info(tender_id).json()['data']['items']
+    number = 0
+    for item in range(len(generated_json['data']['items'])):
+        generated_description = generated_json['data']['items'][item]['description']
+        number += 1
+        for cdb_item in range(len(items_cdb)):
+            item_in_cdb_description = items_cdb[cdb_item]['description']
+            if item_in_cdb_description.split(' ')[3] in generated_description:
+                generated_unit_code = generated_json['data']['items'][item]['unit']['code']
+                cdb_unit_code = items_cdb[cdb_item]['unit']['code']
+                with pytest.allure.step('Compare unit code of item {}'.format(number)):
+                    allure.attach('Generated unit code', generated_unit_code)
+                    allure.attach('Unit code in cdb', cdb_unit_code)
+                    assert generated_unit_code == cdb_unit_code
+
+
 class BrokerBasedViews:
 
     def __init__(self, broker):
@@ -248,6 +282,18 @@ class BrokerBasedActions:
                 allure.attach('Generated quantity', str(generated_quantity))
                 allure.attach('Quantity on page', str(quantity_page))
                 assert generated_quantity == quantity_page
+
+    def compare_unit_name(self, generated_json):
+        number = 0
+        for item in range(len(generated_json['data']['items'])):
+            generated_description_identifier = generated_json['data']['items'][item]['description'].split(' ')[3]
+            number += 1
+            generated_unit_name = generated_json['data']['items'][item]['unit']['name']
+            unit_name_page = self.broker_view_from_page_file.get_unit_name(generated_description_identifier)
+            with pytest.allure.step('Compare unit name of item {}'.format(number)):
+                allure.attach('Generated unit name', generated_unit_name)
+                allure.attach('Unit name on page', unit_name_page)
+                assert generated_unit_name == unit_name_page
 
     def add_contract(self):
         self.broker_actions_file.add_contract()
