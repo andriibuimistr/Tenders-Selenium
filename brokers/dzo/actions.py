@@ -77,14 +77,18 @@ def add_participant_info_limited(data):
     add_participant_info_button = driver.find_element_by_xpath('//a[@class="button reverse addAward"]')  # path of "add info" button
     driver.execute_script("arguments[0].scrollIntoView();", add_participant_info_button)  # scroll to button
     add_participant_info_button.click()
-    time.sleep(2)
-    driver.find_element_by_xpath('//div[@class="jBtnWrap"]/a[1]').click()  # click "ok" in modal window
-    time.sleep(2)
-    driver.find_element_by_name('data[suppliers][0][name]').send_keys('Name of participant\'s organization')  # participant's name
+    # time.sleep(2)
+    # driver.find_element_by_xpath('//div[@class="jBtnWrap"]/a[1]').click()  # click "ok" in modal window
+    click_by_xpath('//div[@class="jBtnWrap"]/a[1]')
+    wait_for_element_not_visible_xpath('//div[@class="jBtnWrap"]/a[1]')
+    # time.sleep(2)
+    # driver.find_element_by_name('data[suppliers][0][name]').send_keys('Name of participant\'s organization')  # participant's name
+    send_keys_name('data[suppliers][0][name]', 'Name of participant\'s organization')
     Select(driver.find_element_by_name('data[suppliers][0][identifier][scheme]')).select_by_value('UA-EDR')  # select country of registration
     driver.find_element_by_name('data[suppliers][0][identifier][id]').send_keys('00000000')  # identifier
     Select(driver.find_element_by_name('data[suppliers][0][address][countryName]')).select_by_value(u'Україна')  # select country
-    time.sleep(1)
+    # time.sleep(1)
+    wait_for_element_clickable_xpath('data[suppliers][0][address][region]')
     Select(driver.find_element_by_name('data[suppliers][0][address][region]')).select_by_value(u'м. Київ')  # select region
     driver.find_element_by_name('data[suppliers][0][address][locality]').send_keys(u'Київ')  # locality
     driver.find_element_by_name('data[suppliers][0][address][streetAddress]').send_keys(u'Адрес')  # address
@@ -115,19 +119,23 @@ def add_participant_info_limited(data):
     driver.find_element_by_xpath('//tr[@class="line submitButton"]/td[2]/button').click()
 
     # close modal window
-    time.sleep(2)
+    # time.sleep(2)
+    wait_for_element_not_visible_xpath('//body[contains(@class, "blocked")]')
+    wait_for_element_clickable_xpath('//div[@class="info"]/a')
     driver.find_element_by_xpath('//div[@class="info"]/a').click()
 
 
 # sign award with EDS
 def qualify_winner_limited():
-    time.sleep(2)
+    # time.sleep(2)
+    wait_for_element_clickable_xpath('//div[@class="btn2 awardActionItem"]/a')
     winner_button = driver.find_element_by_xpath('//div[@class="btn2 awardActionItem"]/a')
     driver.execute_script("arguments[0].scrollIntoView();", winner_button)  # scroll to click winner
     winner_button.click()
-    time.sleep(2)
+    # time.sleep(2)
 
     # open EDS window
+    wait_for_element_clickable_xpath('//div[@class="sign"]/a')
     eds_button = driver.find_element_by_xpath('//div[@class="sign"]/a')
     eds_sign(eds_button)
     # check "add contract" button (check if tender has winner)
@@ -136,11 +144,12 @@ def qualify_winner_limited():
         count += 1
         try:
             driver.refresh()
-            time.sleep(1)
+            # time.sleep(1)
+            wait_for_element_clickable_xpath('//a[@class="reverse grey setDone"]')
             add_contract_button = driver.find_element_by_xpath('//a[@class="reverse grey setDone"]')
             # driver.execute_script("arguments[0].scrollIntoView();", add_contract_button)
             # add_contract_button.click()
-            time.sleep(2)
+            # time.sleep(2)
             if add_contract_button:
                 # print('Contract button was found on the page')
                 break
@@ -164,7 +173,9 @@ def add_contract():
     driver.find_element_by_xpath('//button[@class="icons icon_upload relative"]').click()
     time.sleep(2)
 
-    driver.find_element_by_name('data[contractNumber]').send_keys('123456')
+    wait_for_element_clickable_name('data[contractNumber]')
+    send_keys_name('data[contractNumber]', '123456')
+    # driver.find_element_by_name('data[contractNumber]').send_keys('123456')
 
     # add date of sign
     date_signed_path = driver.find_element_by_name('data[dateSigned]')
@@ -173,28 +184,32 @@ def add_contract():
     date_signed_path.send_keys(date_signed)
 
     # contract start date
-    time.sleep(1)
+    # time.sleep(1)
+    wait_for_element_clickable_name('data[period][startDate]')
     contract_start_date_path = driver.find_element_by_name('data[period][startDate]')
     contract_start_date = (datetime.now() + timedelta(days=1)).strftime('%d/%m/%Y')
     driver.execute_script("arguments[0].removeAttribute('readonly','readonly')", contract_start_date_path)
     contract_start_date_path.send_keys(contract_start_date)
 
     # contract end date
-    time.sleep(1)
+    # time.sleep(1)
+    wait_for_element_clickable_name('data[period][endDate]')
     contract_end_date_path = driver.find_element_by_name('data[period][endDate]')
     contract_end_date = (datetime.now() + timedelta(days=30)).strftime('%d/%m/%Y')
     driver.execute_script("arguments[0].removeAttribute('readonly','readonly')", contract_end_date_path)
     contract_end_date_path.send_keys(contract_end_date)
 
     # submit form button
-    time.sleep(2)
+    # time.sleep(2)
+    wait_for_element_clickable_xpath('//button[@class="bidAction"]')
     driver.find_element_by_xpath('//button[@class="bidAction"]').click()
 
     # click "ok" in modal window
-    time.sleep(2)
+    # time.sleep(2)
+    wait_for_element_clickable_xpath('//div[@class="jBtnWrap"]/a[1]')
     driver.find_element_by_xpath('//div[@class="jBtnWrap"]/a[1]').click()
 
-    time.sleep(2)
+    # time.sleep(2)
 
 
 # sign contract for limited reporting procedure
@@ -206,11 +221,13 @@ def sign_contract():
         count += 1
         try:
             driver.refresh()
-            time.sleep(2)
+            # time.sleep(2)
+            wait_for_element_clickable_xpath('//a[@class="reverse grey setDone"]')
             add_contract_button = driver.find_element_by_xpath('//a[@class="reverse grey setDone"]')
             driver.execute_script("arguments[0].scrollIntoView();", add_contract_button)
             add_contract_button.click()
-            time.sleep(2)
+            # time.sleep(2)
+            wait_for_element_clickable_xpath('//div[@class="sign"]/a')
             sign_contract_button = driver.find_element_by_xpath('//div[@class="sign"]/a')
             driver.execute_script("arguments[0].scrollIntoView();", sign_contract_button)
             # sign_contract_button.click()
@@ -227,22 +244,28 @@ def sign_contract():
                 raise TimeoutError
 
     # close modal window
-    time.sleep(2)
+    # time.sleep(2)
+    wait_for_element_clickable_xpath('//*[@id="modal"]/div[2]/a')
     driver.find_element_by_xpath('//*[@id="modal"]/div[2]/a').click()
-    time.sleep(2)
+    # time.sleep(2)
 
 
 def add_documents(document_data):
     add_documents_tender_section = driver.find_element_by_xpath('//h3[contains(text(), "Тендерна документація")]/following-sibling::a')
-    driver.execute_script("arguments[0].scrollIntoView();", add_documents_tender_section)
+    # driver.execute_script("arguments[0].scrollIntoView();", add_documents_tender_section)
+    scroll_into_view_xpath('//h3[contains(text(), "Тендерна документація")]/following-sibling::a')
     add_documents_tender_section.click()
     for doc in range(len(document_data)):
         add_doc_input = driver.find_element_by_xpath('(//input[@ name="upload"])')
-        driver.execute_script("arguments[0].scrollIntoView();", add_doc_input)
-        add_doc_input.send_keys(document_data[doc]['file_path'])
-        time.sleep(2)
+        # driver.execute_script("arguments[0].scrollIntoView();", add_doc_input)
+        scroll_into_view_xpath('(//input[@ name="upload"])')
+        # add_doc_input.send_keys(document_data[doc]['file_path'])
+        send_keys_xpath('(//input[@ name="upload"])', document_data[doc]['file_path'])
+        # time.sleep(2)
+        wait_for_element_clickable_xpath('//input[@class="js-title"][contains(@value, "{}")]'.format(document_data[doc]['document_name']))
         Select(driver.find_element_by_xpath('(//select[@class="js-documentType"])[last()]')).select_by_value(document_data[doc]['type'])
     save_changes_button = driver.find_element_by_xpath('//button[text()="Зберегти"]')
-    driver.execute_script("arguments[0].scrollIntoView();", save_changes_button)
+    # driver.execute_script("arguments[0].scrollIntoView();", save_changes_button)
+    scroll_into_view_xpath('//button[text()="Зберегти"]')
     save_changes_button.click()
     wait_for_element_clickable_xpath('//h1[@class="t_title"]')

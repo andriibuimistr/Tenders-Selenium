@@ -12,6 +12,6 @@ driver = webdriver.Chrome()
 # driver = webdriver.Chrome(chrome_options=options)
 
 time.sleep(1)
-driver.implicitly_wait(1)
+driver.implicitly_wait(2)
 driver.maximize_window()
 driver.get(host)
