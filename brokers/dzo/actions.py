@@ -246,4 +246,3 @@ def add_documents(document_data):
     driver.execute_script("arguments[0].scrollIntoView();", save_changes_button)
     save_changes_button.click()
     wait_for_element_xpath('//h1[@class="t_title"]')
-    delete_documents(document_data)

@@ -31,14 +31,15 @@ def create_file():
 
 def generate_files(number_of_files):
     documents_data = []
-    for x in range(number_of_files):
-        file_data = create_file()
-        documents_data.append({
-            "document_name": file_data[0],
-            "content": file_data[1],
-            "file_path": file_data[2],
-            "type": tender_documents_types[x]
-        })
+    with pytest.allure.step('Generate files'):
+        for x in range(number_of_files):
+            file_data = create_file()
+            documents_data.append({
+                "document_name": file_data[0],
+                "content": file_data[1],
+                "file_path": file_data[2],
+                "type": tender_documents_types[x]
+            })
     return documents_data
 
 
