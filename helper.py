@@ -7,7 +7,7 @@ from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.wait import WebDriverWait
 from cdb_requests import TenderRequests
 from config import driver
-from initial_data.document_generator import download_and_open_file
+from initial_data.document_generator import download_and_open_file, generate_files
 
 
 def wait_for_element_xpath(xpath):
@@ -232,9 +232,11 @@ class BrokerBasedActions:
         with pytest.allure.step('Open tender edit page'):
             self.broker_actions_file.open_tender_edit_page(tid)
 
-    def add_documents(self, tid):
+    def add_documents(self):
         with pytest.allure.step('Upload documents'):
-            return self.broker_actions_file.add_documents(tid)
+            document_data = generate_files(5)
+            self.broker_actions_file.add_documents(document_data)
+            return document_data
 
     def compare_item_description_on_page(self, generated_json):
         number = 0

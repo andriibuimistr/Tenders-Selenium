@@ -22,7 +22,7 @@ class TestTendersTest(object):
     def test2_add_document_tender(self):
         BrokerBasedActions(self.broker).open_tender_edit_page(json_cdb['data']['tenderID'])
         global docs_data
-        docs_data = BrokerBasedActions(self.broker).add_documents(json_cdb['data']['tenderID'])
+        docs_data = BrokerBasedActions(self.broker).add_documents()
 
     @staticmethod
     def test3_compare_document_content():

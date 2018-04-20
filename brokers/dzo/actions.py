@@ -232,8 +232,7 @@ def sign_contract():
     time.sleep(2)
 
 
-def add_documents(uid):
-    document_data = generate_files(5)
+def add_documents(document_data):
     add_documents_tender_section = driver.find_element_by_xpath('//h3[contains(text(), "Тендерна документація")]/following-sibling::a')
     driver.execute_script("arguments[0].scrollIntoView();", add_documents_tender_section)
     add_documents_tender_section.click()
@@ -248,4 +247,3 @@ def add_documents(uid):
     save_changes_button.click()
     wait_for_element_xpath('//h1[@class="t_title"]')
     delete_documents(document_data)
-    return document_data
