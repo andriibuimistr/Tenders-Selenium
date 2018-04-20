@@ -19,6 +19,7 @@ def pmt(request):
 def broker(request):
     request.cls.broker = request.config.getoption("--broker")
 
+
 def pytest_exception_interact(node, call, report):
     driver = node.instance.driver
     # ...

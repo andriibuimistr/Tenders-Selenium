@@ -3,7 +3,7 @@ import time
 from config import host, driver
 from selenium.webdriver.support.ui import Select
 from datetime import datetime, timedelta
-from helper import wait_for_element_xpath
+from selenium_helper import *
 from initial_data.tender_additional_data import key_path, key_password, document_path
 from initial_data.document_generator import *
 
@@ -31,7 +31,7 @@ def find_tender_by_id(uid):
     driver.find_element_by_name('filter[search]').send_keys(uid)
     time.sleep(1)
     driver.find_element_by_xpath('(//button[contains(text(), "Пошук")])[1]').click()
-    wait_for_element_xpath('//span[contains(text(), "{}")]'.format(uid))
+    wait_for_element_clickable_xpath('//span[contains(text(), "{}")]'.format(uid))
     time.sleep(1)
     driver.find_element_by_xpath('//span[contains(text(), "{}")]/ancestor::div[5]/descendant::h2[@class="title"]/a'.format(uid)).click()
     time.sleep(1)
@@ -42,7 +42,7 @@ def open_tender_edit_page(uid):
     tender_edit_button = driver.find_element_by_xpath('//a[contains(@class, "save")]')
     driver.execute_script("arguments[0].scrollIntoView();", tender_edit_button)  # scroll to tender edit button
     tender_edit_button.click()
-    wait_for_element_xpath('//h3[contains(@class, "bigTitle")]')
+    wait_for_element_clickable_xpath('//h3[contains(@class, "bigTitle")]')
 
 
 def eds_sign(eds_button):
@@ -245,4 +245,4 @@ def add_documents(document_data):
     save_changes_button = driver.find_element_by_xpath('//button[text()="Зберегти"]')
     driver.execute_script("arguments[0].scrollIntoView();", save_changes_button)
     save_changes_button.click()
-    wait_for_element_xpath('//h1[@class="t_title"]')
+    wait_for_element_clickable_xpath('//h1[@class="t_title"]')
