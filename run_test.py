@@ -19,18 +19,18 @@ class TestTendersTest(object):
         global json_cdb
         json_cdb = BrokerBasedActions(self.broker).create_tender(self.pmt)
 
-    # def test2_add_documents_tender(self):
-    #     BrokerBasedActions(self.broker).open_tender_edit_page(json_cdb['data']['tenderID'])
-    #     global docs_data
-    #     docs_data = BrokerBasedActions(self.broker).add_documents()
-    #
-    # @staticmethod
-    # def test3_compare_document_content():
-    #     compare_document_content(docs_data, json_cdb['data']['id'])
-    #
-    # @staticmethod
-    # def test4_compare_document_type():
-    #     compare_document_type(docs_data, json_cdb['data']['id'])
+    def test2_add_documents_tender(self):
+        BrokerBasedActions(self.broker).open_tender_edit_page(json_cdb['data']['tenderID'])
+        global docs_data
+        docs_data = BrokerBasedActions(self.broker).add_documents()
+
+    @staticmethod
+    def test3_compare_document_content():
+        compare_document_content(docs_data, json_cdb['data']['id'])
+
+    @staticmethod
+    def test4_compare_document_type():
+        compare_document_type(docs_data, json_cdb['data']['id'])
 
     def test7_add_supplier(self):
         BrokerBasedActions(self.broker).add_participant_info_limited(self.pmt)

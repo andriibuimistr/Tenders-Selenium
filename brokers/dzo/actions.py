@@ -206,6 +206,7 @@ def add_contract():
 
     # click "ok" in modal window
     # time.sleep(2)
+    wait_for_element_not_visible_xpath('//div[@class="jAlertWrap"]')
     wait_for_element_clickable_xpath('//div[@class="jBtnWrap"]/a[1]')
     driver.find_element_by_xpath('//div[@class="jBtnWrap"]/a[1]').click()
 
