@@ -5,6 +5,8 @@ import pytest
 from cdb_requests import TenderRequests
 from initial_data.document_generator import download_and_open_file, generate_files, delete_documents
 
+DATA = dict()
+
 
 def compare_document_content(docs_data, tender_id):
     time.sleep(240)
