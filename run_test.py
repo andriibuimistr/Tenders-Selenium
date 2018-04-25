@@ -24,13 +24,13 @@ class TestTendersTest(object):
         # global docs_data
         DATA['docs_data'] = BrokerBasedActions(self.broker).add_documents()
 
-    @staticmethod
-    def test3_compare_document_content():
-        compare_document_content(DATA['docs_data'], DATA['json_cdb']['data']['id'])
-
-    @staticmethod
-    def test4_compare_document_type():
-        compare_document_type(DATA['docs_data'], DATA['json_cdb']['data']['id'])
+    # @staticmethod
+    # def test3_compare_document_content():
+    #     compare_document_content(DATA['docs_data'], DATA['json_cdb']['data']['id'])
+    #
+    # @staticmethod
+    # def test4_compare_document_type():
+    #     compare_document_type(DATA['docs_data'], DATA['json_cdb']['data']['id'])
 
     def test7_add_supplier(self):
         BrokerBasedActions(self.broker).add_participant_info_limited(self.pmt)

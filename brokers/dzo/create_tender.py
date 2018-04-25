@@ -2,11 +2,9 @@
 from selenium.webdriver.support.ui import Select
 from initial_data.tender_additional_data import select_procedure
 from initial_data.tender_additional_data import limited_procurement, kiev_now, negotiation_procurement
-from config import driver
 import json
 from datetime import datetime
 from selenium.webdriver.common.action_chains import ActionChains
-from helper import *
 from selenium_helper import *
 
 
@@ -32,17 +30,11 @@ def fill_item_data(item_data, item, procurement_type, lot=0):
 
     driver.execute_script("arguments[0].scrollIntoView();", driver.find_element_by_name('data[items][{}][description]'.format(item)))
     select_main_classification.click()  # open classification window
-    # time.sleep(5)
 
     driver.switch_to.frame(driver.find_element_by_xpath('//div[@id="modal"]/div/div/iframe'))
-    # time.sleep(5)
     wait_for_element_clickable_xpath('//input[@id="search"]')
     driver.find_element_by_xpath('//input[@id="search"]').send_keys(item_data['classification']['id'])
-    # time.sleep(2)
-    # wait_for_element_clickable_xpath('//a[contains(@id, "{}")]/..'.format(item_data['classification']['id'].replace('-', '_')))
-    # driver.find_element_by_xpath('//a[contains(@id, "{}")]/..'.format(item_data['classification']['id'].replace('-', '_'))).click()  # select classification
     click_by_xpath('//a[contains(@id, "{}")]'.format(item_data['classification']['id'].replace('-', '_')))
-    # driver.find_element_by_xpath('//div[@class="buttons"]/a').click()  # press select button
     click_by_xpath('//div[@class="buttons"]/a')
     wait_for_element_not_visible_xpath('//div[@class="buttons"]/a')
     driver.switch_to.default_content()
@@ -113,19 +105,18 @@ def create_tender(tender_data):
     hover = ActionChains(driver).move_to_element(user_menu)
     hover.perform()
     wait_for_element_clickable_xpath('//a[contains(text(), "Мої закупівлі")]')
-    driver.find_element_by_xpath('//a[contains(text(), "Мої закупівлі")]').click()  # open procurements page
-    driver.find_element_by_xpath('//div[1][@class="newTender multiButtons"]/a').click()  # click "create tender" button
+    click_by_xpath('//a[contains(text(), "Мої закупівлі")]')
+    click_by_xpath('//div[1][@class="newTender multiButtons"]/a')
 
     # select procedure
     Select(driver.find_element_by_name('tender_method')).select_by_visible_text(select_procedure(data['procurementMethodType']))
     wait_for_element_clickable_xpath('//*[@class="jContent"]/div[2]/a[1]')
-    driver.find_element_by_xpath('//*[@class="jContent"]/div[2]/a[1]').click()  # close modal window
+    click_by_xpath('//*[@class="jContent"]/div[2]/a[1]')  # close modal window
     wait_for_element_not_visible_xpath('//*[@class="jContent"]/div[2]/a[1]')
-    # time.sleep(2)
 
     if procurement_type in negotiation_procurement:
         wait_for_element_clickable_xpath('//input[@value="additionalConstruction"]/following-sibling::span')
-        driver.find_element_by_xpath('//input[@value="additionalConstruction"]/following-sibling::span').click()
+        click_by_xpath('//input[@value="additionalConstruction"]/following-sibling::span')
         driver.execute_script("arguments[0].scrollIntoView();", driver.find_element_by_name('data[description]'))
         driver.find_element_by_name('data[causeDescription]').send_keys(data['causeDescription'])
 
