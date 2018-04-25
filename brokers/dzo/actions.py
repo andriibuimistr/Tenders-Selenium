@@ -122,15 +122,15 @@ def qualify_winner_limited():
     eds_button = driver.find_element_by_xpath('//div[@class="sign"]/a')
     eds_sign(eds_button)
     count = 0
-    for x in range(10):
+    for x in range(20):
         count += 1
         try:
-            driver.refresh()
+            refresh_page()
             if check_presence_xpath('//a[@class="reverse grey setDone"]') is True:
                 break
         except Exception as e:
             time.sleep(2)
-            if count == 10:
+            if count == 20:
                 print(''.format(e))
                 raise TimeoutError
 

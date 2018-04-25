@@ -131,6 +131,7 @@ def wait_for_element_present_id(element_id):
 
 def check_presence_xpath(xpath):
     with pytest.allure.step('Check presence of element by xpath'):
+        allure.attach('XPATH: ', xpath)
         try:
             wait = WebDriverWait(driver, 1)
             wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
@@ -233,6 +234,11 @@ def wait_jquery():
             else:
                 time.sleep(1)
                 continue
+
+
+def refresh_page():
+    with pytest.allure.step('Refresh page'):
+        driver.refresh()
 
 
 def screenshot(message=''):
