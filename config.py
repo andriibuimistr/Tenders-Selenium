@@ -6,7 +6,7 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 capabilities = DesiredCapabilities.CHROME
 capabilities['loggingPrefs'] = {'browser': 'ALL'}
 
-host = 'http://www.dzo.byustudio.in.ua'
+# host = 'http://www.dzo.byustudio.in.ua'
 # driver = webdriver.Chrome()
 
 options = webdriver.ChromeOptions()
@@ -17,4 +17,4 @@ driver = webdriver.Chrome(chrome_options=options, desired_capabilities=capabilit
 time.sleep(1)
 driver.implicitly_wait(1)
 # driver.maximize_window()
-driver.get(host)
+# driver.get(host)
