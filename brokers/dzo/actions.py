@@ -9,7 +9,6 @@ host = 'http://www.dzo.byustudio.in.ua'
 
 
 def login(user_email, user_pass):
-    driver.get(host)
     click_by_xpath('//a[contains(text(), "Вхід")]')
     driver.find_element_by_name('email').clear()
     send_keys_name('email', user_email)

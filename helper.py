@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from config import driver
 import time
 import allure
 import pytest
@@ -204,10 +205,11 @@ class BrokerBasedActions:
         json_cdb = TenderRequests('2.4').get_tender_info(tender_id).json()
         return json_cdb
 
-    def get_host(self):
-        return self.broker_actions_file.host
+    def go_main_page(self):
+        driver.get(self.broker_actions_file.host)
 
     def login(self):
+        self.go_main_page()
         self.broker_actions_file.login('formyqatesting@gmail.com', 'andriy85')
 
     def add_participant_info_limited(self, pmt):
