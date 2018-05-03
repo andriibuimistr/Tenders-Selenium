@@ -9,6 +9,21 @@ from initial_data.document_generator import download_and_open_file, generate_fil
 DATA = dict()
 
 
+def item_id_page(generated_json, item):
+    return generated_json['data']['items'][item]['description'].split(' ')[3]
+
+
+def item_generated_description(generated_json, item):
+    return generated_json['data']['items'][item]['description']
+
+
+def assert_item_field(generated_data, page_data, field_name, number):
+    with pytest.allure.step('Compare {} of item {}'.format(field_name, number)):
+        allure.attach('Generated {}'.format(field_name), str(generated_data))
+        allure.attach('{} on page'.format(field_name.capitalize()), str(page_data))
+        assert generated_data == page_data
+
+
 def compare_document_content(docs_data, tender_id):
     time.sleep(240)
     docs_cdb = TenderRequests('2.4').get_tender_info(tender_id).json()['data']['documents']
@@ -42,100 +57,82 @@ def compare_item_description_cdb(generated_json, tender_id):
     items_cdb = TenderRequests('2.4').get_tender_info(tender_id).json()['data']['items']
     number = 0
     for item in range(len(generated_json['data']['items'])):
-        generated_description = generated_json['data']['items'][item]['description']
+        generated_description = item_generated_description(generated_json, item)
         number += 1
         for cdb_item in range(len(items_cdb)):
             item_in_cdb_description = items_cdb[cdb_item]['description']
             if item_in_cdb_description.split(' ')[3] in generated_description:
-                with pytest.allure.step('Compare description of item {}'.format(number)):
-                    allure.attach('Generated description', generated_description)
-                    allure.attach('Description in cdb', item_in_cdb_description)
-                    assert generated_description == item_in_cdb_description
+                assert_item_field(generated_description, item_in_cdb_description, 'description', number)
 
 
 def compare_item_class_id_cdb(generated_json, tender_id):
     items_cdb = TenderRequests('2.4').get_tender_info(tender_id).json()['data']['items']
     number = 0
     for item in range(len(generated_json['data']['items'])):
-        generated_description = generated_json['data']['items'][item]['description']
+        generated_description = item_generated_description(generated_json, item)
         number += 1
         for cdb_item in range(len(items_cdb)):
             item_in_cdb_description = items_cdb[cdb_item]['description']
             if item_in_cdb_description.split(' ')[3] in generated_description:
                 generated_class_id = generated_json['data']['items'][item]['classification']['id']
                 cdb_class_id = items_cdb[cdb_item]['classification']['id']
-                with pytest.allure.step('Compare classification id of item {}'.format(number)):
-                    allure.attach('Generated classification id', generated_class_id)
-                    allure.attach('Classification id in cdb', cdb_class_id)
-                    assert generated_class_id == cdb_class_id
+                assert_item_field(generated_class_id, cdb_class_id, 'classification_id', number)
 
 
 def compare_item_class_name_cdb(generated_json, tender_id):
     items_cdb = TenderRequests('2.4').get_tender_info(tender_id).json()['data']['items']
     number = 0
     for item in range(len(generated_json['data']['items'])):
-        generated_description = generated_json['data']['items'][item]['description']
+        generated_description = item_generated_description(generated_json, item)
         number += 1
         for cdb_item in range(len(items_cdb)):
             item_in_cdb_description = items_cdb[cdb_item]['description']
             if item_in_cdb_description.split(' ')[3] in generated_description:
                 generated_class_name = generated_json['data']['items'][item]['classification']['description']
                 cdb_class_name = items_cdb[cdb_item]['classification']['description']
-                with pytest.allure.step('Compare classification description of item {}'.format(number)):
-                    allure.attach('Generated classification description', generated_class_name)
-                    allure.attach('Classification description in cdb', cdb_class_name)
-                    assert generated_class_name == cdb_class_name
+                assert_item_field(generated_class_name, cdb_class_name, 'classification_name', number)
 
 
 def compare_item_quantity_cdb(generated_json, tender_id):
     items_cdb = TenderRequests('2.4').get_tender_info(tender_id).json()['data']['items']
     number = 0
     for item in range(len(generated_json['data']['items'])):
-        generated_description = generated_json['data']['items'][item]['description']
+        generated_description = item_generated_description(generated_json, item)
         number += 1
         for cdb_item in range(len(items_cdb)):
             item_in_cdb_description = items_cdb[cdb_item]['description']
             if item_in_cdb_description.split(' ')[3] in generated_description:
                 generated_item_quantity = generated_json['data']['items'][item]['quantity']
                 cdb_item_quantity = items_cdb[cdb_item]['quantity']
-                with pytest.allure.step('Compare quantity of item {}'.format(number)):
-                    allure.attach('Generated quantity', str(generated_item_quantity))
-                    allure.attach('Quantity in cdb', str(cdb_item_quantity))
-                    assert generated_item_quantity == cdb_item_quantity
+                assert_item_field(generated_item_quantity, cdb_item_quantity, 'quantity', number)
 
 
 def compare_unit_name_cdb(generated_json, tender_id):
     items_cdb = TenderRequests('2.4').get_tender_info(tender_id).json()['data']['items']
     number = 0
     for item in range(len(generated_json['data']['items'])):
-        generated_description = generated_json['data']['items'][item]['description']
+        generated_description = item_generated_description(generated_json, item)
         number += 1
         for cdb_item in range(len(items_cdb)):
             item_in_cdb_description = items_cdb[cdb_item]['description']
             if item_in_cdb_description.split(' ')[3] in generated_description:
                 generated_unit_name = generated_json['data']['items'][item]['unit']['name']
                 cdb_unit_name = items_cdb[cdb_item]['unit']['name']
-                with pytest.allure.step('Compare unit name of item {}'.format(number)):
-                    allure.attach('Generated unit name', generated_unit_name)
-                    allure.attach('Unit name in cdb', cdb_unit_name)
-                    assert generated_unit_name == cdb_unit_name
+                assert_item_field(generated_unit_name, cdb_unit_name, 'unit_name', number)
 
 
 def compare_unit_code_cdb(generated_json, tender_id):
     items_cdb = TenderRequests('2.4').get_tender_info(tender_id).json()['data']['items']
     number = 0
     for item in range(len(generated_json['data']['items'])):
-        generated_description = generated_json['data']['items'][item]['description']
+        generated_description = item_generated_description(generated_json, item)
         number += 1
         for cdb_item in range(len(items_cdb)):
             item_in_cdb_description = items_cdb[cdb_item]['description']
             if item_in_cdb_description.split(' ')[3] in generated_description:
                 generated_unit_code = generated_json['data']['items'][item]['unit']['code']
                 cdb_unit_code = items_cdb[cdb_item]['unit']['code']
-                with pytest.allure.step('Compare unit code of item {}'.format(number)):
-                    allure.attach('Generated unit code', generated_unit_code)
-                    allure.attach('Unit code in cdb', cdb_unit_code)
-                    assert generated_unit_code == cdb_unit_code
+                assert_item_field(generated_unit_code, cdb_unit_code, 'unit_code', number)
 
 
 class BrokerBasedViews:
@@ -192,6 +189,11 @@ class BrokerBasedViews:
         return self.broker_view_from_page_file.get_owner_identifier()
 
 
+# def get_field_by_path(data, keys):
+#     return get_field_by_path(data[keys[0]], keys[1:]) \
+#         if keys else data
+
+
 class BrokerBasedActions:
 
     def __init__(self, broker):
@@ -236,145 +238,110 @@ class BrokerBasedActions:
     def compare_item_description_on_page(self, generated_json):
         number = 0
         for item in range(len(generated_json['data']['items'])):
-            generated_description = generated_json['data']['items'][item]['description']
+            generated_description_identifier = item_id_page(generated_json, item)
             number += 1
-            item_description_page = self.broker_view_from_page_file.get_item_description(generated_description.split(' ')[3])
-            with pytest.allure.step('Compare description of item {}'.format(number)):
-                allure.attach('Generated description', generated_description)
-                allure.attach('Description on page', item_description_page)
-                assert generated_description == item_description_page
+            generated_description = generated_json['data']['items'][item]['description']
+            item_description_page = self.broker_view_from_page_file.get_item_description(generated_description_identifier)
+            assert_item_field(generated_description, item_description_page, 'description', number)
 
     def compare_item_class_id_page(self, generated_json):
         number = 0
         for item in range(len(generated_json['data']['items'])):
-            generated_description_identifier = generated_json['data']['items'][item]['description'].split(' ')[3]
+            generated_description_identifier = item_id_page(generated_json, item)
             number += 1
             generated_classification_identifier = generated_json['data']['items'][item]['classification']['id']
             classification_identifier_page = self.broker_view_from_page_file.get_classification_identifier(generated_description_identifier)
-            with pytest.allure.step('Compare classification id of item {}'.format(number)):
-                allure.attach('Generated classification id', generated_classification_identifier)
-                allure.attach('Classification id on page', classification_identifier_page)
-                assert generated_classification_identifier == classification_identifier_page
+            assert_item_field(generated_classification_identifier, classification_identifier_page, 'classification_id', number)
 
     def compare_item_class_name_page(self, generated_json):
         number = 0
         for item in range(len(generated_json['data']['items'])):
-            generated_description_identifier = generated_json['data']['items'][item]['description'].split(' ')[3]
+            generated_description_identifier = item_id_page(generated_json, item)
             number += 1
             generated_classification_name = generated_json['data']['items'][item]['classification']['description']
             classification_name_page = self.broker_view_from_page_file.get_classification_name(generated_description_identifier)
-            with pytest.allure.step('Compare classification id of item {}'.format(number)):
-                allure.attach('Generated classification id', generated_classification_name)
-                allure.attach('Classification id on page', classification_name_page)
-                assert generated_classification_name == classification_name_page
+            assert_item_field(generated_classification_name, classification_name_page, 'classification_name', number)
 
     def compare_item_quantity(self, generated_json):
         number = 0
         for item in range(len(generated_json['data']['items'])):
-            generated_description_identifier = generated_json['data']['items'][item]['description'].split(' ')[3]
+            generated_description_identifier = item_id_page(generated_json, item)
             number += 1
             generated_quantity = generated_json['data']['items'][item]['quantity']
             quantity_page = self.broker_view_from_page_file.get_item_quantity(generated_description_identifier)
-            with pytest.allure.step('Compare quantity of item {}'.format(number)):
-                allure.attach('Generated quantity', str(generated_quantity))
-                allure.attach('Quantity on page', str(quantity_page))
-                assert generated_quantity == quantity_page
+            assert_item_field(generated_quantity, quantity_page, 'quantity', number)
 
     def compare_unit_name(self, generated_json):
         number = 0
         for item in range(len(generated_json['data']['items'])):
-            generated_description_identifier = generated_json['data']['items'][item]['description'].split(' ')[3]
+            generated_description_identifier = item_id_page(generated_json, item)
             number += 1
             generated_unit_name = generated_json['data']['items'][item]['unit']['name']
             unit_name_page = self.broker_view_from_page_file.get_unit_name(generated_description_identifier)
-            with pytest.allure.step('Compare unit name of item {}'.format(number)):
-                allure.attach('Generated unit name', generated_unit_name)
-                allure.attach('Unit name on page', unit_name_page)
-                assert generated_unit_name == unit_name_page
+            assert_item_field(generated_unit_name, unit_name_page, 'unit_name', number)
 
     def compare_item_delivery_start_date(self, generated_json):
         number = 0
         for item in range(len(generated_json['data']['items'])):
-            generated_description_identifier = generated_json['data']['items'][item]['description'].split(' ')[3]
+            generated_description_identifier = item_id_page(generated_json, item)
             number += 1
             generated_delivery_start_date = generated_json['data']['items'][item]['deliveryDate']['startDate'][:10]
             start_date_page = self.broker_view_from_page_file.get_delivery_start_date(generated_description_identifier)
-            with pytest.allure.step('Compare delivery start date of item {}'.format(number)):
-                allure.attach('Generated date', str(generated_delivery_start_date))
-                allure.attach('Date on page', str(start_date_page))
-                assert generated_delivery_start_date == start_date_page
+            assert_item_field(generated_delivery_start_date, start_date_page, 'delivery_start_date', number)
 
     def compare_item_delivery_end_date(self, generated_json):
         number = 0
         for item in range(len(generated_json['data']['items'])):
-            generated_description_identifier = generated_json['data']['items'][item]['description'].split(' ')[3]
+            generated_description_identifier = item_id_page(generated_json, item)
             number += 1
             generated_delivery_end_date = generated_json['data']['items'][item]['deliveryDate']['endDate'][:10]
             end_date_page = self.broker_view_from_page_file.get_delivery_end_date(generated_description_identifier)
-            with pytest.allure.step('Compare delivery end date of item {}'.format(number)):
-                allure.attach('Generated date', str(generated_delivery_end_date))
-                allure.attach('Date on page', str(end_date_page))
-                assert generated_delivery_end_date == end_date_page
+            assert_item_field(generated_delivery_end_date, end_date_page, 'delivery_end_date', number)
 
     def compare_item_delivery_country(self, generated_json):
         number = 0
         for item in range(len(generated_json['data']['items'])):
-            generated_description_identifier = generated_json['data']['items'][item]['description'].split(' ')[3]
+            generated_description_identifier = item_id_page(generated_json, item)
             number += 1
             generated_delivery_country = generated_json['data']['items'][item]['deliveryAddress']['countryName']
             country_page = self.broker_view_from_page_file.get_delivery_country(generated_description_identifier)
-            with pytest.allure.step('Compare delivery country of item {}'.format(number)):
-                allure.attach('Generated country', str(generated_delivery_country))
-                allure.attach('Country on page', str(country_page))
-                assert generated_delivery_country == country_page
+            assert_item_field(generated_delivery_country, country_page, 'delivery_country', number)
 
     def compare_item_delivery_postal_code(self, generated_json):
         number = 0
         for item in range(len(generated_json['data']['items'])):
-            generated_description_identifier = generated_json['data']['items'][item]['description'].split(' ')[3]
+            generated_description_identifier = item_id_page(generated_json, item)
             number += 1
             generated_delivery_postal_code = generated_json['data']['items'][item]['deliveryAddress']['postalCode']
             postal_code_page = self.broker_view_from_page_file.get_delivery_postal_code(generated_description_identifier)
-            with pytest.allure.step('Compare delivery country of item {}'.format(number)):
-                allure.attach('Generated country', str(generated_delivery_postal_code))
-                allure.attach('Country on page', str(postal_code_page))
-                assert generated_delivery_postal_code == postal_code_page
+            assert_item_field(generated_delivery_postal_code, postal_code_page, 'delivery_postal_code', number)
 
     def compare_item_delivery_region(self, generated_json):
         number = 0
         for item in range(len(generated_json['data']['items'])):
-            generated_description_identifier = generated_json['data']['items'][item]['description'].split(' ')[3]
+            generated_description_identifier = item_id_page(generated_json, item)
             number += 1
             generated_delivery_region = generated_json['data']['items'][item]['deliveryAddress']['region']
             region_page = self.broker_view_from_page_file.get_delivery_region(generated_description_identifier)
-            with pytest.allure.step('Compare delivery region of item {}'.format(number)):
-                allure.attach('Generated region', str(generated_delivery_region))
-                allure.attach('Region on page', str(region_page))
-                assert generated_delivery_region == region_page
+            assert_item_field(generated_delivery_region, region_page, 'delivery_region', number)
 
     def compare_item_delivery_locality(self, generated_json):
         number = 0
         for item in range(len(generated_json['data']['items'])):
-            generated_description_identifier = generated_json['data']['items'][item]['description'].split(' ')[3]
+            generated_description_identifier = item_id_page(generated_json, item)
             number += 1
             generated_delivery_locality = generated_json['data']['items'][item]['deliveryAddress']['locality']
             locality_page = self.broker_view_from_page_file.get_delivery_locality(generated_description_identifier)
-            with pytest.allure.step('Compare delivery locality of item {}'.format(number)):
-                allure.attach('Generated locality', str(generated_delivery_locality))
-                allure.attach('Locality on page', str(locality_page))
-                assert generated_delivery_locality == locality_page
+            assert_item_field(generated_delivery_locality, locality_page, 'delivery_locality', number)
 
     def compare_item_delivery_street(self, generated_json):
         number = 0
         for item in range(len(generated_json['data']['items'])):
-            generated_description_identifier = generated_json['data']['items'][item]['description'].split(' ')[3]
+            generated_description_identifier = item_id_page(generated_json, item)
             number += 1
             generated_delivery_street = generated_json['data']['items'][item]['deliveryAddress']['streetAddress']
             street_page = self.broker_view_from_page_file.get_delivery_street(generated_description_identifier)
-            with pytest.allure.step('Compare delivery street of item {}'.format(number)):
-                allure.attach('Generated street', str(generated_delivery_street))
-                allure.attach('Street on page', str(street_page))
-                assert generated_delivery_street == street_page
+            assert_item_field(generated_delivery_street, street_page, 'delivery_street', number)
 
     def add_contract(self):
         self.broker_actions_file.add_contract()

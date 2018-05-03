@@ -198,6 +198,7 @@ def sign_contract():
                 eds_sign(sign_contract_button)
                 break
             else:
+                time.sleep(10)
                 continue
         except Exception as e:
             if count == 20:
