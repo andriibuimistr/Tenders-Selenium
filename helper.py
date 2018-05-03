@@ -17,11 +17,11 @@ def item_generated_description(generated_json, item):
     return generated_json['data']['items'][item]['description']
 
 
-def assert_item_field(generated_data, page_data, field_name, number):
+def assert_item_field(generated_data, actual_data, field_name, number):
     with pytest.allure.step('Compare {} of item {}'.format(field_name, number)):
         allure.attach('Generated {}'.format(field_name), str(generated_data))
-        allure.attach('{} on page'.format(field_name.capitalize()), str(page_data))
-        assert generated_data == page_data
+        allure.attach('Actual {}'.format(field_name.capitalize()), str(actual_data))
+        assert generated_data == actual_data
 
 
 def compare_document_content(docs_data, tender_id):
