@@ -217,8 +217,8 @@ class BrokerBasedActions:
     def add_participant_info_limited(self, pmt):
         self.broker_actions_file.add_participant_info_limited(pmt)
 
-    def qualify_winner_limited(self):
-        self.broker_actions_file.qualify_winner_limited()
+    def qualify_winner_limited(self, data):
+        self.broker_actions_file.qualify_winner_limited(data['data'])
 
     def find_tender_by_id(self, tid):
         self.broker_actions_file.find_tender_by_id(tid)

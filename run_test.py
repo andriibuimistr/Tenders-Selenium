@@ -36,7 +36,7 @@ class TestTendersTest(object):
         BrokerBasedActions(self.broker).add_participant_info_limited(self.pmt)
 
     def test8_qualify_winner_limited(self):
-        BrokerBasedActions(self.broker).qualify_winner_limited()
+        BrokerBasedActions(self.broker).qualify_winner_limited(self.pmt)
 
     def test9_find_tender_by_identifier(self):
         BrokerBasedActions(self.broker).find_tender_by_id(DATA['json_cdb']['data']['tenderID'])

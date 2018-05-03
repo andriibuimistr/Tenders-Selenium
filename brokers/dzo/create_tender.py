@@ -74,11 +74,12 @@ def fill_item_data(item_data, item, procurement_type, lot=0):
     delivery_start_date_path.send_keys(delivery_start_date)
 
 
-def fill_lot_data(lot_data, lot):
+def fill_lot_data(lot_data, lot, procurement_type):
     driver.find_element_by_name('data[lots][{}][title]'.format(lot)).send_keys(lot_data['title'])
     driver.find_element_by_name('data[lots][{}][description]'.format(lot)).send_keys(lot_data['description'])
     driver.find_element_by_name('data[lots][{}][value][amount]'.format(lot)).send_keys(lot_data['value']['amount'])
-    driver.find_element_by_name('data[lots][{}][minimalStep][amount]'.format(lot)).send_keys(lot_data['minimalStep']['amount'])
+    if procurement_type not in limited_procurement:
+        driver.find_element_by_name('data[lots][{}][minimalStep][amount]'.format(lot)).send_keys(lot_data['minimalStep']['amount'])
     if 'guarantee' in lot_data:
         driver.find_element_by_xpath(
             '//input[@name="data[lots][{}][title]"]/ancestor::div[contains(@class, "accordionContent")]/descendant::span[contains(text(), "Електронна гарантія")][{}]'.format(lot, lot + 1)).click()
@@ -127,7 +128,7 @@ def create_tender(tender_data):
 
     if procurement_type in negotiation_procurement:
         wait_for_element_clickable_xpath('//input[@value="additionalConstruction"]/following-sibling::span')
-        click_by_xpath('//input[@value="additionalConstruction"]/following-sibling::span')
+        click_by_xpath('//input[@value="{}"]/..'.format(data['cause']))
         driver.execute_script("arguments[0].scrollIntoView();", driver.find_element_by_name('data[description]'))
         driver.find_element_by_name('data[causeDescription]').send_keys(data['causeDescription'])
 
@@ -193,7 +194,7 @@ def create_tender(tender_data):
             if lot > 0:
                 driver.find_element_by_xpath('//a[contains(@class, "addMultiLot")]').click()
             lot_data = data['lots'][lot]
-            fill_lot_data(lot_data, lot)
+            fill_lot_data(lot_data, lot, procurement_type)
             item_data = []
             for item in range(len(data['items'])):
                 if data['items'][item]['relatedLot'] == data['lots'][lot]['id']:
@@ -251,6 +252,7 @@ def create_tender(tender_data):
         driver.execute_script("arguments[0].removeAttribute('readonly','readonly')", tender_period_end_date_field)
         tender_period_end_date_field.send_keys(datetime.strftime(datetime.strptime(data['tenderPeriod']['endDate'], "%Y-%m-%dT%H:%M:%S{}".format(kiev_now)), '%d/%m/%Y'))
 
+    scroll_into_view_xpath('//button[@value="publicate"]')
     driver.find_element_by_xpath('//button[@value="publicate"]').click()
     if driver.find_element_by_xpath('//button[@class="js-notClean_ignore_plan"]'):
         driver.find_element_by_xpath('//button[@class="js-notClean_ignore_plan"]').click()

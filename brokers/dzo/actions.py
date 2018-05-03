@@ -87,6 +87,9 @@ def add_participant_info_limited(data):
     send_keys_name('data[suppliers][0][contactPoint][faxNumber]', '+380200000000')  # fax
     send_keys_name('data[suppliers][0][contactPoint][url]', 'https://www.google.com.ua/?gws_rd=ssl')  # site
 
+    if check_presence_xpath('//select[@name="data[lotID]"]') is True:
+        Select(driver.find_element_by_xpath('//select[@name="data[lotID]"]')).select_by_index(1)
+
     # amount as in tender
     offer_amount = data['data']['value']['amount']
     driver.find_element_by_name('data[value][amount]').send_keys(str("%.2f" % offer_amount))
@@ -112,29 +115,68 @@ def add_participant_info_limited(data):
     click_by_xpath('//div[@class="info"]/a')
 
 
+def add_qualification_document():
+    click_by_xpath('//a[contains(text(), "Переможець")]')
+    add_docs_xpath('//input[contains(@class, "uploadFileClick")]', document_path)
+    send_keys_xpath('//div[@class="inp langSwitch langSwitch_uk dataFormatHelpInside"]/input', 'Qualified')
+    Select(driver.find_element_by_name('documentType')).select_by_value('notice')
+    scroll_into_view_xpath('//button[contains(@class, "bidAction")]')
+    click_by_xpath('//input[@name="data[qualified]"]/..')
+    click_by_xpath('//button[contains(@class, "bidAction")]')
+
+
 # sign award with EDS
-def qualify_winner_limited():
+def qualify_winner_limited(data):
+    procurement_type = data['procurementMethodType']
     wait_for_element_clickable_xpath('//div[@class="btn2 awardActionItem"]/a')
     winner_button = driver.find_element_by_xpath('//div[@class="btn2 awardActionItem"]/a')
     driver.execute_script("arguments[0].scrollIntoView();", winner_button)  # scroll to click winner
     winner_button.click()
 
-    # open EDS window
-    wait_for_element_clickable_xpath('//div[@class="sign"]/a')
-    eds_button = driver.find_element_by_xpath('//div[@class="sign"]/a')
-    eds_sign(eds_button)
-    count = 0
-    for x in range(20):
-        count += 1
-        try:
-            refresh_page()
-            if check_presence_xpath('//a[@class="reverse grey setDone"]') is True:
-                break
-        except Exception as e:
-            time.sleep(2)
-            if count == 20:
-                print(''.format(e))
-                raise TimeoutError
+    if procurement_type == 'reporting':
+        # open EDS window
+        wait_for_element_clickable_xpath('//div[@class="sign"]/a')
+        eds_button = driver.find_element_by_xpath('//div[@class="sign"]/a')
+        eds_sign(eds_button)
+        count = 0
+        for x in range(20):
+            count += 1
+            try:
+                refresh_page()
+                if check_presence_xpath('//a[@class="reverse grey setDone"]') is True:
+                    break
+            except Exception as e:
+                time.sleep(2)
+                if count == 20:
+                    print(''.format(e))
+                    raise TimeoutError
+    else:
+        add_qualification_document()
+        count = 0
+        for x in range(20):
+            count += 1
+            try:
+                driver.refresh()
+                wait_for_element_clickable_xpath('// a[contains(text(), "Необхідний ЕЦП"')
+                sign_qualification = driver.find_element_by_xpath('//a[@class="reverse grey setDone"]')
+                driver.execute_script("arguments[0].scrollIntoView();", sign_qualification)
+                sign_qualification.click()
+                sign_page_button = driver.find_element_by_xpath('//div[@class="sign"]/a')
+                driver.execute_script("arguments[0].scrollIntoView();", sign_page_button)
+                if sign_page_button.is_displayed():
+                    eds_sign(sign_page_button)
+                    break
+                else:
+                    time.sleep(10)
+                    continue
+            except Exception as e:
+                if count == 20:
+                    print(e)
+                    raise TimeoutError
+
+        # close modal window
+        wait_for_element_clickable_xpath('//*[@id="modal"]/div[2]/a')
+        click_by_xpath('//button[@class="icons icon_upload relative"]')
 
 
 # add contract for limited reporting procedure
