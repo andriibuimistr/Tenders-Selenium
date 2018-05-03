@@ -194,7 +194,7 @@ def sign_contract():
             add_contract_button.click()
             sign_contract_button = driver.find_element_by_xpath('//div[@class="sign"]/a')
             driver.execute_script("arguments[0].scrollIntoView();", sign_contract_button)
-            if sign_contract_button:
+            if sign_contract_button.is_displayed():
                 eds_sign(sign_contract_button)
                 break
             else:
