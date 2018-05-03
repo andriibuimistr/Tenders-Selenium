@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from config import driver
 import time
+from brokers.dzo.service import *
 
 
 def get_tender_id():
@@ -107,23 +108,40 @@ def get_item_quantity(item_text):
 def get_unit_name(item_text):
     return driver.find_element_by_xpath('//div[@class="itemDescr"][contains(text(), "{}")]/../following-sibling::td[contains(@class, "itemCount")]/div/span[3]'.format(item_text)).text
 
-def get_delivery_date():
-    pass
 
-def get_delivery_country():
-    pass
+def get_delivery_start_date(item_text):
+    initial_date = driver.find_element_by_xpath('//div[@class="itemDescr"][contains(text(), "{}")]/following-sibling::div[3]/descendant::span/following-sibling::span/span'.format(item_text)).text
+    return convert_delivery_date(initial_date)
 
-def get_delivery_postal_code():
-    pass
 
-def get_delivery_region():
-    pass
+def get_delivery_end_date(item_text):
+    initial_date = driver.find_element_by_xpath('//div[@class="itemDescr"][contains(text(), "{}")]/following-sibling::div[3]/descendant::span/following-sibling::span[2]'.format(item_text)).text
+    return convert_delivery_date(initial_date)
 
-def get_delivery_locality():
-    pass
 
-def get_delivery_street():
-    pass
+def get_delivery_country(item_text):
+    delivery_address = driver.find_element_by_xpath('//div[@class="itemDescr"][contains(text(), "{}")]/following-sibling::div[2]/span[2]'.format(item_text)).text
+    return delivery_address.split(',')[1].strip()
+
+
+def get_delivery_postal_code(item_text):
+    delivery_address = driver.find_element_by_xpath('//div[@class="itemDescr"][contains(text(), "{}")]/following-sibling::div[2]/span[2]'.format(item_text)).text
+    return delivery_address.split(',')[0].strip()
+
+
+def get_delivery_region(item_text):
+    delivery_address = driver.find_element_by_xpath('//div[@class="itemDescr"][contains(text(), "{}")]/following-sibling::div[2]/span[2]'.format(item_text)).text
+    return delivery_address.split(',')[2].strip()
+
+
+def get_delivery_locality(item_text):
+    delivery_address = driver.find_element_by_xpath('//div[@class="itemDescr"][contains(text(), "{}")]/following-sibling::div[2]/span[2]'.format(item_text)).text
+    return delivery_address.split(',')[3].strip()
+
+
+def get_delivery_street(item_text):
+    delivery_address = driver.find_element_by_xpath('//div[@class="itemDescr"][contains(text(), "{}")]/following-sibling::div[2]/span[2]'.format(item_text)).text
+    return delivery_address.split(',')[4].strip()
 
 def get_document_name():
     pass
@@ -133,5 +151,3 @@ def get_document_type():
 
 def get_document_content():
     pass
-
-a = 1111

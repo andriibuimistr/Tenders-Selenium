@@ -292,6 +292,90 @@ class BrokerBasedActions:
                 allure.attach('Unit name on page', unit_name_page)
                 assert generated_unit_name == unit_name_page
 
+    def compare_item_delivery_start_date(self, generated_json):
+        number = 0
+        for item in range(len(generated_json['data']['items'])):
+            generated_description_identifier = generated_json['data']['items'][item]['description'].split(' ')[3]
+            number += 1
+            generated_delivery_start_date = generated_json['data']['items'][item]['deliveryDate']['startDate'][:10]
+            start_date_page = self.broker_view_from_page_file.get_delivery_start_date(generated_description_identifier)
+            with pytest.allure.step('Compare delivery start date of item {}'.format(number)):
+                allure.attach('Generated date', str(generated_delivery_start_date))
+                allure.attach('Date on page', str(start_date_page))
+                assert generated_delivery_start_date == start_date_page
+
+    def compare_item_delivery_end_date(self, generated_json):
+        number = 0
+        for item in range(len(generated_json['data']['items'])):
+            generated_description_identifier = generated_json['data']['items'][item]['description'].split(' ')[3]
+            number += 1
+            generated_delivery_end_date = generated_json['data']['items'][item]['deliveryDate']['endDate'][:10]
+            end_date_page = self.broker_view_from_page_file.get_delivery_end_date(generated_description_identifier)
+            with pytest.allure.step('Compare delivery end date of item {}'.format(number)):
+                allure.attach('Generated date', str(generated_delivery_end_date))
+                allure.attach('Date on page', str(end_date_page))
+                assert generated_delivery_end_date == end_date_page
+
+    def compare_item_delivery_country(self, generated_json):
+        number = 0
+        for item in range(len(generated_json['data']['items'])):
+            generated_description_identifier = generated_json['data']['items'][item]['description'].split(' ')[3]
+            number += 1
+            generated_delivery_country = generated_json['data']['items'][item]['deliveryAddress']['countryName']
+            country_page = self.broker_view_from_page_file.get_delivery_country(generated_description_identifier)
+            with pytest.allure.step('Compare delivery country of item {}'.format(number)):
+                allure.attach('Generated country', str(generated_delivery_country))
+                allure.attach('Country on page', str(country_page))
+                assert generated_delivery_country == country_page
+
+    def compare_item_delivery_postal_code(self, generated_json):
+        number = 0
+        for item in range(len(generated_json['data']['items'])):
+            generated_description_identifier = generated_json['data']['items'][item]['description'].split(' ')[3]
+            number += 1
+            generated_delivery_postal_code = generated_json['data']['items'][item]['deliveryAddress']['postalCode']
+            postal_code_page = self.broker_view_from_page_file.get_delivery_postal_code(generated_description_identifier)
+            with pytest.allure.step('Compare delivery country of item {}'.format(number)):
+                allure.attach('Generated country', str(generated_delivery_postal_code))
+                allure.attach('Country on page', str(postal_code_page))
+                assert generated_delivery_postal_code == postal_code_page
+
+    def compare_item_delivery_region(self, generated_json):
+        number = 0
+        for item in range(len(generated_json['data']['items'])):
+            generated_description_identifier = generated_json['data']['items'][item]['description'].split(' ')[3]
+            number += 1
+            generated_delivery_region = generated_json['data']['items'][item]['deliveryAddress']['region']
+            region_page = self.broker_view_from_page_file.get_delivery_region(generated_description_identifier)
+            with pytest.allure.step('Compare delivery region of item {}'.format(number)):
+                allure.attach('Generated region', str(generated_delivery_region))
+                allure.attach('Region on page', str(region_page))
+                assert generated_delivery_region == region_page
+
+    def compare_item_delivery_locality(self, generated_json):
+        number = 0
+        for item in range(len(generated_json['data']['items'])):
+            generated_description_identifier = generated_json['data']['items'][item]['description'].split(' ')[3]
+            number += 1
+            generated_delivery_locality = generated_json['data']['items'][item]['deliveryAddress']['locality']
+            locality_page = self.broker_view_from_page_file.get_delivery_locality(generated_description_identifier)
+            with pytest.allure.step('Compare delivery locality of item {}'.format(number)):
+                allure.attach('Generated locality', str(generated_delivery_locality))
+                allure.attach('Locality on page', str(locality_page))
+                assert generated_delivery_locality == locality_page
+
+    def compare_item_delivery_street(self, generated_json):
+        number = 0
+        for item in range(len(generated_json['data']['items'])):
+            generated_description_identifier = generated_json['data']['items'][item]['description'].split(' ')[3]
+            number += 1
+            generated_delivery_street = generated_json['data']['items'][item]['deliveryAddress']['streetAddress']
+            street_page = self.broker_view_from_page_file.get_delivery_street(generated_description_identifier)
+            with pytest.allure.step('Compare delivery street of item {}'.format(number)):
+                allure.attach('Generated street', str(generated_delivery_street))
+                allure.attach('Street on page', str(street_page))
+                assert generated_delivery_street == street_page
+
     def add_contract(self):
         self.broker_actions_file.add_contract()
 

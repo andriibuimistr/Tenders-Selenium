@@ -62,6 +62,17 @@ def fill_item_data(item_data, item, procurement_type, lot=0):
     driver.execute_script("arguments[0].removeAttribute('readonly','readonly')", delivery_end_date_path)
     delivery_end_date_path.send_keys(delivery_date)
 
+    # delivery start date
+    delivery_start_date = datetime.strftime(datetime.strptime(item_data['deliveryDate']['startDate'], "%Y-%m-%dT%H:%M:%S{}".format(kiev_now)), '%d/%m/%Y')
+    delivery_start_date_path = driver.find_element_by_name('data[items][{}][deliveryDate][startDate]'.format(item))
+    driver.execute_script("arguments[0].scrollIntoView();", select_main_classification)
+    delivery_start_date_path.click()
+    driver.execute_script("arguments[0].removeAttribute('readonly','readonly')", delivery_start_date_path)
+    delivery_start_date_path.clear()
+    delivery_start_date_path.click()
+    driver.execute_script("arguments[0].removeAttribute('readonly','readonly')", delivery_start_date_path)
+    delivery_start_date_path.send_keys(delivery_start_date)
+
 
 def fill_lot_data(lot_data, lot):
     driver.find_element_by_name('data[lots][{}][title]'.format(lot)).send_keys(lot_data['title'])

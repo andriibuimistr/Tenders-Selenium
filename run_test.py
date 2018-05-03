@@ -168,6 +168,34 @@ class TestTendersTest(object):
         with pytest.allure.step(msg.compare_cdb):
             compare_unit_code_cdb(self.pmt, DATA['json_cdb']['data']['id'])
 
+    def test32_compare_item_delivery_start_date(self):
+        with pytest.allure.step(msg.compare_site):
+            BrokerBasedActions(self.broker).compare_item_delivery_start_date(self.pmt)
+
+    def test33_compare_item_delivery_end_date(self):
+        with pytest.allure.step(msg.compare_site):
+            BrokerBasedActions(self.broker).compare_item_delivery_end_date(self.pmt)
+
+    def test34_compare_item_delivery_country(self):
+        with pytest.allure.step(msg.compare_site):
+            BrokerBasedActions(self.broker).compare_item_delivery_country(self.pmt)
+
+    def test355_compare_item_delivery_postal_code(self):
+        with pytest.allure.step(msg.compare_site):
+            BrokerBasedActions(self.broker).compare_item_delivery_postal_code(self.pmt)
+
+    def test36_compare_item_delivery_region(self):
+        with pytest.allure.step(msg.compare_site):
+            BrokerBasedActions(self.broker).compare_item_delivery_region(self.pmt)
+
+    def test37_compare_item_delivery_locality(self):
+        with pytest.allure.step(msg.compare_site):
+            BrokerBasedActions(self.broker).compare_item_delivery_locality(self.pmt)
+
+    def test38_compare_item_delivery_street(self):
+        with pytest.allure.step(msg.compare_site):
+            BrokerBasedActions(self.broker).compare_item_delivery_street(self.pmt)
+
     def test98_add_contract_limited(self):
         BrokerBasedActions(self.broker).add_contract()
 
