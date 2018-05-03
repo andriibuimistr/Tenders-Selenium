@@ -202,10 +202,16 @@ class BrokerBasedActions:
         self.broker_view_from_page_file = __import__("brokers.{}.view_from_page".format(broker), fromlist=[""])
 
     def create_tender(self, pmt):
-        self.broker_create_tender_file.create_tender(pmt)
-        tender_id = self.broker_view_from_page_file.get_tender_id()
-        json_cdb = TenderRequests('2.4').get_tender_info(tender_id).json()
-        return json_cdb
+        with pytest.allure.step('Run function for create tender'):
+            self.broker_create_tender_file.create_tender(pmt)
+        with pytest.allure.step('Get ID from tender page'):
+            tender_id = self.broker_view_from_page_file.get_tender_id()
+            allure.attach('Tender ID: ', tender_id)
+            assert len(tender_id) != 0
+        with pytest.allure.step('Get json from CDB'):
+            response = TenderRequests('2.4').get_tender_info(tender_id)
+            allure.attach('Response code: ', response.status_code)
+        return response.json()
 
     def go_main_page(self):
         driver.get(self.broker_actions_file.host)
