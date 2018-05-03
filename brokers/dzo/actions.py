@@ -116,13 +116,16 @@ def add_participant_info_limited(data):
 
 
 def add_qualification_document():
-    click_by_xpath('//a[contains(text(), "Переможець")]')
-    add_docs_xpath('//input[contains(@class, "uploadFileClick")]', document_path)
+    # click_by_xpath('//a[contains(text(), "Переможець")]')
+    add_docs_xpath('//input[contains(@name, "upload")]', document_path)
     send_keys_xpath('//div[@class="inp langSwitch langSwitch_uk dataFormatHelpInside"]/input', 'Qualified')
     Select(driver.find_element_by_name('documentType')).select_by_value('notice')
+    click_by_xpath('//button[@class="icons icon_upload relative"]')
+    wait_for_element_not_visible_xpath('//body[contains(@class, "blocked")]')
     scroll_into_view_xpath('//button[contains(@class, "bidAction")]')
     click_by_xpath('//input[@name="data[qualified]"]/..')
     click_by_xpath('//button[contains(@class, "bidAction")]')
+    wait_for_element_not_visible_xpath('//button[contains(@class, "bidAction")]')
 
 
 # sign award with EDS
@@ -156,27 +159,40 @@ def qualify_winner_limited(data):
         for x in range(20):
             count += 1
             try:
-                driver.refresh()
-                wait_for_element_clickable_xpath('// a[contains(text(), "Необхідний ЕЦП"')
-                sign_qualification = driver.find_element_by_xpath('//a[@class="reverse grey setDone"]')
-                driver.execute_script("arguments[0].scrollIntoView();", sign_qualification)
-                sign_qualification.click()
-                sign_page_button = driver.find_element_by_xpath('//div[@class="sign"]/a')
-                driver.execute_script("arguments[0].scrollIntoView();", sign_page_button)
-                if sign_page_button.is_displayed():
-                    eds_sign(sign_page_button)
+                refresh_page()
+                wait_for_element_clickable_xpath('//a[contains(text(), "Необхідний ЕЦП")]')
+                sign_winner_button = driver.find_element_by_xpath('//a[contains(text(), "Необхідний ЕЦП")]')
+                driver.execute_script("arguments[0].scrollIntoView();", sign_winner_button)
+                sign_winner_button.click()
+                sign_contract_button = driver.find_element_by_xpath('//div[@class="sign"]/a')
+                driver.execute_script("arguments[0].scrollIntoView();", sign_contract_button)
+                if sign_contract_button.is_displayed():
+                    eds_sign(sign_contract_button)
                     break
                 else:
                     time.sleep(10)
                     continue
             except Exception as e:
                 if count == 20:
-                    print(e)
+                    print(str(e))
+                    raise TimeoutError
+        count = 0
+        for x in range(20):
+            count += 1
+            count += 1
+            try:
+                refresh_page()
+                complaint_period_title = wait_for_element_present_xpath('//span[contains(text(), "Триває період прийому оскаржень щодо кваліфікації учасника. Дата завершення:")]')
+                if complaint_period_title:
+                    break
+            except Exception as e:
+                time.sleep(10)
+                if count == 20:
+                    print(str(e))
                     raise TimeoutError
 
-        # close modal window
-        wait_for_element_clickable_xpath('//*[@id="modal"]/div[2]/a')
-        click_by_xpath('//button[@class="icons icon_upload relative"]')
+    # close modal window
+    wait_for_element_clickable_xpath('//*[@id="modal"]/div[2]/a')
 
 
 # add contract for limited reporting procedure

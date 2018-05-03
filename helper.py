@@ -5,6 +5,7 @@ import allure
 import pytest
 from cdb_requests import TenderRequests
 from initial_data.document_generator import download_and_open_file, generate_files, delete_documents
+import msg
 
 DATA = dict()
 
@@ -140,17 +141,27 @@ class BrokerBasedViews:
     def __init__(self, broker):
         self.broker_view_from_page_file = __import__("brokers.{}.view_from_page".format(broker), fromlist=[""])
 
-    def get_tender_uid(self):
-        return self.broker_view_from_page_file.get_tender_uid()
+    def compare_tender_uid(self, data):
+        assert data['json_cdb']['data']['tenderID'] == self.broker_view_from_page_file.get_tender_uid()
 
-    def get_tender_title(self):
-        return self.broker_view_from_page_file.get_tender_title()
+    def compare_tender_title(self, gen_data, data):
+        with pytest.allure.step(msg.compare_cdb):
+            assert gen_data['data']['title'] == data['json_cdb']['data']['title'].split('] ')[-1]
+        with pytest.allure.step(msg.compare_site):
+            assert gen_data['data']['title'] == self.broker_view_from_page_file.get_tender_title()
 
-    def get_tender_description(self):
-        return self.broker_view_from_page_file.get_tender_description()
+    def compare_tender_description(self, gen_data, data):
+        with pytest.allure.step(msg.compare_cdb):
+            assert gen_data['data']['description'] == data['json_cdb']['data']['description']
+        with pytest.allure.step(msg.compare_site):
+            assert gen_data['data']['description'] == self.broker_view_from_page_file.get_tender_description()
 
-    def get_tender_value_amount(self):
-        return self.broker_view_from_page_file.get_tender_value_amount()
+    def compare_tender_value_amount(self, gen_data, data):
+        with pytest.allure.step(msg.compare_cdb):
+            assert gen_data['data']['value']['amount'] == data['json_cdb']['data']['value']['amount']
+        with pytest.allure.step(msg.compare_site):
+            assert gen_data['data']['value']['amount'] == self.broker_view_from_page_file.get_tender_value_amount()
+        return
 
     def get_tender_currency(self):
         return self.broker_view_from_page_file.get_tender_currency()
@@ -210,7 +221,7 @@ class BrokerBasedActions:
             assert len(tender_id) != 0
         with pytest.allure.step('Get json from CDB'):
             response = TenderRequests('2.4').get_tender_info(tender_id)
-            allure.attach('Response code: ', response.status_code)
+            allure.attach('Response code: ', str(response.status_code))
         return response.json()
 
     def go_main_page(self):
@@ -354,3 +365,5 @@ class BrokerBasedActions:
 
     def sign_contract(self):
         self.broker_actions_file.sign_contract()
+
+

@@ -42,25 +42,16 @@ class TestTendersTest(object):
         BrokerBasedActions(self.broker).find_tender_by_id(DATA['json_cdb']['data']['tenderID'])
 
     def test10_compare_tender_id(self):
-        assert DATA['json_cdb']['data']['tenderID'] == BrokerBasedViews(self.broker).get_tender_uid()
+        BrokerBasedViews(self.broker).compare_tender_uid(DATA)
 
     def test11_compare_tender_title(self):
-        with pytest.allure.step(msg.compare_cdb):
-            assert self.pmt['data']['title'] == DATA['json_cdb']['data']['title'].split('] ')[-1]
-        with pytest.allure.step(msg.compare_site):
-            assert self.pmt['data']['title'] == BrokerBasedViews(self.broker).get_tender_title()
+        BrokerBasedViews(self.broker).compare_tender_title(self.pmt, DATA)
 
     def test12_compare_tender_description(self):
-        with pytest.allure.step(msg.compare_cdb):
-            assert self.pmt['data']['description'] == DATA['json_cdb']['data']['description']
-        with pytest.allure.step(msg.compare_site):
-            assert self.pmt['data']['description'] == BrokerBasedViews(self.broker).get_tender_description()
+        BrokerBasedViews(self.broker).compare_tender_description(self.pmt, DATA)
 
     def test13_compare_tender_value_amount(self):
-        with pytest.allure.step(msg.compare_cdb):
-            assert self.pmt['data']['value']['amount'] == DATA['json_cdb']['data']['value']['amount']
-        with pytest.allure.step(msg.compare_site):
-            assert self.pmt['data']['value']['amount'] == BrokerBasedViews(self.broker).get_tender_value_amount()
+        BrokerBasedViews(self.broker).compare_tender_value_amount(self.pmt, DATA)
 
     def test14_compare_tender_currency(self):
         with pytest.allure.step(msg.compare_cdb):
