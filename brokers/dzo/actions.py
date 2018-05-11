@@ -138,7 +138,7 @@ def qualify_winner_limited(data):
 
     if procurement_type == 'reporting':
         # open EDS window
-        wait_for_element_clickable_xpath('//div[@class="sign"]/a')
+        wait_for_element_present_xpath('//div[@class="sign"]/a')
         eds_button = driver.find_element_by_xpath('//div[@class="sign"]/a')
         eds_sign(eds_button)
         count = 0

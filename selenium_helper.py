@@ -139,7 +139,7 @@ def check_presence_xpath(xpath):
             return True
         except Exception as e:
             allure.attach('IS PRESENT: ', '{}'.format(e))
-            raise e
+            print(e)
 
 
 def scroll_into_view_xpath(xpath):
