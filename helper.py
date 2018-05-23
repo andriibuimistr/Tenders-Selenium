@@ -25,9 +25,10 @@ def assert_item_field(generated_data, actual_data, field_name, number):
         assert generated_data == actual_data
 
 
-def compare_document_content(docs_data, tender_id):
+def compare_document_content(data):
+    docs_data = data['docs_data']
     time.sleep(240)
-    docs_cdb = TenderRequests('2.4').get_tender_info(tender_id).json()['data']['documents']
+    docs_cdb = TenderRequests('2.4').get_tender_info(data['json_cdb']['data']['id']).json()['data']['documents']
     number = 0
     for doc in range(len(docs_data)):
         number += 1
@@ -40,8 +41,9 @@ def compare_document_content(docs_data, tender_id):
                     assert docs_data[doc]['content'] == cdb_content
 
 
-def compare_document_type(docs_data, tender_id):
-    docs_cdb = TenderRequests('2.4').get_tender_info(tender_id).json()['data']['documents']
+def compare_document_type(data):
+    docs_data = data['docs_data']
+    docs_cdb = TenderRequests('2.4').get_tender_info(data['json_cdb']['data']['id']).json()['data']['documents']
     number = 0
     for doc in range(len(docs_data)):
         number += 1
@@ -54,86 +56,83 @@ def compare_document_type(docs_data, tender_id):
                     assert docs_data[doc]['type'] == cdb_type
 
 
-def compare_item_description_cdb(generated_json, tender_id):
-    items_cdb = TenderRequests('2.4').get_tender_info(tender_id).json()['data']['items']
-    number = 0
-    for item in range(len(generated_json['data']['items'])):
-        generated_description = item_generated_description(generated_json, item)
-        number += 1
-        for cdb_item in range(len(items_cdb)):
-            item_in_cdb_description = items_cdb[cdb_item]['description']
-            if item_in_cdb_description.split(' ')[3] in generated_description:
-                assert_item_field(generated_description, item_in_cdb_description, 'description', number)
+class CDBActions:
 
+    def __init__(self, generated_json, data):
+        self.generated_json = generated_json
+        self.data = data
+        self.items_cdb = TenderRequests('2.4').get_tender_info(data['json_cdb']['data']['id']).json()['data']['items']
+        self.generated_items = generated_json['data']['items']
 
-def compare_item_class_id_cdb(generated_json, tender_id):
-    items_cdb = TenderRequests('2.4').get_tender_info(tender_id).json()['data']['items']
-    number = 0
-    for item in range(len(generated_json['data']['items'])):
-        generated_description = item_generated_description(generated_json, item)
-        number += 1
-        for cdb_item in range(len(items_cdb)):
-            item_in_cdb_description = items_cdb[cdb_item]['description']
-            if item_in_cdb_description.split(' ')[3] in generated_description:
-                generated_class_id = generated_json['data']['items'][item]['classification']['id']
-                cdb_class_id = items_cdb[cdb_item]['classification']['id']
-                assert_item_field(generated_class_id, cdb_class_id, 'classification_id', number)
+    def compare_item_description_cdb(self):
+        number = 0
+        for item in range(len(self.generated_items)):
+            generated_description = item_generated_description(self.generated_json, item)
+            number += 1
+            for cdb_item in range(len(self.items_cdb)):
+                item_in_cdb_description = self.items_cdb[cdb_item]['description']
+                if item_in_cdb_description.split(' ')[3] in generated_description:
+                    assert_item_field(generated_description, item_in_cdb_description, 'description', number)
 
+    def compare_item_class_id_cdb(self):
+        number = 0
+        for item in range(len(self.generated_items)):
+            generated_description = item_generated_description(self.generated_json, item)
+            number += 1
+            for cdb_item in range(len(self.items_cdb)):
+                item_in_cdb_description = self.items_cdb[cdb_item]['description']
+                if item_in_cdb_description.split(' ')[3] in generated_description:
+                    generated_class_id = self.generated_json['data']['items'][item]['classification']['id']
+                    cdb_class_id = self.items_cdb[cdb_item]['classification']['id']
+                    assert_item_field(generated_class_id, cdb_class_id, 'classification_id', number)
 
-def compare_item_class_name_cdb(generated_json, tender_id):
-    items_cdb = TenderRequests('2.4').get_tender_info(tender_id).json()['data']['items']
-    number = 0
-    for item in range(len(generated_json['data']['items'])):
-        generated_description = item_generated_description(generated_json, item)
-        number += 1
-        for cdb_item in range(len(items_cdb)):
-            item_in_cdb_description = items_cdb[cdb_item]['description']
-            if item_in_cdb_description.split(' ')[3] in generated_description:
-                generated_class_name = generated_json['data']['items'][item]['classification']['description']
-                cdb_class_name = items_cdb[cdb_item]['classification']['description']
-                assert_item_field(generated_class_name, cdb_class_name, 'classification_name', number)
+    def compare_item_class_name_cdb(self):
+        number = 0
+        for item in range(len(self.generated_items)):
+            generated_description = item_generated_description(self.generated_json, item)
+            number += 1
+            for cdb_item in range(len(self.items_cdb)):
+                item_in_cdb_description = self.items_cdb[cdb_item]['description']
+                if item_in_cdb_description.split(' ')[3] in generated_description:
+                    generated_class_name = self.generated_json['data']['items'][item]['classification']['description']
+                    cdb_class_name = self.items_cdb[cdb_item]['classification']['description']
+                    assert_item_field(generated_class_name, cdb_class_name, 'classification_name', number)
 
+    def compare_item_quantity_cdb(self):
+        number = 0
+        for item in range(len(self.generated_items)):
+            generated_description = item_generated_description(self.generated_json, item)
+            number += 1
+            for cdb_item in range(len(self.items_cdb)):
+                item_in_cdb_description = self.items_cdb[cdb_item]['description']
+                if item_in_cdb_description.split(' ')[3] in generated_description:
+                    generated_item_quantity = self.generated_json['data']['items'][item]['quantity']
+                    cdb_item_quantity = self.items_cdb[cdb_item]['quantity']
+                    assert_item_field(generated_item_quantity, cdb_item_quantity, 'quantity', number)
 
-def compare_item_quantity_cdb(generated_json, tender_id):
-    items_cdb = TenderRequests('2.4').get_tender_info(tender_id).json()['data']['items']
-    number = 0
-    for item in range(len(generated_json['data']['items'])):
-        generated_description = item_generated_description(generated_json, item)
-        number += 1
-        for cdb_item in range(len(items_cdb)):
-            item_in_cdb_description = items_cdb[cdb_item]['description']
-            if item_in_cdb_description.split(' ')[3] in generated_description:
-                generated_item_quantity = generated_json['data']['items'][item]['quantity']
-                cdb_item_quantity = items_cdb[cdb_item]['quantity']
-                assert_item_field(generated_item_quantity, cdb_item_quantity, 'quantity', number)
+    def compare_unit_name_cdb(self):
+        number = 0
+        for item in range(len(self.generated_items)):
+            generated_description = item_generated_description(self.generated_json, item)
+            number += 1
+            for cdb_item in range(len(self.items_cdb)):
+                item_in_cdb_description = self.items_cdb[cdb_item]['description']
+                if item_in_cdb_description.split(' ')[3] in generated_description:
+                    generated_unit_name = self.generated_json['data']['items'][item]['unit']['name']
+                    cdb_unit_name = self.items_cdb[cdb_item]['unit']['name']
+                    assert_item_field(generated_unit_name, cdb_unit_name, 'unit_name', number)
 
-
-def compare_unit_name_cdb(generated_json, tender_id):
-    items_cdb = TenderRequests('2.4').get_tender_info(tender_id).json()['data']['items']
-    number = 0
-    for item in range(len(generated_json['data']['items'])):
-        generated_description = item_generated_description(generated_json, item)
-        number += 1
-        for cdb_item in range(len(items_cdb)):
-            item_in_cdb_description = items_cdb[cdb_item]['description']
-            if item_in_cdb_description.split(' ')[3] in generated_description:
-                generated_unit_name = generated_json['data']['items'][item]['unit']['name']
-                cdb_unit_name = items_cdb[cdb_item]['unit']['name']
-                assert_item_field(generated_unit_name, cdb_unit_name, 'unit_name', number)
-
-
-def compare_unit_code_cdb(generated_json, tender_id):
-    items_cdb = TenderRequests('2.4').get_tender_info(tender_id).json()['data']['items']
-    number = 0
-    for item in range(len(generated_json['data']['items'])):
-        generated_description = item_generated_description(generated_json, item)
-        number += 1
-        for cdb_item in range(len(items_cdb)):
-            item_in_cdb_description = items_cdb[cdb_item]['description']
-            if item_in_cdb_description.split(' ')[3] in generated_description:
-                generated_unit_code = generated_json['data']['items'][item]['unit']['code']
-                cdb_unit_code = items_cdb[cdb_item]['unit']['code']
-                assert_item_field(generated_unit_code, cdb_unit_code, 'unit_code', number)
+    def compare_unit_code_cdb(self):
+        number = 0
+        for item in range(len(self.generated_items)):
+            generated_description = item_generated_description(self.generated_json, item)
+            number += 1
+            for cdb_item in range(len(self.items_cdb)):
+                item_in_cdb_description = self.items_cdb[cdb_item]['description']
+                if item_in_cdb_description.split(' ')[3] in generated_description:
+                    generated_unit_code = self.generated_json['data']['items'][item]['unit']['code']
+                    cdb_unit_code = self.items_cdb[cdb_item]['unit']['code']
+                    assert_item_field(generated_unit_code, cdb_unit_code, 'unit_code', number)
 
 
 class BrokerBasedViews:
@@ -163,46 +162,77 @@ class BrokerBasedViews:
             assert gen_data['data']['value']['amount'] == self.broker_view_from_page_file.get_tender_value_amount()
         return
 
-    def get_tender_currency(self):
-        return self.broker_view_from_page_file.get_tender_currency()
+    def compare_tender_currency(self, gen_data, data):
+        with pytest.allure.step(msg.compare_cdb):
+            assert gen_data['data']['value']['currency'] == data['json_cdb']['data']['value']['currency']
+        with pytest.allure.step(msg.compare_site):
+            assert gen_data['data']['value']['currency'] == self.broker_view_from_page_file.get_tender_currency()
 
-    def get_value_added_tax_included(self):
-        return self.broker_view_from_page_file.get_value_added_tax_included()
+    def compare_tender_value_tax_included(self, gen_data, data):
+        with pytest.allure.step(msg.compare_cdb):
+            assert gen_data['data']['value']['valueAddedTaxIncluded'] == data['json_cdb']['data']['value']['valueAddedTaxIncluded']
+        with pytest.allure.step(msg.compare_site):
+            assert gen_data['data']['value']['valueAddedTaxIncluded'] == self.broker_view_from_page_file.get_value_added_tax_included()
 
-    def get_owner_country(self):
-        return self.broker_view_from_page_file.get_owner_country()
+    def compare_owner_country(self, gen_data, data):
+        with pytest.allure.step(msg.compare_cdb):
+            assert gen_data['data']['procuringEntity']['address']['countryName'] == data['json_cdb']['data']['procuringEntity']['address']['countryName']
+        with pytest.allure.step(msg.compare_site):
+            assert gen_data['data']['procuringEntity']['address']['countryName'] == self.broker_view_from_page_file.get_owner_country()
 
-    def get_owner_locality(self):
-        return self.broker_view_from_page_file.get_owner_locality()
+    def compare_owner_locality(self,  gen_data, data):
+        with pytest.allure.step(msg.compare_cdb):
+            assert gen_data['data']['procuringEntity']['address']['locality'] == data['json_cdb']['data']['procuringEntity']['address']['locality']
+        with pytest.allure.step(msg.compare_site):
+            assert gen_data['data']['procuringEntity']['address']['locality'] == self.broker_view_from_page_file.get_owner_locality()
 
-    def get_owner_postal_code(self):
-        return self.broker_view_from_page_file.get_owner_postal_code()
+    def compare_owner_postal_code(self, gen_data, data):
+        with pytest.allure.step(msg.compare_cdb):
+            assert gen_data['data']['procuringEntity']['address']['postalCode'] == data['json_cdb']['data']['procuringEntity']['address']['postalCode']
+        with pytest.allure.step(msg.compare_site):
+            assert gen_data['data']['procuringEntity']['address']['postalCode'] == self.broker_view_from_page_file.get_owner_postal_code()
 
-    def get_owner_region(self):
-        return self.broker_view_from_page_file.get_owner_region()
+    def compare_owner_region(self, gen_data, data):
+        with pytest.allure.step(msg.compare_cdb):
+            assert gen_data['data']['procuringEntity']['address']['region'] == data['json_cdb']['data']['procuringEntity']['address']['region']
+        with pytest.allure.step(msg.compare_site):
+            assert gen_data['data']['procuringEntity']['address']['region'] == self.broker_view_from_page_file.get_owner_region()
 
-    def get_owner_street(self):
-        return self.broker_view_from_page_file.get_owner_street()
+    def compare_owner_street(self, gen_data, data):
+        with pytest.allure.step(msg.compare_cdb):
+            assert gen_data['data']['procuringEntity']['address']['streetAddress'] == data['json_cdb']['data']['procuringEntity']['address']['streetAddress']
+        with pytest.allure.step(msg.compare_site):
+            assert gen_data['data']['procuringEntity']['address']['streetAddress'] == self.broker_view_from_page_file.get_owner_street()
 
-    def get_owner_contact_name(self):
-        return self.broker_view_from_page_file.get_owner_contact_name()
+    def compare_owner_contact_name(self, gen_data, data):
+        with pytest.allure.step(msg.compare_cdb):
+            assert gen_data['data']['procuringEntity']['contactPoint']['name'] == data['json_cdb']['data']['procuringEntity']['contactPoint']['name']
+        with pytest.allure.step(msg.compare_site):
+            assert gen_data['data']['procuringEntity']['contactPoint']['name'] == self.broker_view_from_page_file.get_owner_contact_name()
 
-    def get_owner_phone_number(self):
-        return self.broker_view_from_page_file.get_owner_phone_number()
+    def compare_owner_phone_number(self, gen_data, data):
+        with pytest.allure.step(msg.compare_cdb):
+            assert gen_data['data']['procuringEntity']['contactPoint']['telephone'] == data['json_cdb']['data']['procuringEntity']['contactPoint']['telephone']
+        with pytest.allure.step(msg.compare_site):
+            assert gen_data['data']['procuringEntity']['contactPoint']['telephone'] == self.broker_view_from_page_file.get_owner_phone_number()
 
-    def get_owner_site(self):
-        return self.broker_view_from_page_file.get_owner_site()
+    def compare_owner_site(self, gen_data, data):
+        with pytest.allure.step(msg.compare_cdb):
+            assert gen_data['data']['procuringEntity']['contactPoint']['url'] == data['json_cdb']['data']['procuringEntity']['contactPoint']['url']
+        with pytest.allure.step(msg.compare_site):
+            assert gen_data['data']['procuringEntity']['contactPoint']['url'] == self.broker_view_from_page_file.get_owner_site()
 
-    def get_owner_company_name(self):
-        return self.broker_view_from_page_file.get_owner_company_name()
+    def compare_owner_company_name(self, gen_data, data):
+        with pytest.allure.step(msg.compare_cdb):
+            assert gen_data['data']['procuringEntity']['name'] == data['json_cdb']['data']['procuringEntity']['name']
+        with pytest.allure.step(msg.compare_site):
+            assert gen_data['data']['procuringEntity']['name'] == self.broker_view_from_page_file.get_owner_company_name()
 
-    def get_owner_identifier(self):
-        return self.broker_view_from_page_file.get_owner_identifier()
-
-
-# def get_field_by_path(data, keys):
-#     return get_field_by_path(data[keys[0]], keys[1:]) \
-#         if keys else data
+    def compare_owner_identifier(self, gen_data, data):
+        with pytest.allure.step(msg.compare_cdb):
+            assert gen_data['data']['procuringEntity']['identifier']['id'] == data['json_cdb']['data']['procuringEntity']['identifier']['id']
+        with pytest.allure.step(msg.compare_site):
+            assert gen_data['data']['procuringEntity']['identifier']['id'] == self.broker_view_from_page_file.get_owner_identifier()
 
 
 class BrokerBasedActions:
@@ -237,12 +267,12 @@ class BrokerBasedActions:
     def qualify_winner_limited(self, data):
         self.broker_actions_file.qualify_winner_limited(data['data'])
 
-    def find_tender_by_id(self, tid):
-        self.broker_actions_file.find_tender_by_id(tid)
+    def find_tender_by_id(self, data):
+        self.broker_actions_file.find_tender_by_id(data['json_cdb']['data']['tenderID'])
 
-    def open_tender_edit_page(self, tid):
+    def open_tender_edit_page(self, data):
         with pytest.allure.step('Open tender edit page'):
-            self.broker_actions_file.open_tender_edit_page(tid)
+            self.broker_actions_file.open_tender_edit_page(data['json_cdb']['data']['tenderID'])
 
     def add_documents(self):
         with pytest.allure.step('Upload documents'):
