@@ -25,37 +25,6 @@ def assert_item_field(generated_data, actual_data, field_name, number):
         assert generated_data == actual_data
 
 
-def compare_document_content(data):
-    docs_data = data['docs_data']
-    time.sleep(240)
-    docs_cdb = TenderRequests('2.4').get_tender_info(data['json_cdb']['data']['id']).json()['data']['documents']
-    number = 0
-    for doc in range(len(docs_data)):
-        number += 1
-        for cdb_doc in range(len(docs_cdb)):
-            if docs_cdb[cdb_doc]['title'].split('.')[0] == docs_data[doc]['document_name']:
-                with pytest.allure.step('Compare content of document {}'.format(number)):
-                    cdb_content = download_and_open_file(docs_cdb[cdb_doc]['url'])
-                    allure.attach('Generated content', docs_data[doc]['content'])
-                    allure.attach('Content of file in cdb', cdb_content)
-                    assert docs_data[doc]['content'] == cdb_content
-
-
-def compare_document_type(data):
-    docs_data = data['docs_data']
-    docs_cdb = TenderRequests('2.4').get_tender_info(data['json_cdb']['data']['id']).json()['data']['documents']
-    number = 0
-    for doc in range(len(docs_data)):
-        number += 1
-        for cdb_doc in range(len(docs_cdb)):
-            if docs_cdb[cdb_doc]['title'].split('.')[0] == docs_data[doc]['document_name']:
-                with pytest.allure.step('Compare type of document {}'.format(number)):
-                    cdb_type = docs_cdb[cdb_doc]['documentType']
-                    allure.attach('Generated type', docs_data[doc]['type'])
-                    allure.attach('Type of file in cdb', cdb_type)
-                    assert docs_data[doc]['type'] == cdb_type
-
-
 class CDBActions:
 
     def __init__(self, generated_json, data):
@@ -63,6 +32,35 @@ class CDBActions:
         self.data = data
         self.items_cdb = TenderRequests('2.4').get_tender_info(data['json_cdb']['data']['id']).json()['data']['items']
         self.generated_items = generated_json['data']['items']
+
+    def compare_document_content_cdb(self):
+        docs_data = self.data['docs_data']
+        time.sleep(240)
+        docs_cdb = TenderRequests('2.4').get_tender_info(self.data['json_cdb']['data']['id']).json()['data']['documents']
+        number = 0
+        for doc in range(len(docs_data)):
+            number += 1
+            for cdb_doc in range(len(docs_cdb)):
+                if docs_cdb[cdb_doc]['title'].split('.')[0] == docs_data[doc]['document_name']:
+                    with pytest.allure.step('Compare content of document {}'.format(number)):
+                        cdb_content = download_and_open_file(docs_cdb[cdb_doc]['url'])
+                        allure.attach('Generated content', docs_data[doc]['content'])
+                        allure.attach('Content of file in cdb', cdb_content)
+                        assert docs_data[doc]['content'] == cdb_content
+
+    def compare_document_type_cdb(self):
+        docs_data = self.data['docs_data']
+        docs_cdb = TenderRequests('2.4').get_tender_info(self.data['json_cdb']['data']['id']).json()['data']['documents']
+        number = 0
+        for doc in range(len(docs_data)):
+            number += 1
+            for cdb_doc in range(len(docs_cdb)):
+                if docs_cdb[cdb_doc]['title'].split('.')[0] == docs_data[doc]['document_name']:
+                    with pytest.allure.step('Compare type of document {}'.format(number)):
+                        cdb_type = docs_cdb[cdb_doc]['documentType']
+                        allure.attach('Generated type', docs_data[doc]['type'])
+                        allure.attach('Type of file in cdb', cdb_type)
+                        assert docs_data[doc]['type'] == cdb_type
 
     def compare_item_description_cdb(self):
         number = 0
@@ -135,109 +133,10 @@ class CDBActions:
                     assert_item_field(generated_unit_code, cdb_unit_code, 'unit_code', number)
 
 
-class BrokerBasedViews:
-
-    def __init__(self, broker):
-        self.broker_view_from_page_file = __import__("brokers.{}.view_from_page".format(broker), fromlist=[""])
-
-    def compare_tender_uid(self, data):
-        assert data['json_cdb']['data']['tenderID'] == self.broker_view_from_page_file.get_tender_uid()
-
-    def compare_tender_title(self, gen_data, data):
-        with pytest.allure.step(msg.compare_cdb):
-            assert gen_data['data']['title'] == data['json_cdb']['data']['title'].split('] ')[-1]
-        with pytest.allure.step(msg.compare_site):
-            assert gen_data['data']['title'] == self.broker_view_from_page_file.get_tender_title()
-
-    def compare_tender_description(self, gen_data, data):
-        with pytest.allure.step(msg.compare_cdb):
-            assert gen_data['data']['description'] == data['json_cdb']['data']['description']
-        with pytest.allure.step(msg.compare_site):
-            assert gen_data['data']['description'] == self.broker_view_from_page_file.get_tender_description()
-
-    def compare_tender_value_amount(self, gen_data, data):
-        with pytest.allure.step(msg.compare_cdb):
-            assert gen_data['data']['value']['amount'] == data['json_cdb']['data']['value']['amount']
-        with pytest.allure.step(msg.compare_site):
-            assert gen_data['data']['value']['amount'] == self.broker_view_from_page_file.get_tender_value_amount()
-        return
-
-    def compare_tender_currency(self, gen_data, data):
-        with pytest.allure.step(msg.compare_cdb):
-            assert gen_data['data']['value']['currency'] == data['json_cdb']['data']['value']['currency']
-        with pytest.allure.step(msg.compare_site):
-            assert gen_data['data']['value']['currency'] == self.broker_view_from_page_file.get_tender_currency()
-
-    def compare_tender_value_tax_included(self, gen_data, data):
-        with pytest.allure.step(msg.compare_cdb):
-            assert gen_data['data']['value']['valueAddedTaxIncluded'] == data['json_cdb']['data']['value']['valueAddedTaxIncluded']
-        with pytest.allure.step(msg.compare_site):
-            assert gen_data['data']['value']['valueAddedTaxIncluded'] == self.broker_view_from_page_file.get_value_added_tax_included()
-
-    def compare_owner_country(self, gen_data, data):
-        with pytest.allure.step(msg.compare_cdb):
-            assert gen_data['data']['procuringEntity']['address']['countryName'] == data['json_cdb']['data']['procuringEntity']['address']['countryName']
-        with pytest.allure.step(msg.compare_site):
-            assert gen_data['data']['procuringEntity']['address']['countryName'] == self.broker_view_from_page_file.get_owner_country()
-
-    def compare_owner_locality(self,  gen_data, data):
-        with pytest.allure.step(msg.compare_cdb):
-            assert gen_data['data']['procuringEntity']['address']['locality'] == data['json_cdb']['data']['procuringEntity']['address']['locality']
-        with pytest.allure.step(msg.compare_site):
-            assert gen_data['data']['procuringEntity']['address']['locality'] == self.broker_view_from_page_file.get_owner_locality()
-
-    def compare_owner_postal_code(self, gen_data, data):
-        with pytest.allure.step(msg.compare_cdb):
-            assert gen_data['data']['procuringEntity']['address']['postalCode'] == data['json_cdb']['data']['procuringEntity']['address']['postalCode']
-        with pytest.allure.step(msg.compare_site):
-            assert gen_data['data']['procuringEntity']['address']['postalCode'] == self.broker_view_from_page_file.get_owner_postal_code()
-
-    def compare_owner_region(self, gen_data, data):
-        with pytest.allure.step(msg.compare_cdb):
-            assert gen_data['data']['procuringEntity']['address']['region'] == data['json_cdb']['data']['procuringEntity']['address']['region']
-        with pytest.allure.step(msg.compare_site):
-            assert gen_data['data']['procuringEntity']['address']['region'] == self.broker_view_from_page_file.get_owner_region()
-
-    def compare_owner_street(self, gen_data, data):
-        with pytest.allure.step(msg.compare_cdb):
-            assert gen_data['data']['procuringEntity']['address']['streetAddress'] == data['json_cdb']['data']['procuringEntity']['address']['streetAddress']
-        with pytest.allure.step(msg.compare_site):
-            assert gen_data['data']['procuringEntity']['address']['streetAddress'] == self.broker_view_from_page_file.get_owner_street()
-
-    def compare_owner_contact_name(self, gen_data, data):
-        with pytest.allure.step(msg.compare_cdb):
-            assert gen_data['data']['procuringEntity']['contactPoint']['name'] == data['json_cdb']['data']['procuringEntity']['contactPoint']['name']
-        with pytest.allure.step(msg.compare_site):
-            assert gen_data['data']['procuringEntity']['contactPoint']['name'] == self.broker_view_from_page_file.get_owner_contact_name()
-
-    def compare_owner_phone_number(self, gen_data, data):
-        with pytest.allure.step(msg.compare_cdb):
-            assert gen_data['data']['procuringEntity']['contactPoint']['telephone'] == data['json_cdb']['data']['procuringEntity']['contactPoint']['telephone']
-        with pytest.allure.step(msg.compare_site):
-            assert gen_data['data']['procuringEntity']['contactPoint']['telephone'] == self.broker_view_from_page_file.get_owner_phone_number()
-
-    def compare_owner_site(self, gen_data, data):
-        with pytest.allure.step(msg.compare_cdb):
-            assert gen_data['data']['procuringEntity']['contactPoint']['url'] == data['json_cdb']['data']['procuringEntity']['contactPoint']['url']
-        with pytest.allure.step(msg.compare_site):
-            assert gen_data['data']['procuringEntity']['contactPoint']['url'] == self.broker_view_from_page_file.get_owner_site()
-
-    def compare_owner_company_name(self, gen_data, data):
-        with pytest.allure.step(msg.compare_cdb):
-            assert gen_data['data']['procuringEntity']['name'] == data['json_cdb']['data']['procuringEntity']['name']
-        with pytest.allure.step(msg.compare_site):
-            assert gen_data['data']['procuringEntity']['name'] == self.broker_view_from_page_file.get_owner_company_name()
-
-    def compare_owner_identifier(self, gen_data, data):
-        with pytest.allure.step(msg.compare_cdb):
-            assert gen_data['data']['procuringEntity']['identifier']['id'] == data['json_cdb']['data']['procuringEntity']['identifier']['id']
-        with pytest.allure.step(msg.compare_site):
-            assert gen_data['data']['procuringEntity']['identifier']['id'] == self.broker_view_from_page_file.get_owner_identifier()
-
-
 class BrokerBasedActions:
 
     def __init__(self, broker):
+        self.broker_config = __import__("brokers.{}.actions".format(broker), fromlist=[""])
         self.broker_actions_file = __import__("brokers.{}.actions".format(broker), fromlist=[""])
         self.broker_create_tender_file = __import__("brokers.{}.create_tender".format(broker), fromlist=[""])
         self.broker_view_from_page_file = __import__("brokers.{}.view_from_page".format(broker), fromlist=[""])
@@ -255,7 +154,7 @@ class BrokerBasedActions:
         return response.json()
 
     def go_main_page(self):
-        driver.get(self.broker_actions_file.host)
+        driver.get(self.broker_config.host)
 
     def login(self):
         self.go_main_page()
@@ -274,7 +173,7 @@ class BrokerBasedActions:
         with pytest.allure.step('Open tender edit page'):
             self.broker_actions_file.open_tender_edit_page(data['json_cdb']['data']['tenderID'])
 
-    def add_documents(self):
+    def add_documents_tender(self):
         with pytest.allure.step('Upload documents'):
             document_data = generate_files(5)
             with pytest.allure.step('Add documents to tender'):
@@ -397,3 +296,166 @@ class BrokerBasedActions:
         self.broker_actions_file.sign_contract()
 
 
+class BrokerBasedViews:
+
+    def __init__(self, broker, generated_json, data):
+        self.broker_view_from_page_file = __import__("brokers.{}.view_from_page".format(broker), fromlist=[""])
+        self.generated_json = generated_json
+        self.data = data
+        self.broker = broker
+
+    def compare_tender_uid(self):
+        assert self.data['json_cdb']['data']['tenderID'] == self.broker_view_from_page_file.get_tender_uid()
+
+    def compare_tender_title(self):
+        with pytest.allure.step(msg.compare_cdb):
+            assert self.generated_json['data']['title'] == self.data['json_cdb']['data']['title'].split('] ')[-1]
+        with pytest.allure.step(msg.compare_site):
+            assert self.generated_json['data']['title'] == self.broker_view_from_page_file.get_tender_title()
+
+    def compare_tender_description(self):
+        with pytest.allure.step(msg.compare_cdb):
+            assert self.generated_json['data']['description'] == self.data['json_cdb']['data']['description']
+        with pytest.allure.step(msg.compare_site):
+            assert self.generated_json['data']['description'] == self.broker_view_from_page_file.get_tender_description()
+
+    def compare_tender_value_amount(self):
+        with pytest.allure.step(msg.compare_cdb):
+            assert self.generated_json['data']['value']['amount'] == self.data['json_cdb']['data']['value']['amount']
+        with pytest.allure.step(msg.compare_site):
+            assert self.generated_json['data']['value']['amount'] == self.broker_view_from_page_file.get_tender_value_amount()
+        return
+
+    def compare_tender_currency(self):
+        with pytest.allure.step(msg.compare_cdb):
+            assert self.generated_json['data']['value']['currency'] == self.data['json_cdb']['data']['value']['currency']
+        with pytest.allure.step(msg.compare_site):
+            assert self.generated_json['data']['value']['currency'] == self.broker_view_from_page_file.get_tender_currency()
+
+    def compare_tender_value_tax_included(self):
+        with pytest.allure.step(msg.compare_cdb):
+            assert self.generated_json['data']['value']['valueAddedTaxIncluded'] == self.data['json_cdb']['data']['value']['valueAddedTaxIncluded']
+        with pytest.allure.step(msg.compare_site):
+            assert self.generated_json['data']['value']['valueAddedTaxIncluded'] == self.broker_view_from_page_file.get_value_added_tax_included()
+
+    def compare_owner_country(self):
+        with pytest.allure.step(msg.compare_cdb):
+            assert self.generated_json['data']['procuringEntity']['address']['countryName'] == self.data['json_cdb']['data']['procuringEntity']['address']['countryName']
+        with pytest.allure.step(msg.compare_site):
+            assert self.generated_json['data']['procuringEntity']['address']['countryName'] == self.broker_view_from_page_file.get_owner_country()
+
+    def compare_owner_locality(self):
+        with pytest.allure.step(msg.compare_cdb):
+            assert self.generated_json['data']['procuringEntity']['address']['locality'] == self.data['json_cdb']['data']['procuringEntity']['address']['locality']
+        with pytest.allure.step(msg.compare_site):
+            assert self.generated_json['data']['procuringEntity']['address']['locality'] == self.broker_view_from_page_file.get_owner_locality()
+
+    def compare_owner_postal_code(self):
+        with pytest.allure.step(msg.compare_cdb):
+            assert self.generated_json['data']['procuringEntity']['address']['postalCode'] == self.data['json_cdb']['data']['procuringEntity']['address']['postalCode']
+        with pytest.allure.step(msg.compare_site):
+            assert self.generated_json['data']['procuringEntity']['address']['postalCode'] == self.broker_view_from_page_file.get_owner_postal_code()
+
+    def compare_owner_region(self):
+        with pytest.allure.step(msg.compare_cdb):
+            assert self.generated_json['data']['procuringEntity']['address']['region'] == self.data['json_cdb']['data']['procuringEntity']['address']['region']
+        with pytest.allure.step(msg.compare_site):
+            assert self.generated_json['data']['procuringEntity']['address']['region'] == self.broker_view_from_page_file.get_owner_region()
+
+    def compare_owner_street(self):
+        with pytest.allure.step(msg.compare_cdb):
+            assert self.generated_json['data']['procuringEntity']['address']['streetAddress'] == self.data['json_cdb']['data']['procuringEntity']['address']['streetAddress']
+        with pytest.allure.step(msg.compare_site):
+            assert self.generated_json['data']['procuringEntity']['address']['streetAddress'] == self.broker_view_from_page_file.get_owner_street()
+
+    def compare_owner_contact_name(self):
+        with pytest.allure.step(msg.compare_cdb):
+            assert self.generated_json['data']['procuringEntity']['contactPoint']['name'] == self.data['json_cdb']['data']['procuringEntity']['contactPoint']['name']
+        with pytest.allure.step(msg.compare_site):
+            assert self.generated_json['data']['procuringEntity']['contactPoint']['name'] == self.broker_view_from_page_file.get_owner_contact_name()
+
+    def compare_owner_phone_number(self):
+        with pytest.allure.step(msg.compare_cdb):
+            assert self.generated_json['data']['procuringEntity']['contactPoint']['telephone'] == self.data['json_cdb']['data']['procuringEntity']['contactPoint']['telephone']
+        with pytest.allure.step(msg.compare_site):
+            assert self.generated_json['data']['procuringEntity']['contactPoint']['telephone'] == self.broker_view_from_page_file.get_owner_phone_number()
+
+    def compare_owner_site(self):
+        with pytest.allure.step(msg.compare_cdb):
+            assert self.generated_json['data']['procuringEntity']['contactPoint']['url'] == self.data['json_cdb']['data']['procuringEntity']['contactPoint']['url']
+        with pytest.allure.step(msg.compare_site):
+            assert self.generated_json['data']['procuringEntity']['contactPoint']['url'] == self.broker_view_from_page_file.get_owner_site()
+
+    def compare_owner_company_name(self):
+        with pytest.allure.step(msg.compare_cdb):
+            assert self.generated_json['data']['procuringEntity']['name'] == self.data['json_cdb']['data']['procuringEntity']['name']
+        with pytest.allure.step(msg.compare_site):
+            assert self.generated_json['data']['procuringEntity']['name'] == self.broker_view_from_page_file.get_owner_company_name()
+
+    def compare_owner_identifier(self):
+        with pytest.allure.step(msg.compare_cdb):
+            assert self.generated_json['data']['procuringEntity']['identifier']['id'] == self.data['json_cdb']['data']['procuringEntity']['identifier']['id']
+        with pytest.allure.step(msg.compare_site):
+            assert self.generated_json['data']['procuringEntity']['identifier']['id'] == self.broker_view_from_page_file.get_owner_identifier()
+
+    def compare_item_description(self):
+        with pytest.allure.step(msg.compare_cdb):
+            CDBActions(self.generated_json, self.data).compare_item_description_cdb()
+        with pytest.allure.step(msg.compare_site):
+            BrokerBasedActions(self.broker).compare_item_description_on_page(self.generated_json)
+
+    def compare_item_classification_identifier(self):
+        with pytest.allure.step(msg.compare_cdb):
+            CDBActions(self.generated_json, self.data).compare_item_class_id_cdb()
+        with pytest.allure.step(msg.compare_site):
+            BrokerBasedActions(self.broker).compare_item_class_id_page(self.generated_json)
+
+    def compare_item_classification_name(self):
+        with pytest.allure.step(msg.compare_cdb):
+            CDBActions(self.generated_json, self.data).compare_item_class_name_cdb()
+        with pytest.allure.step(msg.compare_site):
+            BrokerBasedActions(self.broker).compare_item_class_name_page(self.generated_json)
+
+    def compare_item_quantity(self):
+        with pytest.allure.step(msg.compare_cdb):
+            CDBActions(self.generated_json, self.data).compare_item_quantity_cdb()
+        with pytest.allure.step(msg.compare_site):
+            BrokerBasedActions(self.broker).compare_item_quantity(self.generated_json)
+
+    def compare_unit_name(self):
+        with pytest.allure.step(msg.compare_cdb):
+            CDBActions(self.generated_json, self.data).compare_unit_name_cdb()
+        with pytest.allure.step(msg.compare_site):
+            BrokerBasedActions(self.broker).compare_unit_name(self.generated_json)
+
+    def compare_unit_code(self):
+        with pytest.allure.step(msg.compare_cdb):
+            CDBActions(self.generated_json, self.data).compare_unit_code_cdb()
+
+    def compare_item_delivery_start_date(self):
+        with pytest.allure.step(msg.compare_site):
+            BrokerBasedActions(self.broker).compare_item_delivery_start_date(self.generated_json)
+
+    def compare_item_delivery_end_date(self):
+        with pytest.allure.step(msg.compare_site):
+            BrokerBasedActions(self.broker).compare_item_delivery_end_date(self.generated_json)
+
+    def compare_item_delivery_country(self):
+        with pytest.allure.step(msg.compare_site):
+            BrokerBasedActions(self.broker).compare_item_delivery_country(self.generated_json)
+
+    def compare_item_delivery_postal_code(self):
+        with pytest.allure.step(msg.compare_site):
+            BrokerBasedActions(self.broker).compare_item_delivery_postal_code(self.generated_json)
+
+    def compare_item_delivery_region(self):
+        with pytest.allure.step(msg.compare_site):
+            BrokerBasedActions(self.broker).compare_item_delivery_region(self.generated_json)
+
+    def compare_item_delivery_locality(self):
+        with pytest.allure.step(msg.compare_site):
+            BrokerBasedActions(self.broker).compare_item_delivery_locality(self.generated_json)
+
+    def test38_compare_item_delivery_street(self):
+        with pytest.allure.step(msg.compare_site):
+            BrokerBasedActions(self.broker).compare_item_delivery_street(self.generated_json)

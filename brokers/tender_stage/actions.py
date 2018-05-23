@@ -6,9 +6,6 @@ from selenium_helper import *
 from initial_data.tender_additional_data import key_path, key_password, document_path
 
 
-host = 'http://tender.byustudio.in.ua'
-
-
 def login(user_email, user_pass):
     click_by_xpath('//a[contains(@href, "/login")]')
     driver.find_element_by_name('LoginForm[username]').clear()

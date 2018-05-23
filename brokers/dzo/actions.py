@@ -1,11 +1,9 @@
 # -*- coding: utf-8 -*-
 from selenium.webdriver.support.ui import Select
 from datetime import datetime, timedelta
+from brokers.dzo.config import host
 from selenium_helper import *
 from initial_data.tender_additional_data import key_path, key_password, document_path
-
-
-host = 'http://www.dzo.byustudio.in.ua'
 
 
 def login(user_email, user_pass):
