@@ -19,7 +19,6 @@ def wait_for_element_clickable_xpath(xpath):
             try:
                 wait = WebDriverWait(driver, 1)
                 wait.until(EC.element_to_be_clickable((By.XPATH, xpath)))
-                # assert driver.find_element_by_xpath(xpath).is_enabled() is True
                 break
             except Exception as e:
                 time.sleep(1)

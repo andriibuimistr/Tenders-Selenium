@@ -243,7 +243,7 @@ def sign_contract():
     for x in range(20):
         count += 1
         try:
-            driver.refresh()
+            refresh_page()
             wait_for_element_clickable_xpath('//a[@class="reverse grey setDone"]')
             add_contract_button = driver.find_element_by_xpath('//a[@class="reverse grey setDone"]')
             driver.execute_script("arguments[0].scrollIntoView();", add_contract_button)
