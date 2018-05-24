@@ -21,11 +21,11 @@ class TestTendersTest(object):
         BrokerBasedActions(self.broker).open_tender_edit_page(DATA)
         DATA['docs_data'] = BrokerBasedActions(self.broker).add_documents_tender()
 
-    def test3_compare_document_content(self):
-        BrokerBasedViews(self.broker, self.pmt, DATA).compare_document_content()
-
-    def test4_compare_document_type(self):
-        BrokerBasedViews(self.broker, self.pmt, DATA).compare_document_type()
+    # def test3_compare_document_content(self):
+    #     BrokerBasedViews(self.broker, self.pmt, DATA).compare_document_content()
+    #
+    # def test4_compare_document_type(self):
+    #     BrokerBasedViews(self.broker, self.pmt, DATA).compare_document_type()
 
     def test7_add_supplier(self):
         BrokerBasedActions(self.broker).add_participant_info_limited(self.pmt)
@@ -128,10 +128,13 @@ class TestTendersTest(object):
             BrokerBasedViews(self.broker, self.pmt, DATA).wait_for_complaint_period_end_date()
 
     def test98_add_contract_limited(self):
-        BrokerBasedActions(self.broker).add_contract(self.pmt)
+        DATA['contract_data'] = BrokerBasedActions(self.broker).add_contract(self.pmt)
 
     def test99_sign_contract_limited(self):
         BrokerBasedActions(self.broker).sign_contract()
+
+    def test100_compare_contract_number_tender(self):
+        BrokerBasedViewsContracts(self.broker, DATA).compare_contract_number_tender()
 
     @classmethod
     def teardown_class(cls):

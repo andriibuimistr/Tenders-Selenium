@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 from selenium.webdriver.support.ui import Select
-from datetime import datetime, timedelta
 from brokers.dzo.config import host
 from selenium_helper import *
 from initial_data.tender_additional_data import key_path, key_password, document_path
+from brokers.dzo.view_from_page import *
 
 
 def login(user_email, user_pass):
@@ -191,7 +191,7 @@ def qualify_winner_limited(data):
 
 
 # add contract for limited reporting procedure
-def add_contract(data):
+def add_contract(data, contract_dates):
     procurement_type = data['procurementMethodType']
     if procurement_type != 'reporting':
         count = 0
@@ -216,25 +216,25 @@ def add_contract(data):
     wait_for_element_not_visible_xpath('//body[contains(@class, "blocked")]')
 
     click_by_name('data[contractNumber]')
-    send_keys_name('data[contractNumber]', '123456')
+    send_keys_name('data[contractNumber]', contract_dates.contract_number)
 
     # add date of sign
     date_signed_path = driver.find_element_by_name('data[dateSigned]')
-    date_signed = datetime.now().strftime('%d/%m/%Y')
+    date_signed = contract_dates.date_signed.strftime('%d/%m/%Y')
     driver.execute_script("arguments[0].removeAttribute('readonly','readonly')", date_signed_path)
     date_signed_path.send_keys(date_signed)
 
     # contract start date
     wait_for_element_clickable_name('data[period][startDate]')
     contract_start_date_path = driver.find_element_by_name('data[period][startDate]')
-    contract_start_date = (datetime.now() + timedelta(days=1)).strftime('%d/%m/%Y')
+    contract_start_date = contract_dates.contract_start_date.strftime('%d/%m/%Y')
     driver.execute_script("arguments[0].removeAttribute('readonly','readonly')", contract_start_date_path)
     contract_start_date_path.send_keys(contract_start_date)
 
     # contract end date
     wait_for_element_clickable_name('data[period][endDate]')
     contract_end_date_path = driver.find_element_by_name('data[period][endDate]')
-    contract_end_date = (datetime.now() + timedelta(days=30)).strftime('%d/%m/%Y')
+    contract_end_date = contract_dates.contract_end_date.strftime('%d/%m/%Y')
     driver.execute_script("arguments[0].removeAttribute('readonly','readonly')", contract_end_date_path)
     contract_end_date_path.send_keys(contract_end_date)
 
@@ -290,3 +290,14 @@ def add_documents(document_data):
     scroll_into_view_xpath('//button[text()="Зберегти"]')
     save_changes_button.click()
     wait_for_element_clickable_xpath('//h1[@class="t_title"]')
+
+
+def get_info_from_contract_tender(field):
+    refresh_page()
+    value = ''
+    scroll_into_view_xpath('//a[contains(@href, "/contract/documents")]')
+    click_by_xpath('//a[contains(@href, "/contract/documents")]')
+    wait_for_element_clickable_xpath('//a[@onclick="modalClose();"]')
+    if field == 'contract_number':
+        value = get_contract_number_tender()
+    return value

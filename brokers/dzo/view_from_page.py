@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
-from config import driver
-import time
+# from config import driver
+# import time
 from brokers.dzo.service import *
+from selenium_helper import *
 
 
 def get_tender_id():
@@ -156,3 +157,6 @@ def get_document_content():
 def get_qualification_complaint_period_end_date():
     return driver.find_element_by_xpath('//span[@class="complaintEndDate"]/span[2]').text, '%d.%m.%Y %H:%M'
 
+
+def get_contract_number_tender():
+    return driver.find_element_by_xpath('//td[contains(text(), "Номер договору")]/following-sibling::td[2]').text

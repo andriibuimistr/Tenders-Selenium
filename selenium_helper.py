@@ -178,8 +178,9 @@ def click_and_wait_for_disappear_xpath(xpath):
             try:
                 driver.find_element_by_xpath(xpath).click()
                 wait_for_element_not_visible_xpath(xpath)
-                if driver.find_element_by_xpath(xpath).is_displayed():
-                    raise Exception
+                # if driver.find_element_by_xpath(xpath).is_displayed():
+                #     raise Exception
+                break
             except Exception as e:
                 time.sleep(1)
                 if attempt == 20:
