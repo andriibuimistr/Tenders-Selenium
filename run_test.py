@@ -22,10 +22,10 @@ class TestTendersTest(object):
         DATA['docs_data'] = BrokerBasedActions(self.broker).add_documents_tender()
 
     def test3_compare_document_content(self):
-        CDBActions(self.pmt, DATA).compare_document_content_cdb()
+        BrokerBasedViews(self.broker, self.pmt, DATA).compare_document_content()
 
     def test4_compare_document_type(self):
-        CDBActions(self.pmt, DATA).compare_document_type_cdb()
+        BrokerBasedViews(self.broker, self.pmt, DATA).compare_document_type()
 
     def test7_add_supplier(self):
         BrokerBasedActions(self.broker).add_participant_info_limited(self.pmt)

@@ -469,3 +469,11 @@ class BrokerBasedViews:
             waiting_time = service.count_waiting_time(period[0], period[1], self.broker_config.cdb)
             if waiting_time > 0:
                 time.sleep(waiting_time + 60)
+
+    def compare_document_content(self):
+        with pytest.allure.step(msg.compare_cdb):
+            CDBActions(self.generated_json, self.data, self.broker).compare_document_content_cdb()
+
+    def compare_document_type(self):
+        with pytest.allure.step(msg.compare_cdb):
+            CDBActions(self.generated_json, self.data, self.broker).compare_document_type_cdb()
