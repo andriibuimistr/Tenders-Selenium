@@ -151,3 +151,8 @@ def get_document_type():
 
 def get_document_content():
     pass
+
+
+def get_qualification_complaint_period_end_date():
+    return driver.find_element_by_xpath('//span[@class="complaintEndDate"]/span[2]').text, '%d.%m.%Y %H:%M'
+

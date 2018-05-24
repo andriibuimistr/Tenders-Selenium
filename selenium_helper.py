@@ -168,6 +168,24 @@ def click_by_id(element_id):
             driver.find_element_by_id(element_id).click()
 
 
+def click_and_wait_for_disappear_xpath(xpath):
+    with pytest.allure.step('Click and wait for element to disappear after click'):
+        allure.attach('XPATH: ', '{}'.format(xpath))
+        attempt = 0
+        for x in range(20):
+            attempt += 1
+            allure.attach('ATTEMPT: ', str(attempt))
+            try:
+                driver.find_element_by_xpath(xpath).click()
+                wait_for_element_not_visible_xpath(xpath)
+                if driver.find_element_by_xpath(xpath).is_displayed():
+                    raise Exception
+            except Exception as e:
+                time.sleep(1)
+                if attempt == 20:
+                    allure.attach('EXCEPTION: ', str(e))
+
+
 def add_docs_xpath(xpath, docs):
     with pytest.allure.step('Add docs by xpath'):
         wait_for_element_present_xpath(xpath)

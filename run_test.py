@@ -21,11 +21,11 @@ class TestTendersTest(object):
         BrokerBasedActions(self.broker).open_tender_edit_page(DATA)
         DATA['docs_data'] = BrokerBasedActions(self.broker).add_documents_tender()
 
-    # def test3_compare_document_content(self):
-    #     CDBActions(self.pmt, DATA).compare_document_content_cdb()
-    #
-    # def test4_compare_document_type(self):
-    #     CDBActions(self.pmt, DATA).compare_document_type_cdb()
+    def test3_compare_document_content(self):
+        CDBActions(self.pmt, DATA).compare_document_content_cdb()
+
+    def test4_compare_document_type(self):
+        CDBActions(self.pmt, DATA).compare_document_type_cdb()
 
     def test7_add_supplier(self):
         BrokerBasedActions(self.broker).add_participant_info_limited(self.pmt)
@@ -121,10 +121,14 @@ class TestTendersTest(object):
         BrokerBasedViews(self.broker, self.pmt, DATA).compare_item_delivery_locality()
 
     def test38_compare_item_delivery_street(self):
-        BrokerBasedViews(self.broker, self.pmt, DATA).test38_compare_item_delivery_street()
+        BrokerBasedViews(self.broker, self.pmt, DATA).compare_item_delivery_street()
+
+    def test39_wait_for_complaint_period_end_date(self):
+        if DATA['json_cdb']['data']['procurementMethodType'] != 'reporting':
+            BrokerBasedViews(self.broker, self.pmt, DATA).wait_for_complaint_period_end_date()
 
     def test98_add_contract_limited(self):
-        BrokerBasedActions(self.broker).add_contract()
+        BrokerBasedActions(self.broker).add_contract(self.pmt)
 
     def test99_sign_contract_limited(self):
         BrokerBasedActions(self.broker).sign_contract()

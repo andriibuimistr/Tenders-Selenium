@@ -111,8 +111,8 @@ class TenderRequests:
     #     return request_to_cdb(tender_headers_request(self.cdb, activate_bid_json), self.host, '/{}/bids/{}?acc_token={}'.format(tender_id_long, bid_id, bid_token), 'PATCH', activate_bid_json,
     #                           'Activate bid {}'.format(bid_number), self.entity)
     #
-    # def get_list_of_tenders(self):
-    #     return request_to_cdb(tender_headers_request(self.cdb, None), self.host_public, '', 'GET', None, 'Get list of tenders', self.entity)
+    def get_list_of_tenders(self):
+        return request_to_cdb(tender_headers_request(self.cdb, None), self.host_public, '', 'GET', None, 'Get list of tenders', self.entity)
     #
     # def get_bid_info(self, tender_id_long, bid_id, bid_token):
     #     return request_to_cdb(tender_headers_request(self.cdb, None), self.host, '/{}/bids/{}?acc_token={}'.format(tender_id_long, bid_id, bid_token), 'GET', None, 'Get bid info', self.entity)

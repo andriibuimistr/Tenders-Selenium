@@ -6,6 +6,7 @@ import pytest
 from cdb_requests import TenderRequests
 from initial_data.document_generator import download_and_open_file, generate_files, delete_documents
 import msg
+import service
 
 DATA = dict()
 
@@ -27,16 +28,17 @@ def assert_item_field(generated_data, actual_data, field_name, number):
 
 class CDBActions:
 
-    def __init__(self, generated_json, data):
+    def __init__(self, generated_json, data, broker):
         self.generated_json = generated_json
         self.data = data
-        self.items_cdb = TenderRequests('2.4').get_tender_info(data['json_cdb']['data']['id']).json()['data']['items']
+        self.cdb = __import__("brokers.{}.config".format(broker), fromlist=[""]).cdb
+        self.items_cdb = TenderRequests(self.cdb).get_tender_info(data['json_cdb']['data']['id']).json()['data']['items']
         self.generated_items = generated_json['data']['items']
 
     def compare_document_content_cdb(self):
         docs_data = self.data['docs_data']
         time.sleep(240)
-        docs_cdb = TenderRequests('2.4').get_tender_info(self.data['json_cdb']['data']['id']).json()['data']['documents']
+        docs_cdb = TenderRequests(self.cdb).get_tender_info(self.data['json_cdb']['data']['id']).json()['data']['documents']
         number = 0
         for doc in range(len(docs_data)):
             number += 1
@@ -50,7 +52,7 @@ class CDBActions:
 
     def compare_document_type_cdb(self):
         docs_data = self.data['docs_data']
-        docs_cdb = TenderRequests('2.4').get_tender_info(self.data['json_cdb']['data']['id']).json()['data']['documents']
+        docs_cdb = TenderRequests(self.cdb).get_tender_info(self.data['json_cdb']['data']['id']).json()['data']['documents']
         number = 0
         for doc in range(len(docs_data)):
             number += 1
@@ -136,7 +138,7 @@ class CDBActions:
 class BrokerBasedActions:
 
     def __init__(self, broker):
-        self.broker_config = __import__("brokers.{}.actions".format(broker), fromlist=[""])
+        self.broker_config = __import__("brokers.{}.config".format(broker), fromlist=[""])
         self.broker_actions_file = __import__("brokers.{}.actions".format(broker), fromlist=[""])
         self.broker_create_tender_file = __import__("brokers.{}.create_tender".format(broker), fromlist=[""])
         self.broker_view_from_page_file = __import__("brokers.{}.view_from_page".format(broker), fromlist=[""])
@@ -149,7 +151,7 @@ class BrokerBasedActions:
             allure.attach('Tender ID: ', tender_id)
             assert len(tender_id) != 0
         with pytest.allure.step('Get json from CDB'):
-            response = TenderRequests('2.4').get_tender_info(tender_id)
+            response = TenderRequests(self.broker_config.cdb).get_tender_info(tender_id)
             allure.attach('Response code: ', str(response.status_code))
         return response.json()
 
@@ -289,8 +291,8 @@ class BrokerBasedActions:
             street_page = self.broker_view_from_page_file.get_delivery_street(generated_description_identifier)
             assert_item_field(generated_delivery_street, street_page, 'delivery_street', number)
 
-    def add_contract(self):
-        self.broker_actions_file.add_contract()
+    def add_contract(self, data):
+        self.broker_actions_file.add_contract(data['data'])
 
     def sign_contract(self):
         self.broker_actions_file.sign_contract()
@@ -299,6 +301,7 @@ class BrokerBasedActions:
 class BrokerBasedViews:
 
     def __init__(self, broker, generated_json, data):
+        self.broker_config = __import__("brokers.{}.config".format(broker), fromlist=[""])
         self.broker_view_from_page_file = __import__("brokers.{}.view_from_page".format(broker), fromlist=[""])
         self.generated_json = generated_json
         self.data = data
@@ -400,37 +403,37 @@ class BrokerBasedViews:
 
     def compare_item_description(self):
         with pytest.allure.step(msg.compare_cdb):
-            CDBActions(self.generated_json, self.data).compare_item_description_cdb()
+            CDBActions(self.generated_json, self.data, self.broker).compare_item_description_cdb()
         with pytest.allure.step(msg.compare_site):
             BrokerBasedActions(self.broker).compare_item_description_on_page(self.generated_json)
 
     def compare_item_classification_identifier(self):
         with pytest.allure.step(msg.compare_cdb):
-            CDBActions(self.generated_json, self.data).compare_item_class_id_cdb()
+            CDBActions(self.generated_json, self.data, self.broker).compare_item_class_id_cdb()
         with pytest.allure.step(msg.compare_site):
             BrokerBasedActions(self.broker).compare_item_class_id_page(self.generated_json)
 
     def compare_item_classification_name(self):
         with pytest.allure.step(msg.compare_cdb):
-            CDBActions(self.generated_json, self.data).compare_item_class_name_cdb()
+            CDBActions(self.generated_json, self.data, self.broker).compare_item_class_name_cdb()
         with pytest.allure.step(msg.compare_site):
             BrokerBasedActions(self.broker).compare_item_class_name_page(self.generated_json)
 
     def compare_item_quantity(self):
         with pytest.allure.step(msg.compare_cdb):
-            CDBActions(self.generated_json, self.data).compare_item_quantity_cdb()
+            CDBActions(self.generated_json, self.data, self.broker).compare_item_quantity_cdb()
         with pytest.allure.step(msg.compare_site):
             BrokerBasedActions(self.broker).compare_item_quantity(self.generated_json)
 
     def compare_unit_name(self):
         with pytest.allure.step(msg.compare_cdb):
-            CDBActions(self.generated_json, self.data).compare_unit_name_cdb()
+            CDBActions(self.generated_json, self.data, self.broker).compare_unit_name_cdb()
         with pytest.allure.step(msg.compare_site):
             BrokerBasedActions(self.broker).compare_unit_name(self.generated_json)
 
     def compare_unit_code(self):
         with pytest.allure.step(msg.compare_cdb):
-            CDBActions(self.generated_json, self.data).compare_unit_code_cdb()
+            CDBActions(self.generated_json, self.data, self.broker).compare_unit_code_cdb()
 
     def compare_item_delivery_start_date(self):
         with pytest.allure.step(msg.compare_site):
@@ -456,6 +459,13 @@ class BrokerBasedViews:
         with pytest.allure.step(msg.compare_site):
             BrokerBasedActions(self.broker).compare_item_delivery_locality(self.generated_json)
 
-    def test38_compare_item_delivery_street(self):
+    def compare_item_delivery_street(self):
         with pytest.allure.step(msg.compare_site):
             BrokerBasedActions(self.broker).compare_item_delivery_street(self.generated_json)
+
+    def wait_for_complaint_period_end_date(self):
+        with pytest.allure.step("Wait for qualification complaint period end date"):
+            period = self.broker_view_from_page_file.get_qualification_complaint_period_end_date()
+            waiting_time = service.count_waiting_time(period[0], period[1], self.broker_config.cdb)
+            if waiting_time > 0:
+                time.sleep(waiting_time + 60)

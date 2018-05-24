@@ -61,15 +61,13 @@ def eds_sign(eds_button):
                 break
             else:
                 driver.find_element_by_xpath('//button[@id="PKeyReadButton"][contains(text(), "Зтерти")]').click()
-                continue
 
 
 def add_participant_info_limited(data):
     add_participant_info_button = driver.find_element_by_xpath('//a[@class="button reverse addAward"]')  # path of "add info" button
     driver.execute_script("arguments[0].scrollIntoView();", add_participant_info_button)  # scroll to button
     add_participant_info_button.click()
-    click_by_xpath('//div[@class="jBtnWrap"]/a[1]')
-    wait_for_element_not_visible_xpath('//div[@class="jBtnWrap"]/a[1]')
+    click_and_wait_for_disappear_xpath('//div[@class="jBtnWrap"]/a[1]')
     send_keys_name('data[suppliers][0][name]', 'Name of participant\'s organization')
     Select(driver.find_element_by_name('data[suppliers][0][identifier][scheme]')).select_by_value('UA-EDR')  # select country of registration
     send_keys_name('data[suppliers][0][identifier][id]', '00000000')  # identifier
@@ -177,7 +175,6 @@ def qualify_winner_limited(data):
         count = 0
         for x in range(20):
             count += 1
-            count += 1
             try:
                 refresh_page()
                 complaint_period_title = wait_for_element_present_xpath('//span[contains(text(), "Триває період прийому оскаржень щодо кваліфікації учасника. Дата завершення:")]')
@@ -194,7 +191,21 @@ def qualify_winner_limited(data):
 
 
 # add contract for limited reporting procedure
-def add_contract():
+def add_contract(data):
+    procurement_type = data['procurementMethodType']
+    if procurement_type != 'reporting':
+        count = 0
+        for x in range(20):
+            count += 1
+            try:
+                refresh_page()
+                wait_for_element_present_xpath('//a[@class="reverse grey setDone"]')
+                break
+            except Exception as e:
+                if count == 20:
+                    print(str(e))
+                    raise TimeoutError
+
     add_contract_button = driver.find_element_by_xpath('//a[@class="reverse grey setDone"]')
     driver.execute_script("arguments[0].scrollIntoView();", add_contract_button)
     add_contract_button.click()
@@ -254,9 +265,9 @@ def sign_contract():
                 eds_sign(sign_contract_button)
                 break
             else:
-                time.sleep(10)
                 continue
         except Exception as e:
+            time.sleep(10)
             if count == 20:
                 print(e)
                 raise TimeoutError
