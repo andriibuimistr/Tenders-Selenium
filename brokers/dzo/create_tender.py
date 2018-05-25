@@ -123,8 +123,7 @@ def create_tender(tender_data):
     # select procedure
     Select(driver.find_element_by_name('tender_method')).select_by_visible_text(select_procedure(data['procurementMethodType']))
     wait_for_element_clickable_xpath('//*[@class="jContent"]/div[2]/a[1]')
-    click_by_xpath('//*[@class="jContent"]/div[2]/a[1]')  # close modal window
-    wait_for_element_not_visible_xpath('//*[@class="jContent"]/div[2]/a[1]')
+    click_and_wait_for_disappear_xpath('//*[@class="jContent"]/div[2]/a[1]')
 
     if procurement_type in negotiation_procurement:
         wait_for_element_clickable_xpath('//input[@value="additionalConstruction"]/following-sibling::span')

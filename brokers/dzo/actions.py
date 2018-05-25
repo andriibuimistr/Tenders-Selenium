@@ -1,18 +1,18 @@
 # -*- coding: utf-8 -*-
 from selenium.webdriver.support.ui import Select
-from brokers.dzo.config import host
-from selenium_helper import *
+from brokers.dzo.config import *
+# from selenium_helper import *
 from initial_data.tender_additional_data import key_path, key_password, document_path
 from brokers.dzo.view_from_page import *
 
 
-def login(user_email, user_pass):
+def login(user):
     click_by_xpath('//a[contains(text(), "Вхід")]')
     driver.find_element_by_name('email').clear()
-    send_keys_name('email', user_email)
+    send_keys_name('email', credentials[user]['username'])
     password_block = driver.find_element_by_xpath('//*[@class="line userAllow userAllow1"]')
     driver.execute_script("arguments[0].style.display = 'table-row';", password_block)
-    send_keys_name('psw', user_pass)
+    send_keys_name('psw', credentials[user]['password'])
     password_login_button = driver.find_element_by_xpath('//*[@class="buttons userAllow userAllow1"]')
     driver.execute_script("arguments[0].style.display = 'block';", password_login_button)
     click_by_xpath('//div[@class="clear double"]/div[1]/div/button')
@@ -27,6 +27,19 @@ def find_tender_by_id(uid):
     wait_for_element_clickable_xpath('//span[contains(text(), "{}")]'.format(uid))
     click_by_xpath('//span[contains(text(), "{}")]/ancestor::div[5]/descendant::h2[@class="title"]/a'.format(uid))
     return get_text_xpath('//a[@title="Оголошення на порталі Уповноваженого органу"]/span')
+
+
+def find_contract_by_id(uid):
+    driver.get(host)
+    click_by_xpath('//a[@href="/tenders/contracts"]')
+    wait_for_element_clickable_name('filter[object]')
+    Select(driver.find_element_by_name('filter[object]')).select_by_value('contractID')
+    wait_for_element_present_name('filter[object]')
+    send_keys_name('filter[search]', uid)
+    click_by_xpath('(//button[contains(text(), "Пошук")])[1]')
+    wait_for_element_clickable_xpath('//span[contains(text(), "{}")]'.format(uid))
+    click_by_xpath('//span[contains(text(), "{}")]/ancestor::div[5]/descendant::h2[@class="title"]/a'.format(uid))
+    return get_text_xpath('//a[@title="Оголошення в ЦБД"]/span')
 
 
 def open_tender_edit_page(uid):
@@ -294,12 +307,21 @@ def add_documents(document_data):
 
 def get_info_from_contract_tender():
     refresh_page()
-    # value = ''
     scroll_into_view_xpath('//a[contains(@href, "/contract/documents")]')
     click_by_xpath('//a[contains(@href, "/contract/documents")]')
     wait_for_element_clickable_xpath('//a[@onclick="modalClose();"]')
-    # if field == 'contract_number':
-    #     value = get_contract_number_tender()
-    # elif field == 'date_signed':
-    #     value = get_date_signed_tender()
-    # return value
+
+
+def wait_for_contract_to_be_generated():
+    count = 0
+    for x in range(20):
+        count += 1
+        refresh_page()
+        if check_presence_xpath('//a[contains(text(), "Зміни/виконання договору")]') is True:
+            click_by_xpath('//a[contains(text(), "Зміни/виконання договору")]')
+            return get_contract_id_short(), get_contract_id_long()
+        else:
+            time.sleep(60)
+            if count == 20:
+                raise TimeoutError
+            continue

@@ -60,7 +60,9 @@ class TenderRequests:
         self.cdb = cdb
         self.host = tender_host_selector(cdb)[0]
         self.host_public = tender_host_selector(cdb)[1]
+        self.host_public_contracts = tender_host_selector(cdb)[1].replace('tenders', 'contracts')
         self.entity = 'tenders'
+        self.entity_contract = 'contract'
 
     # def publish_tender(self, json_tender):
     #     return request_to_cdb(tender_headers_request(self.cdb, json_tender), self.host, '', 'POST', json_tender, 'Publish tender', self.entity)
@@ -116,3 +118,6 @@ class TenderRequests:
     #
     # def get_bid_info(self, tender_id_long, bid_id, bid_token):
     #     return request_to_cdb(tender_headers_request(self.cdb, None), self.host, '/{}/bids/{}?acc_token={}'.format(tender_id_long, bid_id, bid_token), 'GET', None, 'Get bid info', self.entity)
+
+    def get_contract_info(self, contract_id_long):
+        return request_to_cdb(None, self.host_public_contracts, '/{}'.format(contract_id_long), 'GET', None, 'Get contract info', self.entity_contract)

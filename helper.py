@@ -8,7 +8,7 @@ from initial_data.document_generator import download_and_open_file, generate_fil
 import msg
 import service
 
-DATA = dict()
+DATA = {'contracts': dict()}
 
 
 def item_id_page(generated_json, item):
@@ -163,7 +163,7 @@ class BrokerBasedActions:
 
     def login(self):
         self.go_main_page()
-        self.broker_actions_file.login('formyqatesting@gmail.com', 'andriy85')
+        self.broker_actions_file.login('owner')
 
     def add_participant_info_limited(self, pmt):
         self.broker_actions_file.add_participant_info_limited(pmt)
@@ -174,6 +174,10 @@ class BrokerBasedActions:
     def find_tender_by_id(self, data):
         with pytest.allure.step('Find tender by id'):
             self.broker_actions_file.find_tender_by_id(data['json_cdb']['data']['tenderID'])
+
+    def find_contract_by_id(self, contract_id):
+        with pytest.allure.step('Find contract by id'):
+            self.broker_actions_file.find_contract_by_id(contract_id)
 
     def open_tender_edit_page(self, data):
         with pytest.allure.step('Open tender edit page'):
@@ -305,6 +309,9 @@ class BrokerBasedActions:
 
     def get_info_from_contract_tender(self):
         self.broker_actions_file.get_info_from_contract_tender()
+
+    def wait_for_contract_generation(self):
+        return self.broker_actions_file.wait_for_contract_to_be_generated()
 
 
 class BrokerBasedViews:
@@ -534,3 +541,5 @@ class BrokerBasedViewsContracts:
             self.compare_contract_values(str(self.contract_generated_data.contract_end_date)[:10], self.new_cdb_json['data']['contracts'][0]['period']['endDate'][:10])
         with pytest.allure.step(msg.compare_site):
             self.compare_contract_values(str(self.contract_generated_data.contract_end_date)[:10], self.broker_view_from_page_file.get_contract_end_date_tender())
+
+

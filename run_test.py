@@ -142,8 +142,16 @@ class TestTendersTest(object):
     def test102_compare_contract_start_date_tender(self):
         BrokerBasedViewsContracts(self.broker, DATA).compare_contract_start_date_tender()
 
-    def test102_compare_contract_end_date_tender(self):
+    def test103_compare_contract_end_date_tender(self):
         BrokerBasedViewsContracts(self.broker, DATA).compare_contract_end_date_tender()
+
+    def test104_wait_for_contract_to_be_generated(self):
+        contract_id = BrokerBasedActions(self.broker).wait_for_contract_generation()
+        DATA['contracts']['id_short'] = contract_id[0]
+        DATA['contracts']['id_long'] = contract_id[1]
+
+    def test105_find_contract_by_id(self):
+        BrokerBasedActions(self.broker).find_contract_by_id(DATA['contracts']['id_short'])
 
     @classmethod
     def teardown_class(cls):

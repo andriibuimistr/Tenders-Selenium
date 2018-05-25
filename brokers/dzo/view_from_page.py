@@ -175,3 +175,11 @@ def get_contract_start_date_tender():
 def get_contract_end_date_tender():
     date = driver.find_element_by_xpath('//td[contains(text(), "Дата завершення дії")]/following-sibling::td[2]').text
     return convert_date_with_dots_from__page(date)
+
+
+def get_contract_id_short():
+    return driver.find_element_by_xpath('//td[contains(text(), "Ідентифікатор укладеного договору")]/following-sibling::td[1]').text
+
+
+def get_contract_id_long():
+    return driver.find_element_by_xpath('//a[contains(@title, "Оголошення в ЦБД")]/span').text
