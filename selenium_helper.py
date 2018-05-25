@@ -64,7 +64,7 @@ def wait_for_element_not_visible_xpath(xpath):
     with pytest.allure.step('Wait for element not visible (by xpath)'):
         allure.attach('XPATH: ', '{}'.format(xpath))
         attempt = 0
-        for x in range(20):
+        for x in range(5):
             attempt += 1
             allure.attach('ATTEMPT: ', str(attempt))
             try:
@@ -72,9 +72,9 @@ def wait_for_element_not_visible_xpath(xpath):
                 wait = WebDriverWait(driver, 1)
                 wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
             except Exception as e:
-                if attempt == 20:
+                if attempt == 5:
                     allure.attach('EXCEPTION: ', str(e))
-                break
+                return True
 
 
 def wait_for_element_present_xpath(xpath):
@@ -169,22 +169,21 @@ def click_by_id(element_id):
 
 
 def click_and_wait_for_disappear_xpath(xpath):
-    with pytest.allure.step('Click and wait for element to disappear after click'):
+    with pytest.allure.step('Click and wait for element to disappear after click (xpath)'):
         allure.attach('XPATH: ', '{}'.format(xpath))
         attempt = 0
         for x in range(20):
             attempt += 1
-            allure.attach('ATTEMPT: ', str(attempt))
-            try:
-                driver.find_element_by_xpath(xpath).click()
-                wait_for_element_not_visible_xpath(xpath)
-                # if driver.find_element_by_xpath(xpath).is_displayed():
-                #     raise Exception
-                break
-            except Exception as e:
-                time.sleep(1)
-                if attempt == 20:
-                    allure.attach('EXCEPTION: ', str(e))
+            with pytest.allure.step('ATTEMPT: {}'.format(attempt)):
+                try:
+                    with pytest.allure.step('Click element'):
+                        driver.find_element_by_xpath(xpath).click()
+                    if wait_for_element_not_visible_xpath(xpath) is True:
+                        break
+                except Exception as e:
+                    time.sleep(1)
+                    if attempt == 20:
+                        allure.attach('EXCEPTION: ', str(e))
 
 
 def add_docs_xpath(xpath, docs):
