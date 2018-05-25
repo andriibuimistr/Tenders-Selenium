@@ -292,12 +292,14 @@ def add_documents(document_data):
     wait_for_element_clickable_xpath('//h1[@class="t_title"]')
 
 
-def get_info_from_contract_tender(field):
+def get_info_from_contract_tender():
     refresh_page()
-    value = ''
+    # value = ''
     scroll_into_view_xpath('//a[contains(@href, "/contract/documents")]')
     click_by_xpath('//a[contains(@href, "/contract/documents")]')
     wait_for_element_clickable_xpath('//a[@onclick="modalClose();"]')
-    if field == 'contract_number':
-        value = get_contract_number_tender()
-    return value
+    # if field == 'contract_number':
+    #     value = get_contract_number_tender()
+    # elif field == 'date_signed':
+    #     value = get_date_signed_tender()
+    # return value

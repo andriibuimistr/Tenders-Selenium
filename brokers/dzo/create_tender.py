@@ -2,7 +2,6 @@
 from selenium.webdriver.support.ui import Select
 from initial_data.tender_additional_data import select_procedure
 from initial_data.tender_additional_data import limited_procurement, kiev_now, negotiation_procurement
-import json
 from datetime import datetime
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium_helper import *
@@ -35,8 +34,9 @@ def fill_item_data(item_data, item, procurement_type, lot=0):
     wait_for_element_clickable_xpath('//input[@id="search"]')
     driver.find_element_by_xpath('//input[@id="search"]').send_keys(item_data['classification']['id'])
     click_by_xpath('//a[contains(@id, "{}")]'.format(item_data['classification']['id'].replace('-', '_')))
-    click_by_xpath('//div[@class="buttons"]/a')
-    wait_for_element_not_visible_xpath('//div[@class="buttons"]/a')
+    # click_by_xpath('//div[@class="buttons"]/a')
+    # wait_for_element_not_visible_xpath('//div[@class="buttons"]/a')
+    click_and_wait_for_disappear_xpath('//div[@class="buttons"]/a')
     driver.switch_to.default_content()
 
     # select country

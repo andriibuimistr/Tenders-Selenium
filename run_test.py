@@ -136,6 +136,15 @@ class TestTendersTest(object):
     def test100_compare_contract_number_tender(self):
         BrokerBasedViewsContracts(self.broker, DATA).compare_contract_number_tender()
 
+    def test101_compare_contract_contract_date_signed_tender(self):
+        BrokerBasedViewsContracts(self.broker, DATA).compare_contract_date_signed_tender()
+
+    def test102_compare_contract_start_date_tender(self):
+        BrokerBasedViewsContracts(self.broker, DATA).compare_contract_start_date_tender()
+
+    def test102_compare_contract_end_date_tender(self):
+        BrokerBasedViewsContracts(self.broker, DATA).compare_contract_end_date_tender()
+
     @classmethod
     def teardown_class(cls):
         cls.driver = driver.quit()

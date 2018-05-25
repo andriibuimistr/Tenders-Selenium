@@ -112,12 +112,12 @@ def get_unit_name(item_text):
 
 def get_delivery_start_date(item_text):
     initial_date = driver.find_element_by_xpath('//div[@class="itemDescr"][contains(text(), "{}")]/following-sibling::div[3]/descendant::span/following-sibling::span/span'.format(item_text)).text
-    return convert_delivery_date(initial_date)
+    return convert_date_with_dots_from__page(initial_date)
 
 
 def get_delivery_end_date(item_text):
     initial_date = driver.find_element_by_xpath('//div[@class="itemDescr"][contains(text(), "{}")]/following-sibling::div[3]/descendant::span/following-sibling::span[2]'.format(item_text)).text
-    return convert_delivery_date(initial_date)
+    return convert_date_with_dots_from__page(initial_date)
 
 
 def get_delivery_country(item_text):
@@ -160,3 +160,18 @@ def get_qualification_complaint_period_end_date():
 
 def get_contract_number_tender():
     return driver.find_element_by_xpath('//td[contains(text(), "Номер договору")]/following-sibling::td[2]').text
+
+
+def get_contract_date_signed_tender():
+    date = driver.find_element_by_xpath('//td[contains(text(), "Дата підписання")]/following-sibling::td[2]').text
+    return convert_date_with_dots_from__page(date)
+
+
+def get_contract_start_date_tender():
+    date = driver.find_element_by_xpath('//td[contains(text(), "Дата початку дії")]/following-sibling::td[2]').text
+    return convert_date_with_dots_from__page(date)
+
+
+def get_contract_end_date_tender():
+    date = driver.find_element_by_xpath('//td[contains(text(), "Дата завершення дії")]/following-sibling::td[2]').text
+    return convert_date_with_dots_from__page(date)
