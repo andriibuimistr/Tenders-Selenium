@@ -19,7 +19,7 @@ def wait_for_element_clickable_xpath(xpath):
             try:
                 wait = WebDriverWait(driver, 1)
                 wait.until(EC.element_to_be_clickable((By.XPATH, xpath)))
-                break
+                return True
             except Exception as e:
                 time.sleep(1)
                 if attempt == 20:
@@ -36,7 +36,7 @@ def wait_for_element_clickable_name(name):
             try:
                 wait = WebDriverWait(driver, 1)
                 wait.until(EC.element_to_be_clickable((By.NAME, name)))
-                break
+                return True
             except Exception as e:
                 time.sleep(1)
                 if attempt == 20:
@@ -53,7 +53,7 @@ def wait_for_element_clickable_id(element_id):
             try:
                 wait = WebDriverWait(driver, 1)
                 wait.until(EC.element_to_be_clickable((By.ID, element_id)))
-                break
+                return True
             except Exception as e:
                 time.sleep(1)
                 if attempt == 20:
@@ -87,7 +87,7 @@ def wait_for_element_present_xpath(xpath):
             try:
                 wait = WebDriverWait(driver, 1)
                 wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
-                break
+                return True
             except Exception as e:
                 time.sleep(1)
                 if attempt == 20:
@@ -104,7 +104,7 @@ def wait_for_element_present_name(name):
             try:
                 wait = WebDriverWait(driver, 1)
                 wait.until(EC.presence_of_element_located((By.NAME, name)))
-                break
+                return True
             except Exception as e:
                 time.sleep(1)
                 if attempt == 20:
@@ -121,7 +121,7 @@ def wait_for_element_present_id(element_id):
             try:
                 wait = WebDriverWait(driver, 1)
                 wait.until(EC.presence_of_element_located((By.ID, element_id)))
-                break
+                return True
             except Exception as e:
                 time.sleep(1)
                 if attempt == 20:
@@ -144,7 +144,9 @@ def check_presence_xpath(xpath):
 def scroll_into_view_xpath(xpath):
     with pytest.allure.step('Scroll into view by xpath'):
         allure.attach('XPATH', xpath)
-        driver.execute_script("arguments[0].scrollIntoView();", driver.find_element_by_xpath(xpath))
+        element = driver.find_element_by_xpath(xpath)
+        vertical_position = element.location['y']
+        driver.execute_script("window.scrollTo(0, {});".format(vertical_position - 200))
 
 
 def click_by_xpath(xpath):
@@ -179,7 +181,7 @@ def click_and_wait_for_disappear_xpath(xpath):
                     with pytest.allure.step('Click element'):
                         driver.find_element_by_xpath(xpath).click()
                     if wait_for_element_not_visible_xpath(xpath) is True:
-                        break
+                        return True
                 except Exception as e:
                     time.sleep(1)
                     if attempt == 20:

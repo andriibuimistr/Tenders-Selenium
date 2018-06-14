@@ -1,6 +1,4 @@
 # -*- coding: utf-8 -*-
-# from config import driver
-# import time
 from brokers.dzo.service import *
 from selenium_helper import *
 

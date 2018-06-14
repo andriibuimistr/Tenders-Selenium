@@ -185,7 +185,7 @@ class BrokerBasedActions:
 
     def add_documents_tender(self):
         with pytest.allure.step('Upload documents'):
-            document_data = generate_files(5)
+            document_data = generate_files()
             with pytest.allure.step('Add documents to tender'):
                 self.broker_actions_file.add_documents(document_data)
             delete_documents(document_data)
@@ -312,6 +312,18 @@ class BrokerBasedActions:
 
     def wait_for_contract_generation(self):
         return self.broker_actions_file.wait_for_contract_to_be_generated()
+
+    def open_contract_edit_page(self):
+        with pytest.allure.step('Open contract edit page'):
+            self.broker_actions_file.open_contract_edit_page()
+
+    def add_documents_contract(self):
+        with pytest.allure.step('Upload documents'):
+            document_data = generate_files('contract')
+            with pytest.allure.step('Add documents to contract'):
+                self.broker_actions_file.add_documents_contract(document_data)
+            delete_documents(document_data)
+            return document_data
 
 
 class BrokerBasedViews:

@@ -4,7 +4,7 @@ import string
 import os
 from faker import Faker
 from definitions import ROOT_DIR
-from initial_data.tender_additional_data import tender_documents_types
+from initial_data.tender_additional_data import *
 import pytest
 import urllib.request
 
@@ -29,16 +29,19 @@ def create_file():
     return filename, content, file_path
 
 
-def generate_files(number_of_files):
+def generate_files(entity=None):
+    types = tender_documents_types
+    if entity == 'contract':
+        types = contract_documents_types
     documents_data = []
     with pytest.allure.step('Generate files'):
-        for x in range(number_of_files):
+        for x in range(len(types)):
             file_data = create_file()
             documents_data.append({
                 "document_name": file_data[0],
                 "content": file_data[1],
                 "file_path": file_data[2],
-                "type": tender_documents_types[x]
+                "type": types[x]
             })
     return documents_data
 

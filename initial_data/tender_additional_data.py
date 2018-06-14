@@ -34,6 +34,7 @@ documents_above_non_financial = ['aboveThresholdUA.defense', 'aboveThresholdUA',
 documents_above_non_confidential = ['aboveThresholdUA.defense', 'aboveThresholdUA', 'competitiveDialogueUA.stage2']
 
 tender_documents_types = ["biddingDocuments", "technicalSpecifications", "eligibilityCriteria", "evaluationCriteria", "contractProforma"]
+contract_documents_types = ["notice", "contractSigned", "contractArrangements", "contractSchedule", "contractAnnexe", "contractGuarantees", "subContract"]
 document_type_names = {"biddingDocuments": "Тендерна документація", "technicalSpecifications": "Технічний опис предмету закупівлі",
                        "eligibilityCriteria": "Кваліфікаційні критерії", "evaluationCriteria": "Критерії оцінки", "contractProforma": "Проект договору"}
 

@@ -44,8 +44,14 @@ def find_contract_by_id(uid):
 
 def open_tender_edit_page(uid):
     tender_edit_button = driver.find_element_by_xpath('//a[contains(@class, "save")]')
-    driver.execute_script("arguments[0].scrollIntoView();", tender_edit_button)  # scroll to tender edit button
+    scroll_into_view_xpath('//a[contains(@class, "save")]')  # scroll to tender edit button
     tender_edit_button.click()
+    wait_for_element_clickable_xpath('//h3[contains(@class, "bigTitle")]')
+
+
+def open_contract_edit_page():
+    scroll_into_view_xpath('//a[contains(@class, "save")]')
+    click_by_xpath('//a[contains(@class, "save")]')
     wait_for_element_clickable_xpath('//h3[contains(@class, "bigTitle")]')
 
 
@@ -78,7 +84,7 @@ def eds_sign(eds_button):
 
 def add_participant_info_limited(data):
     add_participant_info_button = driver.find_element_by_xpath('//a[@class="button reverse addAward"]')  # path of "add info" button
-    driver.execute_script("arguments[0].scrollIntoView();", add_participant_info_button)  # scroll to button
+    scroll_into_view_xpath('//a[@class="button reverse addAward"]')  # scroll to button
     add_participant_info_button.click()
     click_and_wait_for_disappear_xpath('//div[@class="jBtnWrap"]/a[1]')
     send_keys_name('data[suppliers][0][name]', 'Name of participant\'s organization')
@@ -125,7 +131,6 @@ def add_participant_info_limited(data):
 
 
 def add_qualification_document():
-    # click_by_xpath('//a[contains(text(), "Переможець")]')
     add_docs_xpath('//input[contains(@name, "upload")]', document_path)
     send_keys_xpath('//div[@class="inp langSwitch langSwitch_uk dataFormatHelpInside"]/input', 'Qualified')
     Select(driver.find_element_by_name('documentType')).select_by_value('notice')
@@ -142,7 +147,7 @@ def qualify_winner_limited(data):
     procurement_type = data['procurementMethodType']
     wait_for_element_clickable_xpath('//div[@class="btn2 awardActionItem"]/a')
     winner_button = driver.find_element_by_xpath('//div[@class="btn2 awardActionItem"]/a')
-    driver.execute_script("arguments[0].scrollIntoView();", winner_button)  # scroll to click winner
+    scroll_into_view_xpath('//div[@class="btn2 awardActionItem"]/a')  # scroll to click winner
     winner_button.click()
 
     if procurement_type == 'reporting':
@@ -171,10 +176,10 @@ def qualify_winner_limited(data):
                 refresh_page()
                 wait_for_element_clickable_xpath('//a[contains(text(), "Необхідний ЕЦП")]')
                 sign_winner_button = driver.find_element_by_xpath('//a[contains(text(), "Необхідний ЕЦП")]')
-                driver.execute_script("arguments[0].scrollIntoView();", sign_winner_button)
+                scroll_into_view_xpath('//a[contains(text(), "Необхідний ЕЦП")]')
                 sign_winner_button.click()
                 sign_contract_button = driver.find_element_by_xpath('//div[@class="sign"]/a')
-                driver.execute_script("arguments[0].scrollIntoView();", sign_contract_button)
+                scroll_into_view_xpath('//div[@class="sign"]/a')
                 if sign_contract_button.is_displayed():
                     eds_sign(sign_contract_button)
                     break
@@ -220,7 +225,7 @@ def add_contract(data, contract_dates):
                     raise TimeoutError
 
     add_contract_button = driver.find_element_by_xpath('//a[@class="reverse grey setDone"]')
-    driver.execute_script("arguments[0].scrollIntoView();", add_contract_button)
+    scroll_into_view_xpath('//a[@class="reverse grey setDone"]')
     add_contract_button.click()
     add_docs_xpath('//div[@class="inp l relative"]/input[2]', document_path)
     send_keys_xpath('//div[@class="inp langSwitch langSwitch_uk dataFormatHelpInside"]/input', 'Contract')
@@ -270,10 +275,10 @@ def sign_contract():
             refresh_page()
             wait_for_element_clickable_xpath('//a[@class="reverse grey setDone"]')
             add_contract_button = driver.find_element_by_xpath('//a[@class="reverse grey setDone"]')
-            driver.execute_script("arguments[0].scrollIntoView();", add_contract_button)
+            scroll_into_view_xpath('//a[@class="reverse grey setDone"]')
             add_contract_button.click()
             sign_contract_button = driver.find_element_by_xpath('//div[@class="sign"]/a')
-            driver.execute_script("arguments[0].scrollIntoView();", sign_contract_button)
+            scroll_into_view_xpath('//div[@class="sign"]/a')
             if sign_contract_button.is_displayed():
                 eds_sign(sign_contract_button)
                 break
@@ -303,6 +308,41 @@ def add_documents(document_data):
     scroll_into_view_xpath('//button[text()="Зберегти"]')
     save_changes_button.click()
     wait_for_element_clickable_xpath('//h1[@class="t_title"]')
+
+
+def add_documents_contract(document_data):
+    add_documents_tender_section = driver.find_element_by_xpath('//h3[contains(text(), "Документи договору/змін")]/following-sibling::a')
+    scroll_into_view_xpath('//h3[contains(text(), "Документи договору/змін")]/following-sibling::a')
+    add_documents_tender_section.click()
+    for doc in range(len(document_data)):
+        scroll_into_view_xpath('(//input[@ name="upload"])')
+        add_docs_xpath('(//input[@ name="upload"])', document_data[doc]['file_path'])
+        wait_for_element_clickable_xpath('//input[@class="js-title"][contains(@value, "{}")]'.format(document_data[doc]['document_name']))
+        Select(driver.find_element_by_xpath('(//select[@class="js-documentType"])[last()]')).select_by_value(document_data[doc]['type'])
+
+    scroll_into_view_xpath('(//input[@name="change[rationaleTypes][]"])[1]/following-sibling::span')
+    screenshot()
+    click_by_xpath('(//input[@name="change[rationaleTypes][]"])[1]/following-sibling::span')
+    screenshot()
+    send_keys_name('change[rationale]', 'Reason text')
+    screenshot()
+
+    date_signed = driver.find_element_by_name('change[dateSigned]')
+    scroll_into_view_xpath('//input[@name="change[dateSigned]"]')
+    screenshot()
+    date_signed.click()
+    driver.execute_script("arguments[0].removeAttribute('readonly','readonly')", date_signed)
+    screenshot()
+    date_signed.send_keys(datetime.strftime(datetime.now(), '%d/%m/%Y'))
+    screenshot()
+
+    save_changes_button = driver.find_element_by_xpath('//button[@value="save"]')
+    scroll_into_view_xpath('//button[@value="save"]')
+    screenshot()
+    save_changes_button.click()
+    screenshot()
+    wait_for_element_clickable_xpath('//h1[@class="t_title"]')
+    screenshot()
 
 
 def get_info_from_contract_tender():

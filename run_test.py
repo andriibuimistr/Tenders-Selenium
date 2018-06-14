@@ -153,6 +153,10 @@ class TestTendersTest(object):
     def test105_find_contract_by_id(self):
         BrokerBasedActions(self.broker).find_contract_by_id(DATA['contracts']['id_short'])
 
+    def test106_add_documents_contract(self):
+        BrokerBasedActions(self.broker).open_contract_edit_page()
+        DATA['contract_docs_data'] = BrokerBasedActions(self.broker).add_documents_contract()
+
     @classmethod
     def teardown_class(cls):
         cls.driver = driver.quit()
