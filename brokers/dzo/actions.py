@@ -319,30 +319,18 @@ def add_documents_contract(document_data):
         add_docs_xpath('(//input[@ name="upload"])', document_data[doc]['file_path'])
         wait_for_element_clickable_xpath('//input[@class="js-title"][contains(@value, "{}")]'.format(document_data[doc]['document_name']))
         Select(driver.find_element_by_xpath('(//select[@class="js-documentType"])[last()]')).select_by_value(document_data[doc]['type'])
-
     scroll_into_view_xpath('(//input[@name="change[rationaleTypes][]"])[1]/following-sibling::span')
-    screenshot()
     click_by_xpath('(//input[@name="change[rationaleTypes][]"])[1]/following-sibling::span')
-    screenshot()
-    send_keys_name('change[rationale]', 'Reason text')
-    screenshot()
-
     date_signed = driver.find_element_by_name('change[dateSigned]')
     scroll_into_view_xpath('//input[@name="change[dateSigned]"]')
-    screenshot()
     date_signed.click()
     driver.execute_script("arguments[0].removeAttribute('readonly','readonly')", date_signed)
-    screenshot()
     date_signed.send_keys(datetime.strftime(datetime.now(), '%d/%m/%Y'))
-    screenshot()
-
+    send_keys_name('change[rationale]', 'Reason text')
     save_changes_button = driver.find_element_by_xpath('//button[@value="save"]')
     scroll_into_view_xpath('//button[@value="save"]')
-    screenshot()
     save_changes_button.click()
-    screenshot()
     wait_for_element_clickable_xpath('//h1[@class="t_title"]')
-    screenshot()
 
 
 def get_info_from_contract_tender():
