@@ -60,11 +60,11 @@ def wait_for_element_clickable_id(element_id):
                     allure.attach('EXCEPTION: ', str(e))
 
 
-def wait_for_element_not_visible_xpath(xpath):
+def wait_for_element_not_visible_xpath(xpath, seconds=5):
     with pytest.allure.step('Wait for element not visible (by xpath)'):
         allure.attach('XPATH: ', '{}'.format(xpath))
         attempt = 0
-        for x in range(5):
+        for x in range(seconds):
             attempt += 1
             allure.attach('ATTEMPT: ', str(attempt))
             try:
@@ -72,7 +72,7 @@ def wait_for_element_not_visible_xpath(xpath):
                 wait = WebDriverWait(driver, 1)
                 wait.until(EC.presence_of_element_located((By.XPATH, xpath)))
             except Exception as e:
-                if attempt == 5:
+                if attempt == seconds:
                     allure.attach('EXCEPTION: ', str(e))
                 return True
 
@@ -180,7 +180,7 @@ def click_and_wait_for_disappear_xpath(xpath):
                 try:
                     with pytest.allure.step('Click element'):
                         driver.find_element_by_xpath(xpath).click()
-                    if wait_for_element_not_visible_xpath(xpath) is True:
+                    if wait_for_element_not_visible_xpath(xpath, 1) is True:
                         return True
                 except Exception as e:
                     time.sleep(1)

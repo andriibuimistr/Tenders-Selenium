@@ -125,7 +125,7 @@ def add_participant_info_limited(data):
     click_by_xpath('//tr[@class="line submitButton"]/td[2]/button')
 
     # close modal window
-    wait_for_element_not_visible_xpath('//body[contains(@class, "blocked")]')
+    wait_for_element_not_visible_xpath('//body[contains(@class, "blocked")]', 20)
     wait_for_element_clickable_xpath('//div[@class="info"]/a')
     click_by_xpath('//div[@class="info"]/a')
 
@@ -135,11 +135,11 @@ def add_qualification_document():
     send_keys_xpath('//div[@class="inp langSwitch langSwitch_uk dataFormatHelpInside"]/input', 'Qualified')
     Select(driver.find_element_by_name('documentType')).select_by_value('notice')
     click_by_xpath('//button[@class="icons icon_upload relative"]')
-    wait_for_element_not_visible_xpath('//body[contains(@class, "blocked")]')
+    wait_for_element_not_visible_xpath('//body[contains(@class, "blocked")]', 20)
     scroll_into_view_xpath('//button[contains(@class, "bidAction")]')
     click_by_xpath('//input[@name="data[qualified]"]/..')
     click_by_xpath('//button[contains(@class, "bidAction")]')
-    wait_for_element_not_visible_xpath('//button[contains(@class, "bidAction")]')
+    wait_for_element_not_visible_xpath('//button[contains(@class, "bidAction")]', 20)
 
 
 # sign award with EDS
@@ -231,7 +231,7 @@ def add_contract(data, contract_dates):
     send_keys_xpath('//div[@class="inp langSwitch langSwitch_uk dataFormatHelpInside"]/input', 'Contract')
     Select(driver.find_element_by_name('documentType')).select_by_value('contractSigned')
     click_by_xpath('//button[@class="icons icon_upload relative"]')
-    wait_for_element_not_visible_xpath('//body[contains(@class, "blocked")]')
+    wait_for_element_not_visible_xpath('//body[contains(@class, "blocked")]', 10)
 
     click_by_name('data[contractNumber]')
     send_keys_name('data[contractNumber]', contract_dates.contract_number)
@@ -260,10 +260,10 @@ def add_contract(data, contract_dates):
     click_by_xpath('//button[@class="bidAction"]')
 
     # click "ok" in modal window
-    wait_for_element_not_visible_xpath('//div[@class="jAlertWrap"]')
+    wait_for_element_not_visible_xpath('//div[@class="jAlertWrap"]', 10)
     wait_for_element_clickable_xpath('//div[@class="jBtnWrap"]/a[1]')
     click_by_xpath('//div[@class="jBtnWrap"]/a[1]')
-    wait_for_element_not_visible_xpath('//div[@class="jBtnWrap"]/a[1]')
+    wait_for_element_not_visible_xpath('//div[@class="jBtnWrap"]/a[1]', 10)
 
 
 # sign contract for limited reporting procedure

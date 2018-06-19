@@ -35,7 +35,7 @@ def fill_item_data(item_data, item, procurement_type, lot=0):
     driver.find_element_by_xpath('//input[@id="search"]').send_keys(item_data['classification']['id'])
     click_by_xpath('//a[contains(@id, "{}")]'.format(item_data['classification']['id'].replace('-', '_')))
     # click_by_xpath('//div[@class="buttons"]/a')
-    # wait_for_element_not_visible_xpath('//div[@class="buttons"]/a')
+    # wait_for_element_not_visible_xpath('//div[@class="buttons"]/a', 10)
     click_and_wait_for_disappear_xpath('//div[@class="buttons"]/a')
     driver.switch_to.default_content()
 
