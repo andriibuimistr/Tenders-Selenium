@@ -21,20 +21,20 @@ class TestTendersTest(object):
         BrokerBasedActions(self.broker).open_tender_edit_page(DATA)
         DATA['docs_data'] = BrokerBasedActions(self.broker).add_documents_tender()
 
-    # def test3_compare_document_content(self):
-    #     BrokerBasedViews(self.broker, self.pmt, DATA).compare_document_content()
-    #
-    # def test4_compare_document_type(self):
-    #     BrokerBasedViews(self.broker, self.pmt, DATA).compare_document_type()
-
-    def test7_add_supplier(self):
+    def test3_add_supplier(self):
         BrokerBasedActions(self.broker).add_participant_info_limited(self.pmt)
 
-    def test8_qualify_winner_limited(self):
+    def test4_qualify_winner_limited(self):
         BrokerBasedActions(self.broker).qualify_winner_limited(self.pmt)
 
-    def test9_find_tender_by_identifier(self):
+    def test5_find_tender_by_identifier(self):
         BrokerBasedActions(self.broker).find_tender_by_id(DATA)
+
+    def test6_compare_tender_document_content(self):
+        BrokerBasedViews(self.broker, self.pmt, DATA).compare_document_content()
+
+    def test7_compare_tender_document_type(self):
+        BrokerBasedViews(self.broker, self.pmt, DATA).compare_document_type()
 
     def test10_compare_tender_id(self):
         BrokerBasedViews(self.broker, self.pmt, DATA).compare_tender_uid()
@@ -156,6 +156,12 @@ class TestTendersTest(object):
     def test106_add_documents_contract(self):
         BrokerBasedActions(self.broker).open_contract_edit_page()
         DATA['contract_docs_data'] = BrokerBasedActions(self.broker).add_documents_contract()
+
+    def test107_compare_contract_document_content(self):
+        BrokerBasedViews(self.broker, self.pmt, DATA).compare_document_content('contract')
+
+    def test108_compare_contract_document_type(self):
+        BrokerBasedViews(self.broker, self.pmt, DATA).compare_document_type('contract')
 
     @classmethod
     def teardown_class(cls):

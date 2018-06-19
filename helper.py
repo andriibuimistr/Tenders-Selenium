@@ -37,10 +37,13 @@ class CDBActions:
         self.generated_items = generated_json['data']['items']
 
     # DOCUMENTS
-    def compare_document_content_cdb(self):
-        docs_data = self.data['docs_data']
+    def compare_document_content_cdb(self, entity):
         time.sleep(240)
         docs_cdb = TenderRequests(self.cdb).get_tender_info(self.data['json_cdb']['data']['id']).json()['data']['documents']
+        docs_data = self.data['docs_data']
+        if entity == 'contract':
+            docs_cdb = TenderRequests(self.cdb).get_contract_info(self.data['contracts']['id_long']).json()['data']['documents']
+            docs_data = self.data['contract_docs_data']
         number = 0
         for doc in range(len(docs_data)):
             number += 1
@@ -52,9 +55,12 @@ class CDBActions:
                         allure.attach('Content of file in cdb', cdb_content)
                         assert docs_data[doc]['content'] == cdb_content
 
-    def compare_document_type_cdb(self):
-        docs_data = self.data['docs_data']
+    def compare_document_type_cdb(self, entity):
         docs_cdb = TenderRequests(self.cdb).get_tender_info(self.data['json_cdb']['data']['id']).json()['data']['documents']
+        docs_data = self.data['docs_data']
+        if entity == 'contract':
+            docs_cdb = TenderRequests(self.cdb).get_contract_info(self.data['contracts']['id_long']).json()['data']['documents']
+            docs_data = self.data['contract_docs_data']
         number = 0
         for doc in range(len(docs_data)):
             number += 1
@@ -502,13 +508,13 @@ class BrokerBasedViews:
                 time.sleep(waiting_time + 60)
 
     # DOCUMENTS
-    def compare_document_content(self):
+    def compare_document_content(self, entity=None):
         with pytest.allure.step(msg.compare_cdb):
-            CDBActions(self.generated_json, self.data, self.broker).compare_document_content_cdb()
+            CDBActions(self.generated_json, self.data, self.broker).compare_document_content_cdb(entity)
 
-    def compare_document_type(self):
+    def compare_document_type(self, entity=None):
         with pytest.allure.step(msg.compare_cdb):
-            CDBActions(self.generated_json, self.data, self.broker).compare_document_type_cdb()
+            CDBActions(self.generated_json, self.data, self.broker).compare_document_type_cdb(entity)
 
 
 class BrokerBasedViewsContracts:
