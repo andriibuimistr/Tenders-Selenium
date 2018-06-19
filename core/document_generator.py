@@ -3,8 +3,8 @@ import random
 import string
 import os
 from faker import Faker
-from definitions import ROOT_DIR
-from initial_data.tender_additional_data import *
+from config import ROOT_DIR
+from tender_initial_data.tender_additional_data import *
 import pytest
 import urllib.request
 

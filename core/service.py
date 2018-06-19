@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from _datetime import datetime, timedelta
 import time
-from cdb_requests import TenderRequests
+from api.cdb_requests import TenderRequests
 import random
 import string
 

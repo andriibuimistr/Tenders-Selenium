@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import os
+
 from selenium import webdriver
 import time
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
@@ -6,7 +8,6 @@ from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
 capabilities = DesiredCapabilities.CHROME
 capabilities['loggingPrefs'] = {'browser': 'ALL'}
 
-# host = 'http://www.dzo.byustudio.in.ua'
 # driver = webdriver.Chrome()
 
 options = webdriver.ChromeOptions()
@@ -17,4 +18,6 @@ driver = webdriver.Chrome(chrome_options=options, desired_capabilities=capabilit
 time.sleep(1)
 driver.implicitly_wait(1)
 # driver.maximize_window()
-# driver.get(host)
+
+
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))

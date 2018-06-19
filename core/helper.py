@@ -3,10 +3,9 @@ from config import driver
 import time
 import allure
 import pytest
-from cdb_requests import TenderRequests
-from initial_data.document_generator import download_and_open_file, generate_files, delete_documents
-import msg
-import service
+from api.cdb_requests import TenderRequests
+from core.document_generator import download_and_open_file, generate_files, delete_documents
+from core import service, msg
 
 DATA = {'contracts': dict()}
 
@@ -187,7 +186,7 @@ class BrokerBasedActions:
 
     def open_tender_edit_page(self, data):
         with pytest.allure.step('Open tender edit page'):
-            self.broker_actions_file.open_tender_edit_page(data['json_cdb']['data']['tenderID'])
+            self.broker_actions_file.open_tender_edit_page()
 
     def add_documents_tender(self):
         with pytest.allure.step('Upload documents'):

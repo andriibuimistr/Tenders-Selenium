@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
 from selenium.webdriver.support.ui import Select
-from initial_data.tender_additional_data import select_procedure
-from initial_data.tender_additional_data import limited_procurement, kiev_now, negotiation_procurement
+from tender_initial_data.tender_additional_data import select_procedure
+from tender_initial_data.tender_additional_data import limited_procurement, kiev_now, negotiation_procurement
 from datetime import datetime
 from selenium.webdriver.common.action_chains import ActionChains
-from selenium_helper import *
+from core.selenium_helper import *
 
 
 def fill_item_data(item_data, item, procurement_type, lot=0):

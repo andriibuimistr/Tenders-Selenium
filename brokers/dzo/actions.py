@@ -2,7 +2,7 @@
 from selenium.webdriver.support.ui import Select
 from brokers.dzo.config import *
 # from selenium_helper import *
-from initial_data.tender_additional_data import key_path, key_password, document_path
+from tender_initial_data.tender_additional_data import key_path, key_password, document_path
 from brokers.dzo.view_from_page import *
 
 
@@ -42,7 +42,7 @@ def find_contract_by_id(uid):
     return get_text_xpath('//a[@title="Оголошення в ЦБД"]/span')
 
 
-def open_tender_edit_page(uid):
+def open_tender_edit_page():
     tender_edit_button = driver.find_element_by_xpath('//a[contains(@class, "save")]')
     scroll_into_view_xpath('//a[contains(@class, "save")]')  # scroll to tender edit button
     tender_edit_button.click()

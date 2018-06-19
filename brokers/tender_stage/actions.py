@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 # from config import host
-from selenium.webdriver.support.ui import Select
-from datetime import datetime, timedelta
-from selenium_helper import *
-from initial_data.tender_additional_data import key_path, key_password, document_path
+from core.selenium_helper import *
 
 
 def login(user_email, user_pass):

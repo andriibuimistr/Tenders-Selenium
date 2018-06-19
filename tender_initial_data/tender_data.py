@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
-from initial_data.dk021 import classifications
+from tender_initial_data.dk021 import classifications
 import binascii
 import os
 from random import randint, choice
 import pytz
 from faker import Faker
 from datetime import datetime, timedelta
-from initial_data.tender_additional_data import kiev_now, limited_procurement, negotiation_procurement
+from tender_initial_data.tender_additional_data import kiev_now, limited_procurement, negotiation_procurement
 import random
 import string
 

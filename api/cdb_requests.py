@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from tenders.tender_data_for_requests import tender_headers_request, tender_host_selector, json_activate_tender, json_finish_first_stage, json_finish_pq
+from tender_initial_data.tender_data_for_requests import tender_headers_request, tender_host_selector
 from flask import abort
 import json
 import requests

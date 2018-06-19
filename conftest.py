@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # from config import host, driver
-from initial_data.tender_data import create_tender_data
+from tender_initial_data.tender_data import create_tender_data
 import pytest
 import allure
 

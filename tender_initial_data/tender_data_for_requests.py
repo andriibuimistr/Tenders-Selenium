@@ -1,4 +1,4 @@
-from initial_data import tender_additional_data
+from tender_initial_data import tender_additional_data
 from key import auth_key
 import json
 

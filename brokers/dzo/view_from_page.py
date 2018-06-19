@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 from brokers.dzo.service import *
-from selenium_helper import *
+from core.selenium_helper import *
 
 
 def get_tender_id():
