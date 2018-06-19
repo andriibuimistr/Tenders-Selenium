@@ -260,7 +260,7 @@ def add_contract(data, contract_dates):
     click_by_xpath('//button[@class="bidAction"]')
 
     # click "ok" in modal window
-    wait_for_element_not_visible_xpath('//div[@class="jAlertWrap"]', 10)
+    # wait_for_element_not_visible_xpath('//div[@class="jAlertWrap"]', 10)
     wait_for_element_clickable_xpath('//div[@class="jBtnWrap"]/a[1]')
     click_by_xpath('//div[@class="jBtnWrap"]/a[1]')
     wait_for_element_not_visible_xpath('//div[@class="jBtnWrap"]/a[1]', 10)
@@ -295,7 +295,7 @@ def sign_contract():
     click_by_xpath('//button[@class="icons icon_upload relative"]')
 
 
-def add_documents(document_data):
+def add_documents_tender(document_data):
     add_documents_tender_section = driver.find_element_by_xpath('//h3[contains(text(), "Тендерна документація")]/following-sibling::a')
     scroll_into_view_xpath('//h3[contains(text(), "Тендерна документація")]/following-sibling::a')
     add_documents_tender_section.click()

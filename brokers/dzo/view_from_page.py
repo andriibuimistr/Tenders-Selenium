@@ -14,7 +14,7 @@ def get_tender_uid():
 
 
 def get_tender_title():
-    time.sleep(5)
+    # time.sleep(5)
     title = driver.find_element_by_xpath('//h1[@class="t_title"]')
     driver.execute_script("arguments[0].scrollIntoView();", title)
     return title.text.split('] ')[-1]

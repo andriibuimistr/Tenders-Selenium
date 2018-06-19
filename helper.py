@@ -193,7 +193,7 @@ class BrokerBasedActions:
         with pytest.allure.step('Upload documents'):
             document_data = generate_files()
             with pytest.allure.step('Add documents to tender'):
-                self.broker_actions_file.add_documents(document_data)
+                self.broker_actions_file.add_documents_tender(document_data)
             delete_documents(document_data)
             return document_data
 
