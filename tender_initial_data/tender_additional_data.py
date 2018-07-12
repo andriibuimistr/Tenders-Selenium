@@ -2,6 +2,7 @@
 import os
 from datetime import datetime
 import pytz
+from config import ROOT_DIR
 
 
 above_threshold_procurement = ['aboveThresholdUA', 'aboveThresholdEU', 'aboveThresholdUA.defense', 'competitiveDialogueUA', 'competitiveDialogueEU', 'esco']
@@ -47,9 +48,9 @@ list_of_api_versions = ['2.4', 'dev']
 kiev_now = str(datetime.now(pytz.timezone('Europe/Kiev')))[26:]
 
 cdb_host = 'https://public.api-sandbox.openprocurement.org/api/2.4/tenders'
-key_path = os.path.join(os.getcwd(), 'Key-6.dat')
+key_path = os.path.join(ROOT_DIR, 'Key-6.dat')
 key_password = '12345677'
-document_path = os.path.join(os.getcwd(), 'Doc.pdf')
+document_path = os.path.join(ROOT_DIR, 'Doc.pdf')
 
 
 def select_procedure(procedure):

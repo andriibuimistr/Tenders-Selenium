@@ -30,11 +30,11 @@ class TestTendersTest(object):
     def test5_find_tender_by_identifier(self):
         BrokerBasedActions(self.broker).find_tender_by_id(DATA)
 
-    # def test6_compare_tender_document_content(self):
-    #     BrokerBasedViews(self.broker, self.pmt, DATA).compare_document_content()
-    #
-    # def test7_compare_tender_document_type(self):
-    #     BrokerBasedViews(self.broker, self.pmt, DATA).compare_document_type()
+    def test6_compare_tender_document_content(self):
+        BrokerBasedViews(self.broker, self.pmt, DATA).compare_document_content()
+
+    def test7_compare_tender_document_type(self):
+        BrokerBasedViews(self.broker, self.pmt, DATA).compare_document_type()
 
     def test10_compare_tender_id(self):
         BrokerBasedViews(self.broker, self.pmt, DATA).compare_tender_uid()
