@@ -4,6 +4,7 @@ import allure
 from core.document_generator import *
 from core import service, msg
 from core.api_helper import *
+from core.selenium_helper import refresh_page
 
 DATA = {'contracts': dict()}
 
@@ -184,9 +185,9 @@ class BrokerBasedActions:
         with pytest.allure.step('Find tender by id'):
             self.broker_actions_file.find_tender_by_id(data['json_cdb']['data']['tenderID'])
 
-    def find_contract_by_id(self, contract_id):
+    def find_contract_by_id(self, data):
         with pytest.allure.step('Find contract by id'):
-            self.broker_actions_file.find_contract_by_id(contract_id)
+            self.broker_actions_file.find_contract_by_id(data['contracts']['id_short'])
 
     def open_tender_edit_page(self):
         with pytest.allure.step('Open tender edit page'):
@@ -555,6 +556,7 @@ class BrokerBasedViews:
         with pytest.allure.step(msg.compare_cdb):
             CDBActions(self.generated_json, self.data, self.broker).compare_document_content_cdb(entity)
         with pytest.allure.step(msg.compare_site):
+            refresh_page()
             BrokerBasedActions(self.broker).compare_document_content_page(self.data, entity)
 
     def compare_document_type(self, entity=None):

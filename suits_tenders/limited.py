@@ -151,7 +151,7 @@ class TestTendersTest(object):
         DATA['contracts']['id_long'] = contract_id[1]
 
     def test105_find_contract_by_id(self):
-        BrokerBasedActions(self.broker).find_contract_by_id(DATA['contracts']['id_short'])
+        BrokerBasedActions(self.broker).find_contract_by_id(DATA)
 
     def test106_add_documents_contract(self):
         DATA['contract_docs_data'] = BrokerBasedActions(self.broker).add_documents_contract(self.role, DATA)

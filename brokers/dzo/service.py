@@ -10,5 +10,6 @@ def convert_date_with_dots_from__page(date):
 tender_document_type_names = {"Тендерна документація": "biddingDocuments", "Технічний опис предмету закупівлі": "technicalSpecifications",
                               "Кваліфікаційні критерії": "eligibilityCriteria", "Критерії оцінки": "evaluationCriteria", "Проект договору": "contractProforma"}
 
-contract_document_types_names = {"notice": "Повідомлення", "contractSigned": "Підписаний контракт", "contractArrangements": "Умови припинення контракту", "contractSchedule": "Графіки та етапи",
-                                 "contractAnnexe": "Додатки до контракту", "contractGuarantees": "Гарантії", "subContract": "Субконтракти"}
+contract_document_types_names = {"Повідомлення": "notice", "Підписаний договір": "contractSigned", "Заходи для припинення договору": "contractArrangements",
+                                 "Розклад та етапи": "contractSchedule", "Додатки до договору": "contractAnnexe", "Забезпечення тендерних пропозицій": "contractGuarantees",
+                                 "Субпідряд": "subContract"}
