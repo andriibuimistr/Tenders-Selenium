@@ -49,13 +49,13 @@ def get_unit():
 
 
 def generate_id_for_item():
-    return binascii.hexlify(os.urandom(16))
+    return str(binascii.hexlify(os.urandom(16)))
 
 
 def generate_id_for_lot(number_of_lots):
     list_of_id = []
     for x in range(number_of_lots):
-        list_of_id.append(binascii.hexlify(os.urandom(16)))
+        list_of_id.append(str(binascii.hexlify(os.urandom(16))))
     return list_of_id
 
 

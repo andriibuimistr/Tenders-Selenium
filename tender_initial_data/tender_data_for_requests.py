@@ -1,5 +1,5 @@
-from tender_initial_data import tender_additional_data
-from key import auth_key
+from tender_initial_data.tender_additional_data import *
+from key import auth_key, auth_key_ds, key_monitoring
 import json
 
 
@@ -14,22 +14,50 @@ def tender_host_selector(cdb_version):
     return host, host_public
 
 
-# generate headers for create tender
-def tender_headers_request(cdb_version, json_data):
+def tender_ds_host_selector(cdb_version):
     if cdb_version == 'dev':
-        host_headers = 'api-sandbox.prozorro.openprocurement.net'
+        host = 'https://upload.docs-sandbox.prozorro.openprocurement.net/upload'
     else:
-        host_headers = 'lb.api-sandbox.openprocurement.org'
+        host = 'https://upload.docs-sandbox.openprocurement.org/upload'
+    return host
+
+
+monitoring_host = 'https://audit-api-sandbox.prozorro.gov.ua/api/2.4/monitorings'
+
+
+# generate headers for create tender
+def tender_headers_request(cdb_version, json_data, monitoring=False):
     headers = {"Authorization": "Basic {}".format(auth_key),
                "Content-Length": "{}".format(len(json.dumps(json_data))),
-               "Content-Type": "application/json",
-               "Host": host_headers}
+               "Content-Type": "application/json"}  # "Host": host_headers
     return headers
+
+
+tender_headers_add_document_ds = {
+    'authorization': "Basic {}".format(auth_key_ds),
+    'content-type': "multipart/form-data; boundary=--------------------------1507111922.4992",
+    'cache-control': "no-cache",
+    }
+
+tender_headers_patch_document_ds = {
+    'authorization': "Basic {}".format(auth_key),
+    'content-type': "application/json",
+    'cache-control': "no-cache",
+    }
+
+monitoring_headers = {"Authorization": "Basic {}".format(key_monitoring),
+                      "Content-Type": "application/json"}  # "Host": "audit-api-sandbox.prozorro.gov.ua"
 
 
 json_status_active = {
     "data": {
         "status": "active"
+    }
+}
+
+json_status_completed = {
+    "data": {
+        "status": "completed"
     }
 }
 
@@ -47,13 +75,13 @@ json_finish_pq = {
 
 
 def json_activate_tender(procurement_method):
-    if procurement_method in tender_additional_data.above_threshold_procurement:
+    if procurement_method in above_threshold_procurement:
         activate_tender_json = {
             "data": {
                 "status": "active.tendering"
             }
         }
-    elif procurement_method in tender_additional_data.below_threshold_procurement:
+    elif procurement_method in below_threshold_procurement:
         activate_tender_json = {
             "data": {
                 "status": "active.enquiries"
@@ -105,3 +133,9 @@ def activate_award_json_select(procurement_method):
                                   }
                                 }
     return activate_award_json_negotiation
+
+
+json_status_addressed = {"data": {
+                                "status": "addressed"
+                              }
+                         }

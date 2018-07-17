@@ -5,6 +5,7 @@ from config import driver
 
 @pytest.mark.usefixtures("broker")
 @pytest.mark.usefixtures("pmt")
+@pytest.mark.usefixtures("role")
 class TestTendersTest(object):
 
     @classmethod
@@ -12,10 +13,10 @@ class TestTendersTest(object):
         cls.driver = driver
 
     def test0_login(self):
-        BrokerBasedActions(self.broker).login()
+        BrokerBasedActions(self.broker).login(self.role)
 
     def test1_create_tender(self):
-        DATA['json_cdb'] = BrokerBasedActions(self.broker).create_tender(self.pmt)
+        DATA['json_cdb'] = BrokerBasedActions(self.broker).create_tender(self.pmt, self.role)
 
     def test2_add_documents_tender(self):
         BrokerBasedActions(self.broker).open_tender_edit_page(DATA)

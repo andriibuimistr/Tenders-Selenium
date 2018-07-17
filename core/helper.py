@@ -6,6 +6,7 @@ import pytest
 from api.cdb_requests import TenderRequests
 from core.document_generator import download_and_open_file, generate_files, delete_documents
 from core import service, msg
+from core.api_helper import *
 
 DATA = {'contracts': dict()}
 
@@ -151,11 +152,18 @@ class BrokerBasedActions:
         self.broker_create_tender_file = __import__("brokers.{}.create_tender".format(broker), fromlist=[""])
         self.broker_view_from_page_file = __import__("brokers.{}.view_from_page".format(broker), fromlist=[""])
 
-    def create_tender(self, pmt):
+    def create_tender(self, pmt, role):
         with pytest.allure.step('Run function for create tender'):
-            self.broker_create_tender_file.create_tender(pmt)
+            tender = dict()
+            if role == 'owner':
+                self.broker_create_tender_file.create_tender(pmt)
+            else:
+                tender = create_tender(pmt, self.broker_config.cdb)
         with pytest.allure.step('Get ID from tender page'):
-            tender_id = self.broker_view_from_page_file.get_tender_id()
+            if role == 'owner':
+                tender_id = self.broker_view_from_page_file.get_tender_id()
+            else:
+                tender_id = tender['data']['id']
             allure.attach('Tender ID: ', tender_id)
             assert len(tender_id) != 0
         with pytest.allure.step('Get json from CDB'):
@@ -166,9 +174,10 @@ class BrokerBasedActions:
     def go_main_page(self):
         driver.get(self.broker_config.host)
 
-    def login(self):
-        self.go_main_page()
-        self.broker_actions_file.login('owner')
+    def login(self, role):
+        if role != 'viewer':
+            self.go_main_page()
+            self.broker_actions_file.login('owner')
 
     def add_participant_info_limited(self, pmt):
         self.broker_actions_file.add_participant_info_limited(pmt)

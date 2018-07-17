@@ -7,6 +7,7 @@ import allure
 def pytest_addoption(parser):
     parser.addoption("--pmt", action="store", default="reporting", help="procurementMethodType")
     parser.addoption("--broker", action="store", default="dzo_broker", help="broker")
+    parser.addoption("--role", action="store", default="owner", help="role")
 
 
 @pytest.fixture(scope='class')
@@ -17,6 +18,11 @@ def pmt(request):
 @pytest.fixture(scope='class')
 def broker(request):
     request.cls.broker = request.config.getoption("--broker")
+
+
+@pytest.fixture(scope='class')
+def role(request):
+    request.cls.role = request.config.getoption("--role")
 
 
 def pytest_exception_interact(node, call, report):

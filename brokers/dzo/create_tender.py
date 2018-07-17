@@ -238,18 +238,19 @@ def create_tender(tender_data):
                     driver.find_element_by_xpath('//h3[contains(text(), "Загальні нецінові критерії")]/../descendant::a[contains(text(), "Додати критерій")]').click()
                 add_tender_features(features_tender[tender_feature], feature_number)
 
-    if procurement_type == 'belowThreshold':
-        enquiry_period_field = driver.find_element_by_name('data[enquiryPeriod][endDate]')
-        driver.execute_script("arguments[0].scrollIntoView();", enquiry_period_field)
-        enquiry_period_field.click()
-        driver.execute_script("arguments[0].removeAttribute('readonly','readonly')", enquiry_period_field)
-        enquiry_period_field.send_keys(datetime.strftime(datetime.strptime(data['enquiryPeriod']['endDate'], "%Y-%m-%dT%H:%M:%S{}".format(kiev_now)), '%d/%m/%Y'))
     if procurement_type not in limited_procurement:
         tender_period_end_date_field = driver.find_element_by_name('data[tenderPeriod][endDate]')
         driver.execute_script("arguments[0].scrollIntoView();", tender_period_end_date_field)
         tender_period_end_date_field.click()
         driver.execute_script("arguments[0].removeAttribute('readonly','readonly')", tender_period_end_date_field)
         tender_period_end_date_field.send_keys(datetime.strftime(datetime.strptime(data['tenderPeriod']['endDate'], "%Y-%m-%dT%H:%M:%S{}".format(kiev_now)), '%d/%m/%Y'))
+
+    if procurement_type == 'belowThreshold':
+        enquiry_period_field = driver.find_element_by_name('data[enquiryPeriod][endDate]')
+        driver.execute_script("arguments[0].scrollIntoView();", enquiry_period_field)
+        enquiry_period_field.click()
+        driver.execute_script("arguments[0].removeAttribute('readonly','readonly')", enquiry_period_field)
+        enquiry_period_field.send_keys(datetime.strftime(datetime.strptime(data['enquiryPeriod']['endDate'], "%Y-%m-%dT%H:%M:%S{}".format(kiev_now)), '%d/%m/%Y'))
 
     scroll_into_view_xpath('//button[@value="publicate"]')
     driver.find_element_by_xpath('//button[@value="publicate"]').click()
