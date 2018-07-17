@@ -4,7 +4,7 @@ import time
 import allure
 import pytest
 from api.cdb_requests import TenderRequests
-from core.document_generator import download_and_open_file, generate_files, delete_documents
+from core.document_generator import *
 from core import service, msg
 from core.api_helper import *
 
@@ -161,15 +161,14 @@ class BrokerBasedActions:
                 tender = create_tender(pmt, self.broker_config.cdb)
         with pytest.allure.step('Get ID from tender page'):
             if role == 'owner':
-                tender_id = self.broker_view_from_page_file.get_tender_id()
+                tender_id = self.broker_view_from_page_file.get_tender_id()  # Get tender_id_long from tender view page
+                response = TenderRequests(self.broker_config.cdb).get_tender_info(tender_id).json()  # Get tender json from CDB
             else:
                 tender_id = tender['data']['id']
+                response = tender  # Json with access token if tender was created with api request
             allure.attach('Tender ID: ', tender_id)
             assert len(tender_id) != 0
-        with pytest.allure.step('Get json from CDB'):
-            response = TenderRequests(self.broker_config.cdb).get_tender_info(tender_id)
-            allure.attach('Response code: ', str(response.status_code))
-        return response.json()
+        return response
 
     def go_main_page(self):
         driver.get(self.broker_config.host)
@@ -193,17 +192,21 @@ class BrokerBasedActions:
         with pytest.allure.step('Find contract by id'):
             self.broker_actions_file.find_contract_by_id(contract_id)
 
-    def open_tender_edit_page(self, data):
+    def open_tender_edit_page(self):
         with pytest.allure.step('Open tender edit page'):
             self.broker_actions_file.open_tender_edit_page()
 
-    def add_documents_tender(self):
+    def add_documents_tender(self, role, json_data):
         with pytest.allure.step('Upload documents'):
-            document_data = generate_files()
             with pytest.allure.step('Add documents to tender'):
-                self.broker_actions_file.add_documents_tender(document_data)
-            delete_documents(document_data)
-            return document_data
+                if role == 'owner':
+                    files = generate_files()
+                    self.open_tender_edit_page()
+                    self.broker_actions_file.add_documents_tender(files)
+                else:
+                    files = add_documents_to_tender(json_data['json_cdb']['data']['id'], json_data['json_cdb']['access']['token'], 0, self.broker_config.cdb)
+            delete_documents(files)
+            return files
 
     def compare_item_description_on_page(self, generated_json):
         number = 0

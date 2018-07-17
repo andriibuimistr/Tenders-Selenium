@@ -19,8 +19,7 @@ class TestTendersTest(object):
         DATA['json_cdb'] = BrokerBasedActions(self.broker).create_tender(self.pmt, self.role)
 
     def test2_add_documents_tender(self):
-        BrokerBasedActions(self.broker).open_tender_edit_page(DATA)
-        DATA['docs_data'] = BrokerBasedActions(self.broker).add_documents_tender()
+        DATA['docs_data'] = BrokerBasedActions(self.broker).add_documents_tender(self.role, DATA)
 
     def test3_add_supplier(self):
         BrokerBasedActions(self.broker).add_participant_info_limited(self.pmt)
