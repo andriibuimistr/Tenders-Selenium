@@ -14,6 +14,16 @@ def tender_host_selector(cdb_version):
     return host, host_public
 
 
+def contract_host_selector(cdb_version):
+    if cdb_version == 'dev':
+        host = 'https://api-sandbox.prozorro.openprocurement.net/api/dev/contracts'
+        host_public = 'https://public.api-sandbox.prozorro.openprocurement.net/api/dev/contracts'
+    else:
+        host = 'https://lb.api-sandbox.openprocurement.org/api/2.4/contracts'
+        host_public = 'https://public.api-sandbox.openprocurement.org/api/2.4/contracts'
+    return host, host_public
+
+
 def tender_ds_host_selector(cdb_version):
     if cdb_version == 'dev':
         host = 'https://upload.docs-sandbox.prozorro.openprocurement.net/upload'
@@ -26,10 +36,10 @@ monitoring_host = 'https://audit-api-sandbox.prozorro.gov.ua/api/2.4/monitorings
 
 
 # generate headers for create tender
-def tender_headers_request(cdb_version, json_data, monitoring=False):
+def tender_headers_request(json_data):
     headers = {"Authorization": "Basic {}".format(auth_key),
                "Content-Length": "{}".format(len(json.dumps(json_data))),
-               "Content-Type": "application/json"}  # "Host": host_headers
+               "Content-Type": "application/json"}
     return headers
 
 
