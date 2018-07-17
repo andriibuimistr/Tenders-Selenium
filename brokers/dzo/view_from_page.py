@@ -14,7 +14,6 @@ def get_tender_uid():
 
 
 def get_tender_title():
-    # time.sleep(5)
     title = driver.find_element_by_xpath('//h1[@class="t_title"]')
     driver.execute_script("arguments[0].scrollIntoView();", title)
     return title.text.split('] ')[-1]
@@ -145,11 +144,19 @@ def get_delivery_street(item_text):
 def get_document_name():
     pass
 
-def get_document_type():
-    pass
 
-def get_document_content():
-    pass
+def get_tender_document_type(doc_title):
+    doc_type = driver.find_element_by_xpath('//span[contains(@class, "docTitle")][contains(text(), "{}")]/../../a[1]/span/span'.format(doc_title)).text
+    return tender_document_type_names.get(doc_type, doc_type)
+
+
+def get_contract_document_type(doc_title):
+    doc_type = driver.find_element_by_xpath('//span[contains(@class, "docTitle")][contains(text(), "{}")]/../../a[1]/span/span'.format(doc_title)).text
+    return contract_document_types_names.get(doc_type, doc_type)
+
+
+def get_tender_document_link(doc_title):
+    return driver.find_element_by_xpath('//span[contains(@class, "docTitle")][contains(text(), "{}")]/../../a[1]'.format(doc_title)).get_attribute('href')
 
 
 def get_qualification_complaint_period_end_date():

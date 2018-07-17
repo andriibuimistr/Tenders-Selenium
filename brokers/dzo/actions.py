@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from selenium.webdriver.support.ui import Select
 from brokers.dzo.config import *
-# from selenium_helper import *
 from tender_initial_data.tender_additional_data import key_path, key_password, document_path
 from brokers.dzo.view_from_page import *
 
@@ -260,7 +259,6 @@ def add_contract(data, contract_dates):
     click_by_xpath('//button[@class="bidAction"]')
 
     # click "ok" in modal window
-    # wait_for_element_not_visible_xpath('//div[@class="jAlertWrap"]', 10)
     wait_for_element_clickable_xpath('//div[@class="jBtnWrap"]/a[1]')
     click_by_xpath('//div[@class="jBtnWrap"]/a[1]')
     wait_for_element_not_visible_xpath('//div[@class="jBtnWrap"]/a[1]', 10)

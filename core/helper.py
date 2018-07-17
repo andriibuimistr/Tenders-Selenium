@@ -1,9 +1,6 @@
 # -*- coding: utf-8 -*-
 from config import driver
-import time
 import allure
-import pytest
-from api.cdb_requests import TenderRequests
 from core.document_generator import *
 from core import service, msg
 from core.api_helper import *
@@ -38,7 +35,6 @@ class CDBActions:
 
     # DOCUMENTS
     def compare_document_content_cdb(self, entity):
-        time.sleep(240)
         docs_cdb = TenderRequests(self.cdb).get_tender_info(self.data['json_cdb']['data']['id']).json()['data']['documents']
         docs_data = self.data['docs_data']
         if entity == 'contract':
@@ -162,12 +158,12 @@ class BrokerBasedActions:
         with pytest.allure.step('Get ID from tender page'):
             if role == 'owner':
                 tender_id = self.broker_view_from_page_file.get_tender_id()  # Get tender_id_long from tender view page
+                assert len(tender_id) != 0
                 response = TenderRequests(self.broker_config.cdb).get_tender_info(tender_id).json()  # Get tender json from CDB
             else:
                 tender_id = tender['data']['id']
                 response = tender  # Json with access token if tender was created with api request
             allure.attach('Tender ID: ', tender_id)
-            assert len(tender_id) != 0
         return response
 
     def go_main_page(self):
@@ -316,6 +312,37 @@ class BrokerBasedActions:
             street_page = self.broker_view_from_page_file.get_delivery_street(generated_description_identifier)
             assert_item_field(generated_delivery_street, street_page, 'delivery_street', number)
 
+    def compare_document_content_page(self, data, entity):
+        docs_data = data['docs_data']
+        if entity == 'contract':
+            docs_data = data['contract_docs_data']
+        number = 0
+        for doc in range(len(docs_data)):
+            number += 1
+            doc_title = docs_data[doc]['document_name']
+            with pytest.allure.step('Compare content of document {}'.format(number)):
+                file_content = download_and_open_file(self.broker_view_from_page_file.get_tender_document_link(doc_title))  # get content of file from tender view page
+                allure.attach('Generated content', docs_data[doc]['content'])
+                allure.attach('Content of file on view page', file_content)
+                assert docs_data[doc]['content'] == file_content
+
+    def compare_document_type_page(self, data, entity):
+        docs_data = data['docs_data']
+        if entity == 'contract':
+            docs_data = data['contract_docs_data']
+        number = 0
+        for doc in range(len(docs_data)):
+            number += 1
+            doc_title = docs_data[doc]['document_name']
+            with pytest.allure.step('Compare type of document {}'.format(number)):
+                if entity == 'contract':
+                    document_type = self.broker_view_from_page_file.get_contract_document_type(doc_title)
+                else:
+                    document_type = self.broker_view_from_page_file.get_tender_document_type(doc_title)
+                allure.attach('Generated type', docs_data[doc]['type'])
+                allure.attach('Type of file on view page', document_type)
+                assert docs_data[doc]['type'] == document_type
+
     def add_contract(self, data):
         contract_data = service.ContractData
         self.broker_actions_file.add_contract(data['data'], contract_data)
@@ -334,11 +361,15 @@ class BrokerBasedActions:
         with pytest.allure.step('Open contract edit page'):
             self.broker_actions_file.open_contract_edit_page()
 
-    def add_documents_contract(self):
+    def add_documents_contract(self, role, json_data):
         with pytest.allure.step('Upload documents'):
-            document_data = generate_files('contract')
             with pytest.allure.step('Add documents to contract'):
-                self.broker_actions_file.add_documents_contract(document_data)
+                if role == 'owner':
+                    document_data = generate_files('contract')
+                    self.open_contract_edit_page()
+                    self.broker_actions_file.add_documents_contract(document_data)
+                else:
+                    pass  # ############################################################################
             delete_documents(document_data)
             return document_data
 
@@ -520,12 +551,17 @@ class BrokerBasedViews:
 
     # DOCUMENTS
     def compare_document_content(self, entity=None):
+        time.sleep(240)
         with pytest.allure.step(msg.compare_cdb):
             CDBActions(self.generated_json, self.data, self.broker).compare_document_content_cdb(entity)
+        with pytest.allure.step(msg.compare_site):
+            BrokerBasedActions(self.broker).compare_document_content_page(self.data, entity)
 
     def compare_document_type(self, entity=None):
         with pytest.allure.step(msg.compare_cdb):
             CDBActions(self.generated_json, self.data, self.broker).compare_document_type_cdb(entity)
+        with pytest.allure.step(msg.compare_site):
+            BrokerBasedActions(self.broker).compare_document_type_page(self.data, entity)
 
 
 class BrokerBasedViewsContracts:
