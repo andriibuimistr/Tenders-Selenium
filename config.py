@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
-
+from faker import Faker
 from selenium import webdriver
 import time
 from selenium.webdriver.common.desired_capabilities import DesiredCapabilities
@@ -19,5 +19,5 @@ time.sleep(1)
 driver.implicitly_wait(1)
 # driver.maximize_window()
 
-
+fake = Faker('uk_UA')
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))

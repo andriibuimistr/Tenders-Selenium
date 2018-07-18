@@ -46,17 +46,17 @@ def request_to_cdb(headers, host, endpoint, method, json_request, request_name, 
             if resp.status_code in [200, 201, 202]:
                 print("{}: Success".format(request_name))
                 print("       status code:  {}".format(resp.status_code))
-                save_log(resp.status_code, resp.content, resp.headers, host, endpoint, method, request_name, entity, headers, json_request)
+                save_log(resp.status_code, resp.content.decode(), resp.headers, host, endpoint, method, request_name, entity, headers, json_request)
                 return resp
         except HTTPError as error:
             print("{}: Error".format(request_name))
             print("       status code:  {}".format(resp.status_code))
-            print("       response content:  {}".format(resp.content))
+            print("       response content:  {}".format(resp.content.decode()))
             print("       headers:           {}".format(resp.headers))
-            save_log(error.response.status_code, resp.content, resp.headers, host, endpoint, method, request_name, entity, headers, json_request)
+            save_log(error.response.status_code, resp.content.decode(), resp.headers, host, endpoint, method, request_name, entity, headers, json_request)
             time.sleep(1)
             if attempts >= 5:
-                abort(error.response.status_code, resp.content)
+                abort(error.response.status_code, resp.content.decode())
         except ConnectionError as e:
             print('Connection Exception')
             if attempts < 5:

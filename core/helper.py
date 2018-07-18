@@ -24,6 +24,14 @@ def assert_item_field(generated_data, actual_data, field_name, number):
         assert generated_data == actual_data
 
 
+def get_list_of_id_for_lots(pmt):
+    list_of_id_lots = list()
+    if 'lots' in pmt:
+        for lot in range(len(pmt['data']['lots'])):
+            list_of_id_lots.append(pmt['data']['lots'][lot])
+    return list_of_id_lots
+
+
 class CDBActions:
 
     def __init__(self, generated_json, data, broker):
@@ -153,9 +161,11 @@ class BrokerBasedActions:
         with pytest.allure.step('Run function for create tender'):
             tender = dict()
             if role == 'owner':
-                self.broker_create_tender_file.create_tender(pmt)
+                with pytest.allure.step('Create tender from platform'):
+                    self.broker_create_tender_file.create_tender(pmt)
             else:
-                tender = create_tender(pmt, self.broker_config.cdb)
+                with pytest.allure.step('Create tender with API request'):
+                    tender = create_tender(pmt, self.broker_config.cdb)
         with pytest.allure.step('Get ID from tender page'):
             if role == 'owner':
                 tender_id = self.broker_view_from_page_file.get_tender_id()  # Get tender_id_long from tender view page
@@ -171,18 +181,39 @@ class BrokerBasedActions:
         driver.get(self.broker_config.host)
 
     def login(self, role):
-        if role != 'viewer':
+        with pytest.allure.step('ROLE: {}'.format(role)):  # Log user role
+            # if role != 'viewer':
             self.go_main_page()
-            self.broker_actions_file.login('owner')
+            self.broker_actions_file.login(role)
 
-    def add_participant_info_limited(self, pmt):
-        self.broker_actions_file.add_participant_info_limited(pmt)
+    def add_participant_info_limited(self, pmt, role, data):
+        if role == 'owner':
+            with pytest.allure.step('Add participant info from platform'):
+                self.broker_actions_file.add_participant_info_limited(pmt)
+        else:
+            with pytest.allure.step('Add participant info with API request'):
+                if 'lots' in pmt['data']:
+                    number_of_lots = len(pmt['data']['lots'])
+                    list_of_id_lots = get_list_of_id_for_lots(pmt)
+                else:
+                    list_of_id_lots = list()
+                    number_of_lots = 0
+                add_suppliers_for_limited(number_of_lots, data['json_cdb']['data']['id'], data['json_cdb']['access']['token'], list_of_id_lots, self.broker_config.cdb, data['json_cdb'])
+                time.sleep(3)
 
-    def qualify_winner_limited(self, data):
-        self.broker_actions_file.qualify_winner_limited(data['data'])
+    def qualify_winner_limited(self, role, data):
+        if role == 'owner':
+            self.broker_actions_file.qualify_winner_limited(data['json_cdb']['data'])
+        else:
+            get_t_info = TenderRequests(self.broker_config.cdb).get_tender_info(data['json_cdb']['data']['id']).json()
+            list_of_awards = get_t_info['data']['awards']
+            run_activate_award(self.broker_config.cdb, data['json_cdb']['data']['id'], data['json_cdb']['access']['token'], list_of_awards, data['json_cdb']['data']['procurementMethodType'])
 
-    def find_tender_by_id(self, data):
+    def find_tender_by_id(self, role, data):
         with pytest.allure.step('Find tender by id'):
+            if role != 'owner':
+                with pytest.allure.step('Wait for synchronization {} seconds'.format(self.broker_config.waiting_time)):  # Log platform synchronization time
+                    time.sleep(self.broker_config.waiting_time)  # wait for synchronization with CDB if tender was created by API client
             self.broker_actions_file.find_tender_by_id(data['json_cdb']['data']['tenderID'])
 
     def find_contract_by_id(self, data):
@@ -568,11 +599,12 @@ class BrokerBasedViews:
 
 class BrokerBasedViewsContracts:
 
-    def __init__(self, broker, data):
+    def __init__(self, broker, role, data):
         self.broker_config = __import__("brokers.{}.config".format(broker), fromlist=[""])
         self.broker_view_from_page_file = __import__("brokers.{}.view_from_page".format(broker), fromlist=[""])
         self.contract_generated_data = data['contract_data']
         self.data = data
+        self.role = role
         self.broker = broker
         self.new_cdb_json = TenderRequests(self.broker_config.cdb).get_tender_info(self.data['json_cdb']['data']['id']).json()
 
@@ -584,7 +616,7 @@ class BrokerBasedViewsContracts:
 
     # CONTRACTS TENDER
     def compare_contract_number_tender(self):
-        BrokerBasedActions(self.broker).find_tender_by_id(self.data)
+        BrokerBasedActions(self.broker).find_tender_by_id(self.role, self.data)
         BrokerBasedActions(self.broker).get_info_from_contract_tender()
         with pytest.allure.step(msg.compare_cdb):
             self.compare_contract_values(self.contract_generated_data.contract_number, self.new_cdb_json['data']['contracts'][0]['contractNumber'])

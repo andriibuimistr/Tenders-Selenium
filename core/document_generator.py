@@ -5,6 +5,7 @@ from faker import Faker
 import pytest
 import urllib.request
 from api.cdb_requests import *
+import base64
 
 
 fake = Faker('uk_UA')
@@ -44,10 +45,10 @@ def generate_files(entity=None):
     return documents_data
 
 
-def delete_documents(document_data):
+def delete_documents(documents_data):
     with pytest.allure.step('Delete documents from temporal folder'):
-        for doc in range(len(document_data)):
-            os.remove(document_data[doc]['file_path'])
+        for doc in range(len(documents_data)):
+            os.remove(documents_data[doc]['file_path'])
 
 
 def download_and_open_file(url):
@@ -67,8 +68,9 @@ def download_and_open_file(url):
 
 def document_data(filename=None):
     if not filename:
-        filename = 'doc.pdf'
-    file_for_upload = open(os.path.join(ROOT_DIR, 'documents', filename), 'rb').read()
+        filename = 'Doc.txt'
+    file_for_upload = '{}'.format(open(os.path.join(ROOT_DIR, 'documents', filename), 'r').read())  # TEMPORAL
+    # print(file_for_upload)
     data = "----------------------------1507111922.4992\nContent-Disposition: form-data;" \
            "name=\"file\"; filename=\"{}\"\nContent-Type: application/pdf\n\n{}\n" \
            "----------------------------1507111922.4992--".format(filename, file_for_upload)

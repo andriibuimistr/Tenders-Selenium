@@ -22,13 +22,13 @@ class TestTendersTest(object):
         DATA['docs_data'] = BrokerBasedActions(self.broker).add_documents_tender(self.role, DATA)
 
     def test3_add_supplier(self):
-        BrokerBasedActions(self.broker).add_participant_info_limited(self.pmt)
+        BrokerBasedActions(self.broker).add_participant_info_limited(self.pmt, self.role, DATA)
 
     def test4_qualify_winner_limited(self):
-        BrokerBasedActions(self.broker).qualify_winner_limited(self.pmt)
+        BrokerBasedActions(self.broker).qualify_winner_limited(self.role, DATA)
 
     def test5_find_tender_by_identifier(self):
-        BrokerBasedActions(self.broker).find_tender_by_id(DATA)
+        BrokerBasedActions(self.broker).find_tender_by_id(self.role, DATA)
 
     def test6_compare_tender_document_content(self):
         BrokerBasedViews(self.broker, self.pmt, DATA).compare_document_content()
@@ -55,7 +55,7 @@ class TestTendersTest(object):
         BrokerBasedViews(self.broker, self.pmt, DATA).compare_tender_value_tax_included()
 
     def test16_compare_owner_country(self):
-        BrokerBasedViews(self.broker, self.pmt, DATA).compare_owner_country()
+        BrokerBasedViews(self.broker, self.pmt, DATA).compare_owner_country()  # TODO Compare for all platforms
 
     def test17_compare_owner_locality(self):
         BrokerBasedViews(self.broker, self.pmt, DATA).compare_owner_locality()
@@ -134,16 +134,16 @@ class TestTendersTest(object):
         BrokerBasedActions(self.broker).sign_contract()
 
     def test100_compare_contract_number_tender(self):
-        BrokerBasedViewsContracts(self.broker, DATA).compare_contract_number_tender()
+        BrokerBasedViewsContracts(self.broker, self.role, DATA).compare_contract_number_tender()
 
     def test101_compare_contract_contract_date_signed_tender(self):
-        BrokerBasedViewsContracts(self.broker, DATA).compare_contract_date_signed_tender()
+        BrokerBasedViewsContracts(self.broker, self.role, DATA).compare_contract_date_signed_tender()
 
     def test102_compare_contract_start_date_tender(self):
-        BrokerBasedViewsContracts(self.broker, DATA).compare_contract_start_date_tender()
+        BrokerBasedViewsContracts(self.broker, self.role, DATA).compare_contract_start_date_tender()
 
     def test103_compare_contract_end_date_tender(self):
-        BrokerBasedViewsContracts(self.broker, DATA).compare_contract_end_date_tender()
+        BrokerBasedViewsContracts(self.broker, self.role, DATA).compare_contract_end_date_tender()
 
     def test104_wait_for_contract_to_be_generated(self):
         contract_id = BrokerBasedActions(self.broker).wait_for_contract_generation()

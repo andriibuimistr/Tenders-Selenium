@@ -4,36 +4,17 @@ import binascii
 import os
 from random import randint, choice
 import pytz
-from faker import Faker
+from config import fake
 from datetime import datetime, timedelta
 from tender_initial_data.tender_additional_data import kiev_now, limited_procurement, negotiation_procurement
 import random
 import string
 
-fake = Faker('uk_UA')
 kiev_utc_now = str(datetime.now(pytz.timezone('Europe/Kiev')))[26:]
 
 
 def random_item_id():
     return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(8))
-
-
-# Contracts
-def activate_contract_json(complaint_end_date):
-    contract_end_date = datetime.now() + timedelta(days=120)
-    complaint_end_date = datetime.strptime(complaint_end_date, '%Y-%m-%dT%H:%M:%S.%f{}'.format(kiev_now))
-    contract_json = {
-                      "data": {
-                        "period": {
-                          "startDate": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f{}".format(kiev_now)),
-                          "endDate": contract_end_date.strftime("%Y-%m-%dT%H:%M:%S.%f{}".format(kiev_now))
-                        },
-                        "dateSigned": (complaint_end_date + timedelta(seconds=1)).strftime("%Y-%m-%dT%H:%M:%S.%f{}".format(kiev_now)),
-                        "status": "active",
-                        "contractNumber": "N1234567890"
-                      }
-                    }
-    return contract_json
 
 
 def get_classification():
@@ -49,13 +30,13 @@ def get_unit():
 
 
 def generate_id_for_item():
-    return binascii.hexlify(os.urandom(16)).decode("utf-8")
+    return binascii.hexlify(os.urandom(16)).decode()
 
 
 def generate_id_for_lot(number_of_lots):
     list_of_id = []
     for x in range(number_of_lots):
-        list_of_id.append(binascii.hexlify(os.urandom(16)).decode("utf-8"))
+        list_of_id.append(binascii.hexlify(os.urandom(16)).decode())
     return list_of_id
 
 

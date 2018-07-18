@@ -15,5 +15,9 @@ credentials = {
                 'provider1': {
                     'username': 'uac.eseller3@gmail.com',
                     'password': 'andriy85'
+                },
+                'viewer': {
+                    'username': 'uace.seller3@gmail.com',
+                    'password': 'andriy85'
                 }
 }

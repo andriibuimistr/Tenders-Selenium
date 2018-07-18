@@ -50,7 +50,7 @@ kiev_now = str(datetime.now(pytz.timezone('Europe/Kiev')))[26:]
 cdb_host = 'https://public.api-sandbox.openprocurement.org/api/2.4/tenders'
 key_path = os.path.join(ROOT_DIR, 'Key-6.dat')
 key_password = '12345677'
-document_path = os.path.join(ROOT_DIR, 'Doc.pdf')
+document_path = os.path.join(ROOT_DIR, 'documents', 'Doc.pdf')
 
 
 def select_procedure(procedure):
