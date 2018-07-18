@@ -68,13 +68,9 @@ def download_and_open_file(url):
 
 def document_data(filename=None):
     if not filename:
-        filename = 'Doc.txt'
-    file_for_upload = '{}'.format(open(os.path.join(ROOT_DIR, 'documents', filename), 'r').read())  # TEMPORAL
-    # print(file_for_upload)
-    data = "----------------------------1507111922.4992\nContent-Disposition: form-data;" \
-           "name=\"file\"; filename=\"{}\"\nContent-Type: application/pdf\n\n{}\n" \
-           "----------------------------1507111922.4992--".format(filename, file_for_upload)
-    return data
+        filename = 'Doc.pdf'
+    files = {'file': (filename, open(os.path.join(ROOT_DIR, 'documents', filename), 'rb').read())}  # 1st filename - title
+    return files
 
 
 tender_documents_type = {'technicalSpecifications': 'Технічний опис предмету закупівлі',
@@ -122,3 +118,10 @@ def add_documents_to_tender(tender_id_long, tender_token, list_of_id_lots, api_v
     #         patch_tender_documents_from_ds(doc_type, doc_type_name, added_tender_document, tender_id_long, tender_token, lot_id, 'lot', ds)
     #
     # return doc_publish_info
+
+# EXAMPLE
+# files = {'file': ('name.pdf', open(os.path.join(ROOT_DIR, 'documents', 'Doc.pdf'), 'rb').read())}
+# print(TenderRequests('2.4').add_tender_document_to_ds(files).json())
+# r = requests.post(tender_ds_host_selector('2.4'), headers=tender_headers_add_document_ds, files=files, data=None)
+# print(r.status_code)
+# pprint(r.content.decode())
