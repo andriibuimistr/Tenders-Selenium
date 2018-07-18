@@ -29,8 +29,8 @@ class CDBActions:
     def __init__(self, generated_json, data, broker):
         self.generated_json = generated_json
         self.data = data
-        self.cdb = __import__("brokers.{}.config".format(broker), fromlist=[""]).cdb
         self.broker_config = __import__("brokers.{}.config".format(broker), fromlist=[""])
+        self.cdb = self.broker_config.cdb
         self.items_cdb = TenderRequests(self.cdb).get_tender_info(data['json_cdb']['data']['id']).json()['data']['items']
         self.generated_items = generated_json['data']['items']
 
@@ -552,7 +552,7 @@ class BrokerBasedViews:
 
     # DOCUMENTS
     def compare_document_content(self, entity=None):
-        time.sleep(240)
+        # time.sleep(240)
         with pytest.allure.step(msg.compare_cdb):
             CDBActions(self.generated_json, self.data, self.broker).compare_document_content_cdb(entity)
         with pytest.allure.step(msg.compare_site):

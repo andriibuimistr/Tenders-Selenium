@@ -306,6 +306,7 @@ def add_documents_tender(document_data):
     scroll_into_view_xpath('//button[text()="Зберегти"]')
     save_changes_button.click()
     wait_for_element_clickable_xpath('//h1[@class="t_title"]')
+    time.sleep(180)  # wait until documents will be uploaded to CDB
 
 
 def add_documents_contract(document_data):
@@ -329,6 +330,7 @@ def add_documents_contract(document_data):
     scroll_into_view_xpath('//button[@value="save"]')
     save_changes_button.click()
     wait_for_element_clickable_xpath('//h1[@class="t_title"]')
+    time.sleep(180)  # wait until documents will be uploaded to CDB
 
 
 def get_info_from_contract_tender():

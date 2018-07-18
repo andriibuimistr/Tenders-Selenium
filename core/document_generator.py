@@ -2,10 +2,8 @@
 import random
 import string
 from faker import Faker
-# from tender_initial_data.tender_additional_data import *
 import pytest
 import urllib.request
-# import json
 from api.cdb_requests import *
 
 

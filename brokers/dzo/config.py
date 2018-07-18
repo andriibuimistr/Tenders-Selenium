@@ -7,5 +7,13 @@ cdb = '2.4'
 credentials = {
                 'owner': {
                     'username': 'formyqatesting@gmail.com',
-                    'password': 'andriy85'}
+                    'password': 'andriy85'},
+                'provider': {
+                    'username': 'ua.ceseller3@gmail.com',
+                    'password': 'andriy85'
+                },
+                'provider1': {
+                    'username': 'uac.eseller3@gmail.com',
+                    'password': 'andriy85'
+                }
 }

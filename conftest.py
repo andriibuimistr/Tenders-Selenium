@@ -25,11 +25,10 @@ def role(request):
     request.cls.role = request.config.getoption("--role")
 
 
-# def pytest_exception_interact(node, call, report):
-#     driver = node.instance.driver
-#     # ...
-#     allure.attach(
-#         name='Скриншот',
-#         contents=driver.get_screenshot_as_png(),
-#         type=allure.constants.AttachmentType.PNG,
-#     )
+def pytest_exception_interact(node, call, report):
+    driver = node.instance.driver
+    allure.attach(
+        name='Скриншот',
+        contents=driver.get_screenshot_as_png(),
+        type=allure.constants.AttachmentType.PNG,
+    )
