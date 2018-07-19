@@ -26,9 +26,11 @@ def assert_item_field(generated_data, actual_data, field_name, number):
 
 def get_list_of_id_for_lots(pmt):
     list_of_id_lots = list()
-    if 'lots' in pmt:
-        for lot in range(len(pmt['data']['lots'])):
-            list_of_id_lots.append(pmt['data']['lots'][lot])
+    if 'lots' in pmt['data']:
+        with pytest.allure.step('Add id of lots to list'):
+            for lot in range(len(pmt['data']['lots'])):
+                list_of_id_lots.append(pmt['data']['lots'][lot]['id'])
+                allure.attach('Lots list: ', str(pmt['data']['lots']))
     return list_of_id_lots
 
 
@@ -194,11 +196,15 @@ class BrokerBasedActions:
         else:
             with pytest.allure.step('Add participant info with API request'):
                 if 'lots' in pmt['data']:
-                    number_of_lots = len(pmt['data']['lots'])
+                    allure.attach('Many lots', str('LOTS'))
                     list_of_id_lots = get_list_of_id_for_lots(pmt)
+                    number_of_lots = len(pmt['data']['lots'])
                 else:
+                    allure.attach('ONE LOT', str('LOTS'))
                     list_of_id_lots = list()
                     number_of_lots = 0
+                allure.attach('List of lots id', str(list_of_id_lots))
+                allure.attach('Number of lots', str(number_of_lots))
                 add_suppliers_for_limited(number_of_lots, data['json_cdb']['data']['id'], data['json_cdb']['access']['token'], list_of_id_lots, self.broker_config.cdb, data['json_cdb'])
                 time.sleep(3)
 
