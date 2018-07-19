@@ -77,7 +77,7 @@ def get_owner_site():
 
 
 def get_owner_company_name():
-    return driver.find_element_by_xpath('//td[contains(text(), "Найменування замовника")]/following-sibling::td/a/span').text
+    return driver.find_element_by_xpath('//td[contains(text(), "Найменування замовника")]/following-sibling::td/descendant::span').text
 
 
 def get_owner_identifier():
@@ -87,8 +87,8 @@ def get_owner_identifier():
 def get_item_description(item_text):
     return driver.find_element_by_xpath('//div[@class="itemDescr"][contains(text(), "{}")]'.format(item_text)).text
 
-def get_classification_scheme():
-    pass
+# def get_classification_scheme():
+#     pass
 
 
 def get_classification_identifier(item_text):
@@ -141,8 +141,8 @@ def get_delivery_street(item_text):
     delivery_address = driver.find_element_by_xpath('//div[@class="itemDescr"][contains(text(), "{}")]/following-sibling::div[2]/span[2]'.format(item_text)).text
     return delivery_address.split(',')[4].strip()
 
-def get_document_name():
-    pass
+# def get_document_name():
+#     pass
 
 
 def get_tender_document_type(doc_title):

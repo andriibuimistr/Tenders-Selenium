@@ -150,6 +150,9 @@ class TenderRequests(object):
     def get_contract_info(self, contract_id_long):
         return request_to_cdb(None, self.host_public_contracts, '/{}'.format(contract_id_long), 'GET', None, 'Get contract info', self.entity_contract)
 
+    def get_contract_token(self, contract_id_long, tender_token):
+        return request_to_cdb(tender_headers_request(self.cdb), self.host_contracts, '/{}/credentials?acc_token={}'.format(contract_id_long, tender_token), 'PATCH', None, 'Get contract token', self.entity_contract)
+
     def add_tender_document_to_ds(self, files):
         return request_to_cdb(tender_headers_add_document_ds, self.ds_host, '', 'POST', None, 'Add document to DS (tenders)', self.document, False, files)
 

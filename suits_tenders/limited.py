@@ -124,14 +124,13 @@ class TestTendersTest(object):
         BrokerBasedViews(self.broker, self.pmt, DATA).compare_item_delivery_street()
 
     def test39_wait_for_complaint_period_end_date(self):
-        if DATA['json_cdb']['data']['procurementMethodType'] != 'reporting':
-            BrokerBasedViews(self.broker, self.pmt, DATA).wait_for_complaint_period_end_date()
+        BrokerBasedViews(self.broker, self.pmt, DATA).wait_for_complaint_period_end_date(self.role)
 
     def test98_add_contract_limited(self):
-        DATA['contract_data'] = BrokerBasedActions(self.broker).add_contract(self.pmt)
+        DATA['contract_data'] = BrokerBasedActions(self.broker).add_contract(self.role, DATA)
 
     def test99_sign_contract_limited(self):
-        BrokerBasedActions(self.broker).sign_contract()
+        BrokerBasedActions(self.broker).sign_contract(self.role)
 
     def test100_compare_contract_number_tender(self):
         BrokerBasedViewsContracts(self.broker, self.role, DATA).compare_contract_number_tender()
@@ -146,7 +145,7 @@ class TestTendersTest(object):
         BrokerBasedViewsContracts(self.broker, self.role, DATA).compare_contract_end_date_tender()
 
     def test104_wait_for_contract_to_be_generated(self):
-        contract_id = BrokerBasedActions(self.broker).wait_for_contract_generation()
+        contract_id = BrokerBasedActions(self.broker).wait_for_contract_generation()  # TODO Check contract in CDB
         DATA['contracts']['id_short'] = contract_id[0]
         DATA['contracts']['id_long'] = contract_id[1]
 

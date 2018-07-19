@@ -153,6 +153,7 @@ class BrokerBasedActions:
 
     def __init__(self, broker):
         self.broker_config = __import__("brokers.{}.config".format(broker), fromlist=[""])
+        self.cdb = self.broker_config.cdb
         self.broker_actions_file = __import__("brokers.{}.actions".format(broker), fromlist=[""])
         self.broker_create_tender_file = __import__("brokers.{}.create_tender".format(broker), fromlist=[""])
         self.broker_view_from_page_file = __import__("brokers.{}.view_from_page".format(broker), fromlist=[""])
@@ -375,13 +376,20 @@ class BrokerBasedActions:
                 allure.attach('Type of file on view page', document_type)
                 assert docs_data[doc]['type'] == document_type
 
-    def add_contract(self, data):
+    def add_contract(self, role, data):
         contract_data = service.ContractData
-        self.broker_actions_file.add_contract(data['data'], contract_data)
+        if role == 'owner':
+            self.broker_actions_file.add_contract(data['json_cdb']['data'], contract_data)
+        else:
+            run_activate_contract(self.cdb, data['json_cdb']['data']['id'], data['json_cdb']['access']['token'], contract_data)
         return contract_data
 
-    def sign_contract(self):
-        self.broker_actions_file.sign_contract()
+    def sign_contract(self, role):
+        if role == 'owner':
+            self.broker_actions_file.sign_contract()
+        else:
+            with pytest.allure.step('Contract data was filled in Add contract test case'):
+                pass
 
     def get_info_from_contract_tender(self):
         self.broker_actions_file.get_info_from_contract_tender()
@@ -410,6 +418,7 @@ class BrokerBasedViews:
 
     def __init__(self, broker, generated_json, data):
         self.broker_config = __import__("brokers.{}.config".format(broker), fromlist=[""])
+        self.cdb = self.broker_config.cdb
         self.broker_view_from_page_file = __import__("brokers.{}.view_from_page".format(broker), fromlist=[""])
         self.generated_json = generated_json
         self.data = data
@@ -574,12 +583,20 @@ class BrokerBasedViews:
             BrokerBasedActions(self.broker).compare_item_delivery_street(self.generated_json)
 
     # QUALIFICATION
-    def wait_for_complaint_period_end_date(self):
-        with pytest.allure.step("Wait for qualification complaint period end date"):
-            period = self.broker_view_from_page_file.get_qualification_complaint_period_end_date()
-            waiting_time = service.count_waiting_time(period[0], period[1], self.broker_config.cdb)
-            if waiting_time > 0:
-                time.sleep(waiting_time + 60)
+    def wait_for_complaint_period_end_date(self, role):
+        if self.data['json_cdb']['data']['procurementMethodType'] != 'reporting':
+            with pytest.allure.step("Wait for qualification complaint period end date"):
+                if role == 'owner':
+                    period = self.broker_view_from_page_file.get_qualification_complaint_period_end_date()
+                else:
+                    tender = TenderRequests(self.cdb)
+                    period = tender.get_tender_info(self.data['json_cdb']['data']['id']).json()['data']['awards'][-1]['complaintPeriod']['endDate'], '%Y-%m-%dT%H:%M:%S.%f{}'.format(kiev_now)
+                waiting_time = service.count_waiting_time(period[0], period[1], self.broker_config.cdb)
+                if waiting_time > 0:
+                    time.sleep(waiting_time + 60)
+        else:
+            with pytest.allure.step("Complaint period end date doesn't exist for REPORTING procedure"):
+                pass
 
     # DOCUMENTS
     def compare_document_content(self, entity=None):
@@ -606,7 +623,7 @@ class BrokerBasedViewsContracts:
         self.data = data
         self.role = role
         self.broker = broker
-        self.new_cdb_json = TenderRequests(self.broker_config.cdb).get_tender_info(self.data['json_cdb']['data']['id']).json()
+        self.tender = TenderRequests(self.broker_config.cdb)
 
     @staticmethod
     def compare_contract_values(generated_value, actual_value):
@@ -616,28 +633,32 @@ class BrokerBasedViewsContracts:
 
     # CONTRACTS TENDER
     def compare_contract_number_tender(self):
-        BrokerBasedActions(self.broker).find_tender_by_id(self.role, self.data)
-        BrokerBasedActions(self.broker).get_info_from_contract_tender()
         with pytest.allure.step(msg.compare_cdb):
-            self.compare_contract_values(self.contract_generated_data.contract_number, self.new_cdb_json['data']['contracts'][0]['contractNumber'])
+            new_cdb_json = self.tender.get_tender_info(self.data['json_cdb']['data']['id']).json()
+            self.compare_contract_values(self.contract_generated_data.contract_number, new_cdb_json['data']['contracts'][0]['contractNumber'])
         with pytest.allure.step(msg.compare_site):
+            BrokerBasedActions(self.broker).find_tender_by_id(self.role, self.data)
+            BrokerBasedActions(self.broker).get_info_from_contract_tender()
             self.compare_contract_values(self.contract_generated_data.contract_number, self.broker_view_from_page_file.get_contract_number_tender())
 
     def compare_contract_date_signed_tender(self):
         with pytest.allure.step(msg.compare_cdb):
-            self.compare_contract_values(str(self.contract_generated_data.date_signed)[:10], self.new_cdb_json['data']['contracts'][0]['dateSigned'][:10])
+            new_cdb_json = self.tender.get_tender_info(self.data['json_cdb']['data']['id']).json()
+            self.compare_contract_values(str(self.contract_generated_data.date_signed)[:10], new_cdb_json['data']['contracts'][0]['dateSigned'][:10])
         with pytest.allure.step(msg.compare_site):
             self.compare_contract_values(str(self.contract_generated_data.date_signed)[:10], self.broker_view_from_page_file.get_contract_date_signed_tender())
 
     def compare_contract_start_date_tender(self):
         with pytest.allure.step(msg.compare_cdb):
-            self.compare_contract_values(str(self.contract_generated_data.contract_start_date)[:10], self.new_cdb_json['data']['contracts'][0]['period']['startDate'][:10])
+            new_cdb_json = self.tender.get_tender_info(self.data['json_cdb']['data']['id']).json()
+            self.compare_contract_values(str(self.contract_generated_data.contract_start_date)[:10], new_cdb_json['data']['contracts'][0]['period']['startDate'][:10])
         with pytest.allure.step(msg.compare_site):
             self.compare_contract_values(str(self.contract_generated_data.contract_start_date)[:10], self.broker_view_from_page_file.get_contract_start_date_tender())
 
     def compare_contract_end_date_tender(self):
         with pytest.allure.step(msg.compare_cdb):
-            self.compare_contract_values(str(self.contract_generated_data.contract_end_date)[:10], self.new_cdb_json['data']['contracts'][0]['period']['endDate'][:10])
+            new_cdb_json = self.tender.get_tender_info(self.data['json_cdb']['data']['id']).json()
+            self.compare_contract_values(str(self.contract_generated_data.contract_end_date)[:10], new_cdb_json['data']['contracts'][0]['period']['endDate'][:10])
         with pytest.allure.step(msg.compare_site):
             self.compare_contract_values(str(self.contract_generated_data.contract_end_date)[:10], self.broker_view_from_page_file.get_contract_end_date_tender())
 

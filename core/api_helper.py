@@ -181,27 +181,43 @@ def run_activate_award(api_version, tender_id_long, tender_token, list_of_awards
 # ########################################   CONTRACTS   ###################################################
 
 
-def activate_contract_json(complaint_end_date):
-    contract_end_date = datetime.now() + timedelta(days=120)
-    complaint_end_date = datetime.strptime(complaint_end_date, '%Y-%m-%dT%H:%M:%S.%f{}'.format(kiev_now))
+def activate_contract_json(complaint_end_date, contract_data):
+    # contract_end_date = datetime.now() + timedelta(days=120)
+    # complaint_end_date = datetime.strptime(complaint_end_date, '%Y-%m-%dT%H:%M:%S.%f{}'.format(kiev_now))
     contract_json = {
                       "data": {
                         "period": {
-                          "startDate": datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f{}".format(kiev_now)),
-                          "endDate": contract_end_date.strftime("%Y-%m-%dT%H:%M:%S.%f{}".format(kiev_now))
+                          "startDate": contract_data.contract_start_date.strftime("%Y-%m-%dT%H:%M:%S.%f{}".format(kiev_now)),  # datetime.now().strftime("%Y-%m-%dT%H:%M:%S.%f{}".format(kiev_now)),
+                          "endDate": contract_data.contract_end_date.strftime("%Y-%m-%dT%H:%M:%S.%f{}".format(kiev_now))  # contract_end_date.strftime("%Y-%m-%dT%H:%M:%S.%f{}".format(kiev_now))
                         },
-                        "dateSigned": (complaint_end_date + timedelta(seconds=1)).strftime("%Y-%m-%dT%H:%M:%S.%f{}".format(kiev_now)),
+                        "dateSigned": contract_data.date_signed.strftime("%Y-%m-%dT%H:%M:%S.%f{}".format(kiev_now)),  # (complaint_end_date + timedelta(seconds=1)).strftime("%Y-%m-%dT%H:%M:%S.%f{}".format(kiev_now))
                         "status": "active",
-                        "contractNumber": "N1234567890"
+                        "contractNumber": contract_data.contract_number
                       }
                     }
     return contract_json
 
 
-def run_activate_contract(api_version, tender_id_long, tender_token, list_of_contracts, complaint_end_date):
+def check_if_contract_exists(tender, tender_id_long):
+    with pytest.allure.step('Check if contract was generated'):
+        for x in range(10):
+            get_t_info = tender.get_tender_info(tender_id_long).json()
+            if 'contracts' in get_t_info['data']:
+                return get_t_info['data']['contracts']
+            else:
+                time.sleep(10)
+
+
+def run_activate_contract(api_version, tender_id_long, tender_token, contract_data):
     tender = TenderRequests(api_version)
+    tender_actual_data = tender.get_tender_info(tender_id_long).json()
+    list_of_contracts = check_if_contract_exists(tender, tender_id_long)
+    if tender_actual_data['data']['procurementMethodType'] in negotiation_procurement:
+        complaint_end_date = tender_actual_data['data']['awards'][-1]['complaintPeriod']['endDate']
+    else:
+        complaint_end_date = datetime.strftime(datetime.now(), '%Y-%m-%dT%H:%M:%S.%f{}'.format(kiev_now))
     contract_number = 0
-    json_activate_contract = activate_contract_json(complaint_end_date)
+    json_activate_contract = activate_contract_json(complaint_end_date, contract_data)
     for contract in range(len(list_of_contracts)):
         contract_number += 1
         contract_id = list_of_contracts[contract]['id']
