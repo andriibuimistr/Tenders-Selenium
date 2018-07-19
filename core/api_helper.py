@@ -181,6 +181,23 @@ def run_activate_award(api_version, tender_id_long, tender_token, list_of_awards
 # ########################################   CONTRACTS   ###################################################
 
 
+def check_if_contract_is_generated(tender, data):
+    with pytest.allure.step('Get contract id long'):
+        contract_id_long = tender.get_tender_info(data['json_cdb']['data']['id']).json()['data']['contracts'][0]['id']
+    attempt = 0
+    for x in range(60):
+        attempt += 1
+        with pytest.allure.step('Check if contract was passed to contracts from tender. Attempt {}'.format(attempt)):
+            try:
+                get_contract = tender.get_contract_info(contract_id_long)
+                if get_contract.status_code == 200:
+                    return get_contract.json()['data']['contractID'], get_contract.json()['data']['id']
+            except Exception as e:
+                if attempt == 60:
+                    return '{}'.format(e)
+                time.sleep(10)
+
+
 def activate_contract_json(complaint_end_date, contract_data):
     # contract_end_date = datetime.now() + timedelta(days=120)
     # complaint_end_date = datetime.strptime(complaint_end_date, '%Y-%m-%dT%H:%M:%S.%f{}'.format(kiev_now))

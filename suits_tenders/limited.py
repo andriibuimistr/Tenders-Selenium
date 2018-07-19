@@ -145,7 +145,7 @@ class TestTendersTest(object):
         BrokerBasedViewsContracts(self.broker, self.role, DATA).compare_contract_end_date_tender()
 
     def test104_wait_for_contract_to_be_generated(self):
-        contract_id = BrokerBasedActions(self.broker).wait_for_contract_generation()  # TODO Check contract in CDB
+        contract_id = BrokerBasedActions(self.broker).wait_for_contract_generation(self.role, DATA)  # TODO Check contract in CDB
         DATA['contracts']['id_short'] = contract_id[0]
         DATA['contracts']['id_long'] = contract_id[1]
 

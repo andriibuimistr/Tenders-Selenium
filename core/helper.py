@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from config import driver
+from config import driver, cdb_synchro
 import allure
 from core.document_generator import *
 from core import service, msg
@@ -389,13 +389,18 @@ class BrokerBasedActions:
             self.broker_actions_file.sign_contract()
         else:
             with pytest.allure.step('Contract data was filled in Add contract test case'):
-                pass
+                time.sleep(cdb_synchro)  # Wait for CBD nodes synchronization (lb with public point)
 
     def get_info_from_contract_tender(self):
         self.broker_actions_file.get_info_from_contract_tender()
 
-    def wait_for_contract_generation(self):
-        return self.broker_actions_file.wait_for_contract_to_be_generated()
+    def wait_for_contract_generation(self, role, data):
+        if role == 'owner':
+            contract = self.broker_actions_file.wait_for_contract_to_be_generated()
+        else:
+            tender = TenderRequests(self.cdb)
+            contract = check_if_contract_is_generated(tender, data)
+        return contract
 
     def open_contract_edit_page(self):
         with pytest.allure.step('Open contract edit page'):

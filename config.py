@@ -21,3 +21,4 @@ driver.implicitly_wait(1)
 
 fake = Faker('uk_UA')
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+cdb_synchro = 15
