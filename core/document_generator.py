@@ -5,7 +5,6 @@ from faker import Faker
 import pytest
 import urllib.request
 from api.cdb_requests import *
-import base64
 
 
 fake = Faker('uk_UA')
@@ -118,10 +117,3 @@ def add_documents_to_tender(tender_id_long, tender_token, list_of_id_lots, api_v
     #         patch_tender_documents_from_ds(doc_type, doc_type_name, added_tender_document, tender_id_long, tender_token, lot_id, 'lot', ds)
     #
     # return doc_publish_info
-
-# EXAMPLE
-# files = {'file': ('name.pdf', open(os.path.join(ROOT_DIR, 'documents', 'Doc.pdf'), 'rb').read())}
-# print(TenderRequests('2.4').add_tender_document_to_ds(files).json())
-# r = requests.post(tender_ds_host_selector('2.4'), headers=tender_headers_add_document_ds, files=files, data=None)
-# print(r.status_code)
-# pprint(r.content.decode())
