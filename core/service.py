@@ -22,8 +22,20 @@ def count_waiting_time(time_to_wait, time_template, api_version):
 
 class ContractData:
 
-    date_signed = datetime.now()
-    contract_start_date = datetime.now() + timedelta(days=1)
-    contract_end_date = datetime.now() + timedelta(days=30)
-    contract_number = ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(15))
+    def __init__(self, api_version):
+        self.time_difference = get_time_difference(api_version)
 
+    def date_signed(self):
+        return datetime.now() + timedelta(seconds=self.time_difference)
+
+    @staticmethod
+    def contract_start_date():
+        return datetime.now() + timedelta(days=1)
+
+    @staticmethod
+    def contract_end_date():
+        return datetime.now() + timedelta(days=30)
+
+    @staticmethod
+    def contract_number():
+        return ''.join(random.choice(string.ascii_letters + string.digits) for _ in range(15))

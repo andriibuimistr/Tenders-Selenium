@@ -201,12 +201,12 @@ def activate_contract_json(contract_data):
     contract_json = {
                       "data": {
                         "period": {
-                          "startDate": contract_data.contract_start_date.strftime("%Y-%m-%dT%H:%M:%S.%f{}".format(kiev_now)),
-                          "endDate": contract_data.contract_end_date.strftime("%Y-%m-%dT%H:%M:%S.%f{}".format(kiev_now))
+                          "startDate": contract_data['contract_start_date'].strftime("%Y-%m-%dT%H:%M:%S.%f{}".format(kiev_now)),
+                          "endDate": contract_data['contract_end_date'].strftime("%Y-%m-%dT%H:%M:%S.%f{}".format(kiev_now))
                         },
-                        "dateSigned": contract_data.date_signed.strftime("%Y-%m-%dT%H:%M:%S.%f{}".format(kiev_now)),
+                        "dateSigned": contract_data['date_signed'].strftime("%Y-%m-%dT%H:%M:%S.%f{}".format(kiev_now)),
                         "status": "active",
-                        "contractNumber": contract_data.contract_number
+                        "contractNumber": contract_data['contract_number']
                       }
                     }
     return contract_json

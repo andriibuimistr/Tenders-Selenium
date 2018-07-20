@@ -233,25 +233,25 @@ def add_contract(data, contract_dates):
     wait_for_element_not_visible_xpath('//body[contains(@class, "blocked")]', 10)
 
     click_by_name('data[contractNumber]')
-    send_keys_name('data[contractNumber]', contract_dates.contract_number)
+    send_keys_name('data[contractNumber]', contract_dates['contract_number'])
 
     # add date of sign
     date_signed_path = driver.find_element_by_name('data[dateSigned]')
-    date_signed = contract_dates.date_signed.strftime('%d/%m/%Y')
+    date_signed = contract_dates['date_signed'].strftime('%d/%m/%Y')
     driver.execute_script("arguments[0].removeAttribute('readonly','readonly')", date_signed_path)
     date_signed_path.send_keys(date_signed)
 
     # contract start date
     wait_for_element_clickable_name('data[period][startDate]')
     contract_start_date_path = driver.find_element_by_name('data[period][startDate]')
-    contract_start_date = contract_dates.contract_start_date.strftime('%d/%m/%Y')
+    contract_start_date = contract_dates['contract_start_date'].strftime('%d/%m/%Y')
     driver.execute_script("arguments[0].removeAttribute('readonly','readonly')", contract_start_date_path)
     contract_start_date_path.send_keys(contract_start_date)
 
     # contract end date
     wait_for_element_clickable_name('data[period][endDate]')
     contract_end_date_path = driver.find_element_by_name('data[period][endDate]')
-    contract_end_date = contract_dates.contract_end_date.strftime('%d/%m/%Y')
+    contract_end_date = contract_dates['contract_end_date'].strftime('%d/%m/%Y')
     driver.execute_script("arguments[0].removeAttribute('readonly','readonly')", contract_end_date_path)
     contract_end_date_path.send_keys(contract_end_date)
 
