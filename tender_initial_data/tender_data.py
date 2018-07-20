@@ -246,7 +246,7 @@ def generate_tender_json(procurement_method, number_of_lots, number_of_items, ac
                         "title_ru": "",
                         "procuringEntity": {
                             "kind": "defense",
-                            "name": 'ТОВ Тестовый заказчик "Заказик"',
+                            "name": "Umbrella Corporation",
                             "address": {
                                 "postalCode": "12345",
                                 "countryName": "Україна",
@@ -255,11 +255,11 @@ def generate_tender_json(procurement_method, number_of_lots, number_of_items, ac
                                 "locality": "Київ"
                             },
                             "contactPoint": {
-                                "telephone": "+380510101010",
-                                "url": "http://www.site.site",
+                                "telephone": "+380510101111",
+                                "url": "http://www.site.testik",
                                 "name_en": "Name of person in english",
-                                "name": "Франко Иван Яковлевич",
-                                "email": "formyqatesting@gmail.com"
+                                "name": "Франко Микола Яковлевич",
+                                "email": "testik_testik@gmail.testik"
                             },
                             "identifier": {
                                 "scheme": "UA-EDR",

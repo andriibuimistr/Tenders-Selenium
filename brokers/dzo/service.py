@@ -13,3 +13,12 @@ tender_document_type_names = {"Тендерна документація": "bidd
 contract_document_types_names = {"Повідомлення": "notice", "Підписаний контракт": "contractSigned", "Умови припинення контракту": "contractArrangements",
                                  "Графіки та етапи": "contractSchedule", "Додатки до контракту": "contractAnnexe", "Гарантії": "contractGuarantees",
                                  "Субконтракти": "subContract"}
+
+
+def adapt_owner_data(initial_data):
+    initial_data['data']['procuringEntity']['name'] = 'ТОВ Тестовый заказчик "Заказик"'
+    initial_data['data']['procuringEntity']['contactPoint']['telephone'] = '+380510101010'
+    initial_data['data']['procuringEntity']['contactPoint']['url'] = 'http://www.site.site'
+    initial_data['data']['procuringEntity']['contactPoint']['name'] = 'Франко Иван Яковлевич'
+    initial_data['data']['procuringEntity']['contactPoint']['email'] = 'formyqatesting@gmail.com'
+    return initial_data

@@ -12,7 +12,7 @@ def pytest_addoption(parser):
 
 @pytest.fixture(scope='class')
 def pmt(request):
-    request.cls.pmt = create_tender_data(request.config.getoption("--pmt"))
+    request.cls.pmt = request.config.getoption("--pmt")
 
 
 @pytest.fixture(scope='class')
