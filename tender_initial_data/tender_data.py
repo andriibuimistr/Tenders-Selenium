@@ -321,7 +321,7 @@ def create_tender_data(procurement_method):
     if procurement_method == 'reporting':
         tender_data = generate_tender_json(procurement_method, 0, 2, 1440, 'active.tendering', generate_id_for_lot(0), 0, False)
     elif procurement_method in negotiation_procurement:
-        tender_data = generate_tender_json(procurement_method, 1, 3, 1440, 'active.tendering', generate_id_for_lot(1), 0, False)
+        tender_data = generate_tender_json(procurement_method, 2, 3, 1440, 'active.tendering', generate_id_for_lot(2), 0, False)
     else:
         tender_data = generate_tender_json(procurement_method, 2, 2, 1440, 'active.tendering', generate_id_for_lot(2), 1, True)
     return tender_data

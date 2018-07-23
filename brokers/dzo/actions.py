@@ -105,8 +105,11 @@ def add_participant_info_limited(data):
         Select(driver.find_element_by_xpath('//select[@name="data[lotID]"]')).select_by_index(1)
 
     # amount as in tender
-    offer_amount = data['data']['value']['amount']
-    driver.find_element_by_name('data[value][amount]').send_keys(str("%.2f" % offer_amount))
+    if 'lots' in data['data']:
+        offer_amount = data['data']['lots'][0]['value']['amount']
+    else:
+        offer_amount = data['data']['value']['amount']
+    driver.find_element_by_name('data[value][amount]').send_keys(str("%.2f" % float(offer_amount)))
 
     # tax included as in tender
     tax_included = data['data']['value']['valueAddedTaxIncluded']
