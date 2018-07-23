@@ -65,4 +65,3 @@ def select_procedure(procedure):
             'competitiveDialogueEU': 'Конкурентний діалог з публікацією англійською мовою 1-ий етап',
             'belowThreshold': 'Допорогові закупівлі'
             }.get(procedure, procedure)
-

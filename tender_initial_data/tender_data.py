@@ -3,14 +3,11 @@ from tender_initial_data.dk021 import classifications
 import binascii
 import os
 from random import randint, choice
-import pytz
 from config import fake
 from datetime import datetime, timedelta
 from tender_initial_data.tender_additional_data import kiev_now, limited_procurement, negotiation_procurement
 import random
 import string
-
-kiev_utc_now = str(datetime.now(pytz.timezone('Europe/Kiev')))[26:]
 
 
 def random_item_id():
@@ -42,10 +39,10 @@ def generate_id_for_lot(number_of_lots):
 
 def tender_period(accelerator, procurement_method, received_tender_status):
     # tender_start_date
-    tender_start_date = datetime.now().strftime('%Y-%m-%dT%H:%M:%S{}'.format(kiev_utc_now))
+    tender_start_date = datetime.now().strftime('%Y-%m-%dT%H:%M:%S{}'.format(kiev_now))
     # tender_end_date
     date_day = datetime.now() + timedelta(minutes=int(round(31 * (1440.0 / accelerator)) + 1))
-    tender_end_date = date_day.strftime('%Y-%m-%dT%H:%M:%S{}'.format(kiev_utc_now))
+    tender_end_date = date_day.strftime('%Y-%m-%dT%H:%M:%S{}'.format(kiev_now))
     tender_period_data = {"tenderPeriod": {
                                     "startDate": tender_start_date,
                                     "endDate": tender_end_date
@@ -55,16 +52,16 @@ def tender_period(accelerator, procurement_method, received_tender_status):
         one_day = datetime.now() + timedelta(minutes=int(round(1 * (1440.0 / accelerator))), seconds=10)
         ten_days = datetime.now() + timedelta(minutes=int(round(10 * (1440.0 / accelerator))), seconds=10)
         five_dozens_days = datetime.now() + timedelta(minutes=int(round(60 * (1440.0 / accelerator))), seconds=10)
-        tender_start_date = one_day.strftime('%Y-%m-%dT%H:%M:%S{}'.format(kiev_utc_now))
-        tender_end_date = five_dozens_days.strftime('%Y-%m-%dT%H:%M:%S{}'.format(kiev_utc_now))
+        tender_start_date = one_day.strftime('%Y-%m-%dT%H:%M:%S{}'.format(kiev_now))
+        tender_end_date = five_dozens_days.strftime('%Y-%m-%dT%H:%M:%S{}'.format(kiev_now))
         if received_tender_status == 'active.qualification':
-            tender_end_date = ten_days.strftime('%Y-%m-%dT%H:%M:%S{}'.format(kiev_utc_now))
+            tender_end_date = ten_days.strftime('%Y-%m-%dT%H:%M:%S{}'.format(kiev_now))
         tender_period_data = {"tenderPeriod": {
                                     "startDate": tender_start_date,
                                     "endDate": tender_end_date
         },
                              "enquiryPeriod": {
-                                    "startDate": datetime.now().strftime('%Y-%m-%dT%H:%M:%S{}'.format(kiev_utc_now)),
+                                    "startDate": datetime.now().strftime('%Y-%m-%dT%H:%M:%S{}'.format(kiev_now)),
                                     "endDate": tender_start_date
                             }}
     return tender_period_data
@@ -195,8 +192,8 @@ def generate_items(number_of_items, procurement_method, classification):
                         "locality": "Город"
                     },
                     "deliveryDate": {
-                        "startDate": datetime.strftime(datetime.now() + timedelta(days=7), '%Y-%m-%dT%H:%M:%S{}'.format(kiev_utc_now)),
-                        "endDate": datetime.strftime(datetime.now() + timedelta(days=120), '%Y-%m-%dT%H:%M:%S{}'.format(kiev_utc_now))
+                        "startDate": datetime.strftime(datetime.now() + timedelta(days=7), '%Y-%m-%dT%H:%M:%S{}'.format(kiev_now)),
+                        "endDate": datetime.strftime(datetime.now() + timedelta(days=120), '%Y-%m-%dT%H:%M:%S{}'.format(kiev_now))
                     },
                     "id": generate_id_for_item(),
                     "unit": {
